@@ -5,4 +5,4 @@ $(EXEC): Aplysia\ Feeding\ Kinetic\ Model.cpp
 
 .PHONY: clean
 clean:
-	rm -rf $(EXEC) *~
+	rm -rf $(EXEC) *~ .*~
