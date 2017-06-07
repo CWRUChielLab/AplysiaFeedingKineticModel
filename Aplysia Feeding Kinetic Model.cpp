@@ -6,7 +6,6 @@
 // and rejection, without changing the biomechanics.
 // XXII model with dynamic hinge.
 
-#include "stdafx.h"
 #include <iostream>
 #include <fstream>
 using namespace std;
@@ -23,7 +22,7 @@ FILE *neuralinputs;
 
 /* including some files of my own in the rebulid */
 #include <string.h>
-#include "Math.h"
+#include "math.h"
 #include "stdio.h"
 
 /* The constants */
@@ -192,11 +191,11 @@ double activehingeforce (double activation, double velocity, double length);
 
 
 
-int _tmain(int argc, _TCHAR* argv[])
+int main(int argc, char* argv[])
 {  
     /* Absent minded code variable definitions */
-	char* filename = "SlugOutput2.txt";
-	char* filename2 = "NeuralInputs.txt";
+	const char* filename = "SlugOutput2.txt";
+	const char* filename2 = "NeuralInputs.txt";
 
 
 		//variables used to calculate the muscle forces and odontophore position - explained when initialized
