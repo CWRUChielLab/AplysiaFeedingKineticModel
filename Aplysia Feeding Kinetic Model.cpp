@@ -8,7 +8,7 @@
 
 
 
-//hello this change may be an issue.....
+//hello this change may be an issue
 #include <iostream>
 #include <fstream>
 using namespace std;
