@@ -6,7 +6,7 @@
 // and rejection, without changing the biomechanics.
 // XXII model with dynamic hinge.
 
-// Merge test
+// Merge test 2
 
 #include <iostream>
 #include <fstream>
