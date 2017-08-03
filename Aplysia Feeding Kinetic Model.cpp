@@ -368,7 +368,7 @@ int main(int argc, char* argv[])
 
 		}*/
 
-	indata.open("NeuralInputs.txt"); // opens the file
+	/*indata.open("NeuralInputs.txt"); // opens the file
 
 	 if(!indata) 
 	  { // file couldn't be opened
@@ -378,7 +378,7 @@ int main(int argc, char* argv[])
 	 else
 	 {
 		 cout << "Found It!" << endl;
-	 }
+	 }  */
 /*  BLARF COMMENT REMOVING READING INPUT
 // Reading the data into the model
 		indata >> num;
