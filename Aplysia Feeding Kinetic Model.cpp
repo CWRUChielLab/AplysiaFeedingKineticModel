@@ -669,7 +669,7 @@ while(frequencyiterationtime < endfrequencytime)  //loop added to do cyclic freq
 			}   */ //End of proposed swallow A 
 
 //this is rejection A
-		if (time >.6)
+	/*	if (time >.6)
 			{
 				freqN3 = 30;
 			}
@@ -705,8 +705,64 @@ while(frequencyiterationtime < endfrequencytime)  //loop added to do cyclic freq
 			if (time> 6.0)
 			{
 				freqHinge = 0;
+			} */
+
+//this is is Hillel's interrupted bite 
+
+			{
+				freqI2 = 20;
 			}
 
+			if (time > 2.05)
+			{
+				freqI2 = 0;
+			}
+
+			if (time > 2.48)
+			{
+				freqHinge = 20;
+			}
+
+			if (time> 6.62)
+			{
+				freqHinge = 0;
+			}
+
+			if (time> 3.5)  //time>2.55
+			{
+				freqI1I3 = 20;
+			}
+
+			if (time > 6.62)
+			{
+				freqI1I3 = 0;
+			}
+
+			if (time > 1.4) //(time > 1.4)
+			{
+				freqN3 = 30;
+			}
+
+			if (time > 3.0) //(time > 4.25)
+			{
+				freqN3 = 0;
+			}
+
+			if (time > 1.5)
+			{
+				
+				if (time<2.5)
+				{
+				seaweedforce = MAXSEAWEEDFORCE * ((a - .005)/.003)*(time - 1.5);
+				}
+
+				else
+				{
+                seaweedforce =  MAXSEAWEEDFORCE*((a - .005)/.003);
+				} 
+
+
+			}
  //Shiftsweep code for figure 1: moving RN activity within a swallow A in order to show transition from ingestion to egestion
 /*
 			if (time > 0.0)
