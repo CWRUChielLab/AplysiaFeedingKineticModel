@@ -92,6 +92,8 @@ const double xr = 6.9; //mm, point in retraction when hinge force is last measur
 const double passiveoffset = 9.8; //shifts the hinge forces in order to get a biologically accurate rest position
 const double lengthshift = 0.0;  // 0.0; //-.0062;  the shift on the hinge LT in order to get good active forces.
 
+const double MAXSEAWEEDFORCE = 100;  // the maximum force on the seaweed in mN.
+
 const int seednum = 42;
 const double RunDuration = 8.5; // 8.5; //seconds, length of time each individual is run
 
@@ -105,7 +107,7 @@ const double anglestiffness = .0001; //maximum additional rotation speed for odo
 	
 double updateforces (double x, double ytop, double ybottom, double a, double ydot, double xdot, double oldx, double oldytop, double oldybottom, double olda, 
 					 double freqI2, double freqI1I3, double *aprimeI2, double *aprimeI1I3, double *force1, double *force2, 
-					 double *F1, double *HingeAct, double hingefrequency, double Oangle, double *hingeforce);
+					 double *F1, double *HingeAct, double hingefrequency, double Oangle, double *hingeforce, double *externalforce);
   //updateforces takes the current position of the odontophore and I1/I3 and the frequency of stimulation of the muscles 
   //and calculates the forces on the odontophore
 
@@ -261,6 +263,8 @@ int main(int argc, char* argv[])
 		ifstream inFile;
 		valout = fopen(filename, "w"); //opens a text file, valout.txt
 
+		double seaweedforce = 0;  //This is added seaweed force on the odontophore
+
 
 
 
@@ -347,7 +351,7 @@ int main(int argc, char* argv[])
 
 
 
-		fprintf(valout, "time	position	radius	angle	hingeF	fitness	freqI2	freqI1I3	freqN3	freqHinge	actI2	actI1I3	acthinge	fitness\n");
+		fprintf(valout, "time	position	radius	angle	hingeF	fitness	freqI2	freqI1I3	freqN3	freqHinge	actI2	actI1I3	acthinge	fitness	seaweedforce\n");
 		
 		/* Reading the file for neural input */
 		i = 0;
@@ -486,7 +490,7 @@ while(frequencyiterationtime < endfrequencytime)  //loop added to do cyclic freq
 
 
 
-		while(time < RunDuration) //runs the individual until time is greater than RunDuration
+	while(time < RunDuration) //runs the individual until time is greater than RunDuration
 		{
 			
 			
@@ -701,7 +705,7 @@ while(frequencyiterationtime < endfrequencytime)  //loop added to do cyclic freq
 			if (time> 6.0)
 			{
 				freqHinge = 0;
-			} 
+			}
 
  //Shiftsweep code for figure 1: moving RN activity within a swallow A in order to show transition from ingestion to egestion
 /*
@@ -971,7 +975,7 @@ while(frequencyiterationtime < endfrequencytime)  //loop added to do cyclic freq
 			printvar = force1;
 
 			//take frequencies and determine the forces
-			printvar = updateforces (x, ytop, ybottom, a, ydot, xdot, oldx, oldytop, oldybottom, olda, freqI2, freqI1I3, &aprimeI2, &aprimeI1I3, &force1, &force2, &F1, &acthinge, freqHinge, odontophoreangle, &hingeF);	
+			printvar = updateforces (x, ytop, ybottom, a, ydot, xdot, oldx, oldytop, oldybottom, olda, freqI2, freqI1I3, &aprimeI2, &aprimeI1I3, &force1, &force2, &F1, &acthinge, freqHinge, odontophoreangle, &hingeF, &seaweedforce);	
 
 			//oldx, oldy, and olda are set equal to x, y, and a respectively before x, y, and a are updated to the new position
 			oldx = x;
@@ -1006,7 +1010,7 @@ while(frequencyiterationtime < endfrequencytime)  //loop added to do cyclic freq
 						//fprintf(valout, "%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	\n", time, x, ybottom, ytop, a, freqI2, freqI1I3, I1I3metafreq1, I1I3metafreq2, I1I3metafreq3, freqN3, freqHinge, -calchingeforce2(x, xdot),  -activehingeforce(acthinge, xdot, x), printvar2, dummyvariable, printvar, acthinge, aprimeI1I3, aprimeI2, OdonAngle(x), fitness);
 						
 						//This is the Fprint for the simulations in the example PDF's I sent Hillel.
-						fprintf(valout, "%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f \n", time, x, a, odontophoreangle, hingeF, fitness, freqI2, freqI1I3, freqN3, freqHinge, aprimeI2, aprimeI1I3, acthinge, fitness);
+						fprintf(valout, "%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f \n", time, x, a, odontophoreangle, hingeF, fitness, freqI2, freqI1I3, freqN3, freqHinge, aprimeI2, aprimeI1I3, acthinge, fitness, seaweedforce);
 
 						//resets printtimer 
 						printtimer = 0.0;
@@ -1056,7 +1060,7 @@ while(frequencyiterationtime < endfrequencytime)  //loop added to do cyclic freq
 /* Putting in my function definitions */
 double updateforces (double x, double ytop, double ybottom, double a, double ydot, double xdot, double oldx, double oldytop, double oldybottom, double olda, 
 					 double freqI2, double freqI1I3, double *aprimeI2, double *aprimeI1I3, double *force1, double *force2, 
-					 double *F1, double *HingeAct, double hingefrequency, double Oangle, double *hinge)
+					 double *F1, double *HingeAct, double hingefrequency, double Oangle, double *hinge, double *externalforce)
 	
 	/*updateforces takes the new and old position of the odontophore (x, oldx), the new and old radius of the I1/I3 torus 
 (y, oldy), the new and old major axes (a, olda), the velocity of the odontophore (xdot) velocity of the radius of the torus 
@@ -1134,7 +1138,8 @@ be added directly to the horizontal force acting on the odontophore.*/
 
 		//Putting in an active hinge with a basic Zajac McLT curve
 
-		*force1 = 2 * pi * tensionI2 * cos(effectivePhi) + *hinge;
+		*force1 = 2 * pi * tensionI2 * cos(effectivePhi) + *hinge + *externalforce;   ///JEFF THIS IS WHERE THE EXTERNAL FORCE GOES!!!!  
+
 		*force2 =  2 * tensionI1I3 * pi; //+ 2*pi*tensionI2*sin(effectivePhi) taking out I2component on I3 simplemodel;
 		
 		return (lengthI2);
