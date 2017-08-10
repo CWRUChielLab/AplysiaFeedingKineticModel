@@ -126,10 +126,10 @@ double musclevelocityI2 (double oldx, double oldytop, double oldybottom, double 
 double musclevelocityI1I3 (double ytop, double ybottom, double oldytop, double oldybottom); 
 	//takes the change in position of I1/I3 and calculates the velocity of I1/I3
 
-double activationI2 (double, double *); 
+double activationI2 (double frequency, double *aprime); 
 	//calculates the activation of I2 given the frequency of stimulation
 	
-double activationI1I3 (double, double *);
+double activationI1I3 (double frequency, double *aprime);
 	//calculates the activation of I1/I3 given the frequency of stimulation
 	
 double activationN3(double frequency, double *act, double time);
@@ -707,7 +707,7 @@ while(frequencyiterationtime < endfrequencytime)  //loop added to do cyclic freq
 				freqHinge = 0;
 			} */
 
-//this is is Hillel's interrupted bite 
+//this is is Hillel's perturbed swallow
 
 			{
 				freqI2 = 20;
