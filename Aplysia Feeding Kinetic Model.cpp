@@ -13,6 +13,7 @@ using std::cerr;
 using std::cout;
 using std::endl;
 using std::ifstream;
+using std::string;
 
 #include <cstdlib> // for exit function
 
@@ -1784,7 +1785,38 @@ double OdonAngle2(double x, double hingeforce, double radius, double oldodonangl
 
 void updateinputs (double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2)
 {
-    updateinputsSwallowPerturbed(time, freqI2, freqHinge, freqI1I3, freqN3, seaweedforce, a, frequencyiterationtime, frequencyiterationtime2);
+    string behaviorType = "SwallowPerturbed";
+    
+    if(behaviorType == "RejectionB")
+    {
+        updateinputsRejectionB(time, freqI2, freqHinge, freqI1I3, freqN3, seaweedforce, a, frequencyiterationtime, frequencyiterationtime2);
+    }
+    else if(behaviorType == "Bite")
+    {
+        updateinputsBite(time, freqI2, freqHinge, freqI1I3, freqN3, seaweedforce, a, frequencyiterationtime, frequencyiterationtime2);
+    }
+    else if(behaviorType == "SwallowB")
+    {
+        updateinputsSwallowB(time, freqI2, freqHinge, freqI1I3, freqN3, seaweedforce, a, frequencyiterationtime, frequencyiterationtime2);
+
+    }
+    else if(behaviorType == "SwallowA")
+    {
+        updateinputsSwallowA(time, freqI2, freqHinge, freqI1I3, freqN3, seaweedforce, a, frequencyiterationtime, frequencyiterationtime2);
+    }
+    else if(behaviorType == "RejectionA")
+    {
+        updateinputsRejectionA(time, freqI2, freqHinge, freqI1I3, freqN3, seaweedforce, a, frequencyiterationtime, frequencyiterationtime2);
+    }
+    else if(behaviorType == "SwallowPerturbed")
+    {
+        updateinputsSwallowPerturbed(time, freqI2, freqHinge, freqI1I3, freqN3, seaweedforce, a, frequencyiterationtime, frequencyiterationtime2);
+    }
+    else
+    {
+        cerr << "Behavior Type Not Recognized"  << endl;
+        exit(1);
+    }
 }
 
 void updateinputsRejectionB(double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2)
