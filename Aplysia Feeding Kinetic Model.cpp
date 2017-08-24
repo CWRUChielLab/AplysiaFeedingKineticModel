@@ -193,6 +193,17 @@ double activehingeforce (double activation, double velocity, double length);
 
 void updateinputs(double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2);
 
+void updateinputsRejectionB(double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2);
+
+void updateinputsBite(double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2);
+
+void updateinputsSwallowB(double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2);
+
+void updateinputsSwallowA(double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2);
+
+void updateinputsRejectionA(double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2);
+
+void updateinputsSwallowPerturbed(double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2);
 
 int main(int argc, char* argv[])
 {  
@@ -1773,8 +1784,13 @@ double OdonAngle2(double x, double hingeforce, double radius, double oldodonangl
 
 void updateinputs (double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2)
 {
+    updateinputsSwallowPerturbed(time, freqI2, freqHinge, freqI1I3, freqN3, seaweedforce, a, frequencyiterationtime, frequencyiterationtime2);
+}
+
+void updateinputsRejectionB(double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2)
+{
     //Rejection B sqaure wave inputs
-    /*      if (time > 0.38)
+    if (time > 0.38)
      {
      freqI2 = 20;
      }
@@ -1812,10 +1828,13 @@ void updateinputs (double time, double & freqI2, double & freqHinge, double & fr
      if (time > 2.5)
      {
      freqN3 = 0;
-     } */
-    
+     }
+}
+
+void updateinputsBite(double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2)
+{
     // Bite square wave inputs
-    /*		if (time > 0.0)
+    if (time > 0.0)
      {
      freqI2 = 20;
      }
@@ -1853,10 +1872,13 @@ void updateinputs (double time, double & freqI2, double & freqHinge, double & fr
      if (time > 4.85)
      {
      freqN3 = 0;
-     }  */
-    
+     }
+}
+
+void updateinputsSwallowB(double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2)
+{
     //Proposed swallow B code
-    /*    if (time > 0.0)
+    if (time > 0.0)
      {
      freqI2 = 20;
      }
@@ -1894,10 +1916,13 @@ void updateinputs (double time, double & freqI2, double & freqHinge, double & fr
      if (time > frequencyiterationtime + 2.85) //(time > 4.25)
      {
      freqN3 = 0;
-     } */ //End of proposed Swallow B
-    
+     }  //End of proposed Swallow B
+}
+
+void updateinputsSwallowA(double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2)
+{
     // Beginning of proposed swallow A
-    /*   if (time > 0.0)
+    if (time > 0.0)
      {
      freqI2 = 20;
      }
@@ -1935,10 +1960,13 @@ void updateinputs (double time, double & freqI2, double & freqHinge, double & fr
      if (time > 3.9)
      {
      freqN3 = 0;
-     }   */ //End of proposed swallow A
-    
+     }    //End of proposed swallow A
+}
+
+void updateinputsRejectionA(double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2)
+{
     //this is rejection A
-    /*	if (time >.6)
+    if (time >.6)
      {
      freqN3 = 30;
      }
@@ -1974,10 +2002,13 @@ void updateinputs (double time, double & freqI2, double & freqHinge, double & fr
      if (time> 6.0)
      {
      freqHinge = 0;
-     } */
-    
+     }
+}
+
+void updateinputsSwallowPerturbed(double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2)
+{
     //this is is Hillel's perturbed swallow
-    
+    // TODO come back to this:
     {
         freqI2 = 20;
     }
@@ -2032,252 +2063,5 @@ void updateinputs (double time, double & freqI2, double & freqHinge, double & fr
         
         
     }
-    //Shiftsweep code for figure 1: moving RN activity within a swallow A in order to show transition from ingestion to egestion
-    /*
-     if (time > 0.0)
-     {
-     freqI2 = 20;
-     }
-     
-     if (time > 2.05)
-     {
-     freqI2 = 0;
-     }
-     
-     if (time > 2.48)
-     {
-     freqHinge = 20;
-     }
-     
-     if (time> 6.62)
-     {
-     freqHinge = 0;
-     }
-     
-     if (time> 2.33)
-     {
-     freqI1I3 = 20;
-     }
-     
-     if (time > 6.62)
-     {
-     freqI1I3 = 0;
-     }
-     
-     if (time>frequencyiterationtime)
-     {
-				 freqN3 =  30;
-     }
-     if (time>frequencyiterationtime + 1.5)
-     {
-     freqN3 = 0;
-     }  */
-    //Shiftsweep code for figure 2, moving onset of I1/I3 activation time for protraction magnitude, within a bite pattern
-    /*		if (time > 0.0)
-     {
-     freqI2 = 20;
-     }
-     
-     if (time > 3.41)
-     {
-     freqI2 = 0;
-     }
-     
-     if (time > 2.36)
-     {
-     freqHinge = 20;  //BLARF was 20
-     }
-     
-     if (time> 6.80)
-     {
-     freqHinge = 0;
-     }
-     
-     if (time>  frequencyiterationtime)  //2.21)
-     {
-     freqI1I3 = 20;   //BLARF was 35
-     }
-     
-     if (time >  frequencyiterationtime + 4.3)             //6.56)
-     {
-     freqI1I3 = 0;
-     }
-     
-     if (time > 2.15)
-     {
-     freqN3 = 30;  //BLARF was 20
-     }
-     
-     if (time > 4.85)
-     {
-     freqN3 = 0;
-     }  */
-    //code for differing durations of I2 for inward fitness based on Swallowing Pattern figure 3, fitness
-    // with different I2 durations
-    
-    /*	if (time > 0.0)
-     {
-     freqI2 = 20;
-     }
-     
-     if (time > frequencyiterationtime)
-     {
-     freqI2 = 0;
-     }
-     
-     if (time > frequencyiterationtime)
-     {
-     freqHinge = 20;  //BLARF was 20
-     }
-     
-     if (time> frequencyiterationtime + 3.0)
-     {
-     freqHinge = 0;
-     }
-     
-     if (time >  3.0)  //2.21)
-     {
-     freqI1I3 = 20;   //BLARF was 35
-     }
-     
-     if (time >  6.0)             //6.56)
-     {
-     freqI1I3 = 0;
-     }
-     
-     if (time > frequencyiterationtime - 0.5)
-     {
-     freqN3 = 30;  //BLARF was 20
-     }
-     
-     if (time > frequencyiterationtime + 1.5)
-     {
-     freqN3 = 0;
-     }  */
-    
-    //shiftsweep code #3 looking at I2 duration relative to rejections.  Figure 4.  Based on Rejection A
-    /*	if (time >.6)
-     {
-     freqN3 = 30;
-     }
-     
-     if (time > frequencyiterationtime - 0.2)  //1.7)
-     {
-     freqN3 = 0;
-     }
-     
-     if (time > .26)
-     {
-     freqI2 = 20;
-     }
-     
-     if (time > frequencyiterationtime) //1.9)
-     {
-     freqI2 = 0;
-     }
-     
-     if (time> frequencyiterationtime + 0.6) //2.5)
-     {
-     freqI1I3 =  20;
-     }
-     if (time> frequencyiterationtime + 4.7) //6.6)
-     {
-     freqI1I3 = 0;
-     }
-     
-     if (time>  frequencyiterationtime2 ) //frequencyiterationtime - 0.7)  //1.2
-     {
-     freqHinge = 20;
-     }
-     if (time> frequencyiterationtime2 + 5.0) //frequencyiterationtime + 3.1) //6.0)
-     {
-     freqHinge = 0;
-     }  */
-    
-    //Changing I2 frequency during a type B swallow
-    /*   if (time > 0.0)
-     {
-     freqI2 = frequencyiterationtime;
-     }
-     
-     if (time > (1/(frequencyiterationtime/20))*2.05) //2.05)
-     {
-     freqI2 = 0;
-     }
-     
-     if (time > ((1/(frequencyiterationtime/20))*2.05) + .43) //2.48)
-     {
-     freqHinge = 20;
-     }
-     
-     if (time> 6.62)
-     {
-     freqHinge = 0;
-     }
-     
-     if (time> ((1/(frequencyiterationtime/20))*2.05) + .33) //2.33)
-     {
-     freqI1I3 = 20; //frequencyiterationtime; //20;
-     }
-     
-     if (time > 6.62)
-     {
-     freqI1I3 = 0;
-     }
-     
-     if (time > ((1/(frequencyiterationtime/20))*2.05) - .6) //1.4)
-     {
-     freqN3 = 30;
-     }
-     
-     if (time > ((1/(frequencyiterationtime/20))*2.05) + 2.2) //4.25)
-     {
-     freqN3 = 0;
-     } */
-    //End of proposed Swallow B 
-    
-    // Changing of frequency rejection B talking about antagonism
-    /*      if (time > 0.38)
-     {
-     freqI2 = frequencyiterationtime; //20;
-     }
-     
-     if (time > 2.75)
-     {
-     freqI2 = 0;
-     }
-     
-     if (time > 1.01)
-     {
-     freqHinge = 20; // frequencyiterationtime;  //20;  //BLARF was 20
-     }
-     
-     if (time> 7.56)
-     {
-     freqHinge = 0;
-     }
-     
-     if (time> 3.56)
-     {
-     freqI1I3 = 20;   //BLARF was 35
-     }
-     
-     if (time > 7.69)
-     {
-     freqI1I3 = 0;
-     }
-     
-     if (time > .8)
-     {
-     freqN3 = 30;  //BLARF was 20
-     }
-     
-     if (time > 2.5)
-     {
-     freqN3 = 0;
-     } 
-     */
-    
-    
-    //End of Shiftsweep code
 }
+
