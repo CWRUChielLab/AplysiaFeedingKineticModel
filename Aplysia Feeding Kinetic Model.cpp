@@ -25,6 +25,7 @@ FILE *neuralinputs;
 #include <string.h>
 #include "math.h"
 #include "stdio.h"
+#include <vector>
 
 /* The constants */
 #define eom 1 /*Equation of Motion, if this is one - using complex equation of motion (NEOM)
@@ -192,7 +193,7 @@ void xcCalc(double a, double x, double rotation, double & Txc, double & Bxc, dou
 
 double activehingeforce (double activation, double velocity, double length);
 
-void updateinputs(double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2);
+void updateinputs(double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2, string behaviorType);
 
 void updateinputsRejectionB(double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2);
 
@@ -208,155 +209,147 @@ void updateinputsSwallowPerturbed(double time, double & freqI2, double & freqHin
 
 int main(int argc, char* argv[])
 {  
+    
+    // Taking an argument, parsing it to a string
+    //EDIT
+    std::string current_exec_name = argv[0]; // Name of the current exec program
+    std::string first_arge;
+    std::vector<std::string> all_args;
+    
+    if (argc > 1) {
+        
+        first_arge = argv[1];
+        
+        all_args.assign(argv + 1, argv + argc);
+    }
+    
     /* Absent minded code variable definitions */
 	const char* filename = "SlugOutput2.txt";
 	const char* filename2 = "NeuralInputs.txt";
 
 
-		//variables used to calculate the muscle forces and odontophore position - explained when initialized
-//variables used to calculate the muscle forces and odontophore position - explained when initialized
-		double x, y, xdot, ydot, adot, xacc;
-		double a, b;
-		double odontophoreangle;
-		double vol, force1, force2, time;
-		double oldx, oldy, olda, oldytop, oldybottom;
-		double aprimeI2, aprimeI1I3, aprimeN3, freqI2, freqI1I3, freqN3, actN3;
-		double F1; //visco-elastic hinge force, F1 from Sutton et al 2002
-		double hingeF = 0;
-		double xctop, xcbottom, yctop, ycbottom, ytop, ybottom, topslope, bottomslope, rotation;
+    //variables used to calculate the muscle forces and odontophore position - explained when initialized
+    //variables used to calculate the muscle forces and odontophore position - explained when initialized
+    double x, y, xdot, ydot, adot, xacc;
+    double a, b;
+    double odontophoreangle;
+    double vol, force1, force2, time;
+    double oldx, oldy, olda, oldytop, oldybottom;
+    double aprimeI2, aprimeI1I3, aprimeN3, freqI2, freqI1I3, freqN3, actN3;
+    double F1; //visco-elastic hinge force, F1 from Sutton et al 2002
+    double hingeF = 0;
+    double xctop, xcbottom, yctop, ycbottom, ytop, ybottom, topslope, bottomslope, rotation;
 	
-		//fitness calculation variables - explained when initialized
-		double fitness;
-		double SArea;
-		double fitcounter1, fitcounter2, fitcheck;
-		double fitpertime, oldfit, oldtime, totalfitness;
-		double oldxdot;
-		double aPrevious = 0;
+    //fitness calculation variables - explained when initialized
+    double fitness;
+    double SArea;
+    double fitcounter1, fitcounter2, fitcheck;
+    double fitpertime, oldfit, oldtime, totalfitness;
+    double oldxdot;
+    double aPrevious = 0;
+    double printtimer;
+    double eggtimer = 0;
+    double actI3 = 0;
+    double acthinge = 0;
+    int i = 1;
+    int I2inputcounter = 1;
+    int j = 1;
+    int k = 1;
+    int I1I3inputcounter1, I1I3inputcounter2, I1I3inputcounter3, RNinputcounter, Hingeinputcounter;
+    double printvar = 0;
+    double printvar2 = 0; // used in update position to ou tput the effective slope and phi
 		
-		double printtimer;
+    /* Absent minded code variable definitions */
+    int columncounter = 0;
+    int rowcounter = 0;
+    ifstream indata;  //the input stream
+    float num; //variable for input value
+    float neuralvariables[12][inputrows];
+    double I1I3metafreq1 = 0;
+    double I1I3metafreq2 = 0;
+    double I1I3metafreq3 = 0;
+    double freqHinge = 0;
+    double startloop1 = 1;
+    double frequencyiterationtime = startloop1; //Code added to run loops of frequency code
+    double endfrequencytime = 1.1;  //BLARF CHANGED TO ONLY CYCLE ONCE
+    double frequencystep = .1;
+	double frequencyiterationtime2 = 0;
+    double endfrequencytime2 = 0.1;
+    double frequencystep2 = .1;  //BLARF CHANGED TO ONLY CYCLE ONCE
+    double checker = 1;
+    double period = 0;
+    double dummyvariable = 0;  //just something to hand to functions for outputs that dont matter
+    ifstream inFile;
+    valout = fopen(filename, "w"); //opens a text file, valout.txt
+    double seaweedforce = 0;  //This is added seaweed force on the odontophore
 
-		double eggtimer = 0;
-		double actI3 = 0;
-		double acthinge = 0;
-		int i = 1;
-		int I2inputcounter = 1;
-		int j = 1;
-		int k = 1;
-
-		int I1I3inputcounter1, I1I3inputcounter2, I1I3inputcounter3, RNinputcounter, Hingeinputcounter;
-
-		double printvar = 0;
-		double printvar2 = 0; // used in update position to ou tput the effective slope and phi
+    //********INITIALIZING THE VARIABLES********
 		
-		   /* Absent minded code variable definitions */
-		int columncounter = 0;
-		int rowcounter = 0;
-		ifstream indata;  //the input stream
-		float num; //variable for input value
-		float neuralvariables[12][inputrows];
-		double I1I3metafreq1 = 0;
-		double I1I3metafreq2 = 0;
-		double I1I3metafreq3 = 0;
-		double freqHinge = 0;
-
-		double startloop1 = 1;
-		double frequencyiterationtime = startloop1; //Code added to run loops of frequency code
-		double endfrequencytime = 1.1;  //BLARF CHANGED TO ONLY CYCLE ONCE
+    //variables for the physics - see geometry diagram in Valerie Snyder's notebook 4/24/02
+    //Guidebook pg. 1 diagram
+    a = Radius; //the major axis of the odontophore, the odontophore is intitialized as a sphere
+    b = (5.0*sqrt(5.0)/sqrt(a * 1000.0))/1000.0; //the minor axis of the odontophore, equation keeps the odontophore isovolumetric
+    x = -1 * a; //displacement of center of odontophore with respect to vertical line down the center of the I1/I3 torus
+    y = 0.00375; //major radius of I1/I3 ring
+    //r = sqrt(x*x + y*y) - Radius; //Pythagorean equality, r = thickness of I1/I3 torus (minor/cross-sectional radius)
+    vol = 2 * pi *r*r*y; //volume of the I1/I3 torus
+    xdot = 0; //velocity of odontophore
+    ydot = 0; //velocity of contraction/expansion of I1/I3 torus
+    adot = 0; //velocity of major axis of the odontophore
+    xacc = 0; //acceleration of the odontophore
+    //rotation = OdonAngle(x);
+    odontophoreangle = 90;
+    xctop = -0.0037;
+    xcbottom = -0.0037;
 		
-		
-		double frequencystep = .1;
-
-		double frequencyiterationtime2 = 0;
-		double endfrequencytime2 = 0.1;
-		double frequencystep2 = .1;  //BLARF CHANGED TO ONLY CYCLE ONCE
-
-		double checker = 1;
-		double period = 0;
-		double dummyvariable = 0;  //just something to hand to functions for outputs that dont matter
-		ifstream inFile;
-		valout = fopen(filename, "w"); //opens a text file, valout.txt
-
-		double seaweedforce = 0;  //This is added seaweed force on the odontophore
-
-
-
-
-//********INITIALIZING THE VARIABLES********
-		
-		//variables for the physics - see geometry diagram in Valerie Snyder's notebook 4/24/02
-		//Guidebook pg. 1 diagram
-		a = Radius; //the major axis of the odontophore, the odontophore is intitialized as a sphere
-		b = (5.0*sqrt(5.0)/sqrt(a * 1000.0))/1000.0; //the minor axis of the odontophore, equation keeps the odontophore isovolumetric
-		x = -1 * a; //displacement of center of odontophore with respect to vertical line down the center of the I1/I3 torus
-		y = 0.00375; //major radius of I1/I3 ring
-		//r = sqrt(x*x + y*y) - Radius; //Pythagorean equality, r = thickness of I1/I3 torus (minor/cross-sectional radius)
-		vol = 2 * pi *r*r*y; //volume of the I1/I3 torus
-		xdot = 0; //velocity of odontophore
-		ydot = 0; //velocity of contraction/expansion of I1/I3 torus
-		adot = 0; //velocity of major axis of the odontophore
-		xacc = 0; //acceleration of the odontophore
-		//rotation = OdonAngle(x);
-		odontophoreangle = 90;
-
-		xctop = -0.0037;
-		xcbottom = -0.0037;
-		
-		xcCalc(a, -1*x, odontophoreangle, xctop, xcbottom, yctop, ycbottom, topslope, bottomslope);
+    xcCalc(a, -1*x, odontophoreangle, xctop, xcbottom, yctop, ycbottom, topslope, bottomslope);
 	
-		ytop = yctop + sqrt(r*r - (-1*x - xctop)*(-1*x - xctop));
-		ybottom = ycbottom - sqrt(r*r - (-1*x - xcbottom)*(-1*x - xcbottom)); //initializing contact point
+    ytop = yctop + sqrt(r*r - (-1*x - xctop)*(-1*x - xctop));
+    ybottom = ycbottom - sqrt(r*r - (-1*x - xcbottom)*(-1*x - xcbottom)); //initializing contact point
 		
-		force1 = 0.000; //horizontal force acting on odontophore
-		force2 = 0.000; //vertical force acting on the I1/I3 torus
+    force1 = 0.000; //horizontal force acting on odontophore
+    force2 = 0.000; //vertical force acting on the I1/I3 torus
 	
-		//oldx, oldy, and oldr keep track of the previous position of the individual in order to calculate the velocity of I2 and adot
-		oldx = x;
-		oldy = y;
-		olda = a;
-		oldytop = ytop;
-		oldybottom = ybottom;
+    //oldx, oldy, and oldr keep track of the previous position of the individual in order to calculate the velocity of I2 and adot
+    oldx = x;
+    oldy = y;
+    olda = a;
+    oldytop = ytop;
+    oldybottom = ybottom;
+    
+    //activation variables, from Yu et al 1999
+    aprimeI2 = 0;
+    aprimeI1I3 = 0;
+    aprimeN3 = 0.01;
+    actN3 = 0;
+
+    //freqI2 and freqI1I3 are the frequency of stimulation of I2 and I1/I3 respectively
+    freqI2 = 0;
+    freqI1I3 = 0;
+	freqN3 = 0;  //controls the length of the odontophore's major axis
 		
-		//activation variables, from Yu et al 1999
-		aprimeI2 = 0;
-		aprimeI1I3 = 0;
-		aprimeN3 = 0.01;
-		actN3 = 0;
-		
-		//freqI2 and freqI1I3 are the frequency of stimulation of I2 and I1/I3 respectively
-		freqI2 = 0;
-		freqI1I3 = 0;
-		freqN3 = 0;  //controls the length of the odontophore's major axis
-		
-		//component of the visco-elastic hinge force, F1 from Sutton et al 2002
-		F1 = 0;
+    //component of the visco-elastic hinge force, F1 from Sutton et al 2002
+    F1 = 0;
 	
-		//fitness calculation variables
-		//fitness = 0.005 ; //0.1; //running total of the fitness an individual has earned
-		fitness = 0.0;  //starting fitness at zero because we're not doing GA's right now.
-		SArea = 0; //amount of surface area exposed when the individual reaches peak protraction
-		fitcounter1 = 0; //counts consecutive negative velocities in order to determine when the protraction is finished
-		fitcounter2 = 0; //counts consecutive positive velocities in order to determine when retraction is finished
-		fitcheck = 0;  //keeps track of whether the individual is currently protracting (1) or retracting (-1)
-		fitpertime = 0; //amount of fitness an individual recieves per second
-		oldfit = 0; //used to store the amount of fitness at the last peak protraction to calculate fitpertime
-		oldtime = 0;  //used to store the time when the last peak protraction occurred to calculate fitpertime
-		
-
-
-		totalfitness = 0; //fitness an individual would receive if the run were stopped (includes partial surface area or partial retraction)
-		
-		
-		time = 0; //keeps track of the amount of time the model has run so model will stop after the RunDuration is up
-		
-		printtimer = 0;
-		
-		I2inputcounter = 0;
-		I1I3inputcounter1 = 0;
-		I1I3inputcounter2 = 0;
-		I1I3inputcounter3 = 0;
-		RNinputcounter = 0;
-		Hingeinputcounter = 0;
-
+    //fitness calculation variables
+    //fitness = 0.005 ; //0.1; //running total of the fitness an individual has earned
+    fitness = 0.0;  //starting fitness at zero because we're not doing GA's right now.
+    SArea = 0; //amount of surface area exposed when the individual reaches peak protraction
+    fitcounter1 = 0; //counts consecutive negative velocities in order to determine when the protraction is finished
+    fitcounter2 = 0; //counts consecutive positive velocities in order to determine when retraction is finished
+    fitcheck = 0;  //keeps track of whether the individual is currently protracting (1) or retracting (-1)
+    fitpertime = 0; //amount of fitness an individual recieves per second
+    oldfit = 0; //used to store the amount of fitness at the last peak protraction to calculate fitpertime
+    oldtime = 0;  //used to store the time when the last peak protraction occurred to calculate fitpertime
+    totalfitness = 0; //fitness an individual would receive if the run were stopped (includes partial surface area or partial retraction)
+    time = 0; //keeps track of the amount of time the model has run so model will stop after the RunDuration is up
+    printtimer = 0;
+    I2inputcounter = 0;
+    I1I3inputcounter1 = 0;
+    I1I3inputcounter2 = 0;
+    I1I3inputcounter3 = 0;
+    RNinputcounter = 0;
+    Hingeinputcounter = 0;
 		
 		//neuralinputs = fopen(filename2, "r"); //sets up the text file for reading the input.
 
@@ -364,13 +357,13 @@ int main(int argc, char* argv[])
 
 
 
-		fprintf(valout, "time	position	radius	angle	hingeF	fitness	freqI2	freqI1I3	freqN3	freqHinge	actI2	actI1I3	acthinge	fitness	seaweedforce\n");
+    fprintf(valout, "time	position	radius	angle	hingeF	fitness	freqI2	freqI1I3	freqN3	freqHinge	actI2	actI1I3	acthinge	fitness	seaweedforce\n");
 		
-		/* Reading the file for neural input */
-		i = 0;
-		j = 1;
+    /* Reading the file for neural input */
+    i = 0;
+    j = 1;
 		
-		/*while (j<inputrows)
+        /*while (j<inputrows)
 		{
 		printf("Scan3 %i \n", j);
 
@@ -433,7 +426,7 @@ BLARF COMMENT REMOVING READING INPUT END */
 			//********ENDING INITIALIZATION********
 
 /* Running the model here */
-printf("Dreaming the impossible dream \n" );
+    printf("Dreaming the impossible dream \n" );
 /*printf("%f	%f \n", neuralvariables[1][I2inputcounter], neuralvariables[2][I2inputcounter]);
 printf("%f	%f \n", neuralvariables[1][1], neuralvariables[2][1]);
 
@@ -447,57 +440,54 @@ while(frequencyiterationtime < endfrequencytime)  //loop added to do cyclic freq
 
 //redo of initialization for the run
 		
-		//variables for the physics - see geometry diagram in Valerie Snyder's notebook 4/24/02
-		//Guidebook pg. 1 diagram
-		a = Radius; //the major axis of the odontophore, the odontophore is intitialized as a sphere
-		b = (5.0*sqrt(5.0)/sqrt(a * 1000.0))/1000.0; //the minor axis of the odontophore, equation keeps the odontophore isovolumetric
-		x = -1 * a; //displacement of center of odontophore with respect to vertical line down the center of the I1/I3 torus
-		y = 0.00375; //major radius of I1/I3 ring
-		//r = sqrt(x*x + y*y) - Radius; //Pythagorean equality, r = thickness of I1/I3 torus (minor/cross-sectional radius)
-		vol = 2 * pi *r*r*y; //volume of the I1/I3 torus
-		xdot = 0; //velocity of odontophore
-		ydot = 0; //velocity of contraction/expansion of I1/I3 torus
-		adot = 0; //velocity of major axis of the odontophore
-		xacc = 0; //acceleration of the odontophore
-		rotation = OdonAngle(x);
-		xctop = -0.0037;
-		xcbottom = -0.0037;
+    //variables for the physics - see geometry diagram in Valerie Snyder's notebook 4/24/02
+    //Guidebook pg. 1 diagram
+    a = Radius; //the major axis of the odontophore, the odontophore is intitialized as a sphere
+    b = (5.0*sqrt(5.0)/sqrt(a * 1000.0))/1000.0; //the minor axis of the odontophore, equation keeps the odontophore isovolumetric
+    x = -1 * a; //displacement of center of odontophore with respect to vertical line down the center of the I1/I3 torus
+    y = 0.00375; //major radius of I1/I3 ring
+    //r = sqrt(x*x + y*y) - Radius; //Pythagorean equality, r = thickness of I1/I3 torus (minor/cross-sectional radius)
+    vol = 2 * pi *r*r*y; //volume of the I1/I3 torus
+    xdot = 0; //velocity of odontophore
+    ydot = 0; //velocity of contraction/expansion of I1/I3 torus
+    adot = 0; //velocity of major axis of the odontophore
+    xacc = 0; //acceleration of the odontophore
+    rotation = OdonAngle(x);
+    xctop = -0.0037;
+    xcbottom = -0.0037;
+    xcCalc(a, -1*x, rotation, xctop, xcbottom, yctop, ycbottom, topslope, bottomslope);
+    ytop = yctop + sqrt(r*r - (-1*x - xctop)*(-1*x - xctop));
+    ybottom = ycbottom - sqrt(r*r - (-1*x - xcbottom)*(-1*x - xcbottom)); //initializing contact point
+    force1 = 0.000; //horizontal force acting on odontophore
+    force2 = 0.000; //vertical force acting on the I1/I3 torus
+   
+    //oldx, oldy, and oldr keep track of the previous position of the individual in order to calculate the velocity of I2 and adot
+    oldx = x;
+    oldy = y;
+    olda = a;
+    oldytop = ytop;
+    oldybottom = ybottom;
 		
-		xcCalc(a, -1*x, rotation, xctop, xcbottom, yctop, ycbottom, topslope, bottomslope);
+    //activation variables, from Yu et al 1999
+    aprimeI2 = 0;
+    aprimeI1I3 = 0;
+    aprimeN3 = 0.01;
+    actN3 = 0;
+		
+    //freqI2 and freqI1I3 are the frequency of stimulation of I2 and I1/I3 respectively
+    freqI2 = 0;
+    freqI1I3 = 0;
+    freqN3 = 0;  //controls the length of the odontophore's major axis
+    freqHinge = 0;
+		
+    //component of the visco-elastic hinge force, F1 from Sutton et al 2002
+    F1 = 0;
 	
-		ytop = yctop + sqrt(r*r - (-1*x - xctop)*(-1*x - xctop));
-		ybottom = ycbottom - sqrt(r*r - (-1*x - xcbottom)*(-1*x - xcbottom)); //initializing contact point
-		
-		force1 = 0.000; //horizontal force acting on odontophore
-		force2 = 0.000; //vertical force acting on the I1/I3 torus
-	
-		//oldx, oldy, and oldr keep track of the previous position of the individual in order to calculate the velocity of I2 and adot
-		oldx = x;
-		oldy = y;
-		olda = a;
-		oldytop = ytop;
-		oldybottom = ybottom;
-		
-		//activation variables, from Yu et al 1999
-		aprimeI2 = 0;
-		aprimeI1I3 = 0;
-		aprimeN3 = 0.01;
-		actN3 = 0;
-		
-		//freqI2 and freqI1I3 are the frequency of stimulation of I2 and I1/I3 respectively
-		freqI2 = 0;
-		freqI1I3 = 0;
-		freqN3 = 0;  //controls the length of the odontophore's major axis
-		freqHinge = 0;
-		
-		//component of the visco-elastic hinge force, F1 from Sutton et al 2002
-		F1 = 0;
-	
-		//fitness calculation variables, making really low for bites!
-		fitness = 0.0; //running total of the fitness an individual has earned, tube manipulation
-		//fitness = x; //fitness for the maximum protraction trials of biting.
+    //fitness calculation variables, making really low for bites!
+    fitness = 0.0; //running total of the fitness an individual has earned, tube manipulation
+    //fitness = x; //fitness for the maximum protraction trials of biting.
 
-		time = 0;
+    time = 0;
 
 
 
@@ -505,98 +495,93 @@ while(frequencyiterationtime < endfrequencytime)  //loop added to do cyclic freq
 
 	while(time < RunDuration) //runs the individual until time is greater than RunDuration
 		{
-			
-			
-			
-			//NeuronOutput is from 0 to 1, multiply be 20 to get freq from 0 to 20
-			freqI2 = 0;//circ.NeuronOutput(1) * 20; 
-			freqI1I3 = 0;//circ.NeuronOutput(2) * 20;
-			freqN3 = 0;//circ.NeuronOutput(3) * 20;
-			I1I3metafreq1 = 0;
-			I1I3metafreq2 = 0;
-			I1I3metafreq3 = 0;
-			freqHinge = 0;
-
-            //Update Neural variables and seaweed force based on the current time
-            updateinputs(time, freqI2, freqHinge, freqI1I3, freqN3, seaweedforce, a, frequencyiterationtime,  frequencyiterationtime2);
+        //NeuronOutput is from 0 to 1, multiply be 20 to get freq from 0 to 20
+        freqI2 = 0;//circ.NeuronOutput(1) * 20;
+        freqI1I3 = 0;//circ.NeuronOutput(2) * 20;
+        freqN3 = 0;//circ.NeuronOutput(3) * 20;
+        I1I3metafreq1 = 0;
+        I1I3metafreq2 = 0;
+        I1I3metafreq3 = 0;
+        freqHinge = 0;
+            
+        //Update Neural variables and seaweed force based on the current time
+        updateinputs(time, freqI2, freqHinge, freqI1I3, freqN3, seaweedforce, a, frequencyiterationtime,  frequencyiterationtime2, first_arge);
             
             
-			//BLARF looking at first protraction first
-			//freqI1I3 = 0;
-			//freqN3 = 0;
-			//freqN3 = 15;
+        //BLARF looking at first protraction first
+        //freqI1I3 = 0;
+        //freqN3 = 0;
+        //freqN3 = 15;
 
-			eggtimer += StepSize;		
+        eggtimer += StepSize;
 				
-			//actN3 = activationN3(freqN3, &aprimeN3, time);
-			actN3 = secondactivationN3(freqN3, &aprimeN3, time);
+        //actN3 = activationN3(freqN3, &aprimeN3, time);
+        actN3 = secondactivationN3(freqN3, &aprimeN3, time);
 
-			oldxdot = xdot; //for use in hinge fix
+        oldxdot = xdot; //for use in hinge fix
 			
-			//take frequencies and determine the forces
-			//printvar2 = updateforces (x, ytop, ybottom, a, ydot, xdot, oldx, oldytop, oldybottom, olda, freqI2, freqI1I3, &aprimeI2, &aprimeI1I3, &force1, &force2, &F1, &acthinge, freqHinge);	
-			printvar = force1;
+        //take frequencies and determine the forces
+        //printvar2 = updateforces (x, ytop, ybottom, a, ydot, xdot, oldx, oldytop, oldybottom, olda, freqI2, freqI1I3, &aprimeI2, &aprimeI1I3, &force1, &force2, &F1, &acthinge, freqHinge);
+        printvar = force1;
 
-			//take frequencies and determine the forces
-			printvar = updateforces (x, ytop, ybottom, a, ydot, xdot, oldx, oldytop, oldybottom, olda, freqI2, freqI1I3, &aprimeI2, &aprimeI1I3, &force1, &force2, &F1, &acthinge, freqHinge, odontophoreangle, &hingeF, &seaweedforce);	
+        //take frequencies and determine the forces
+        printvar = updateforces (x, ytop, ybottom, a, ydot, xdot, oldx, oldytop, oldybottom, olda, freqI2, freqI1I3, &aprimeI2, &aprimeI1I3, &force1, &force2, &F1, &acthinge, freqHinge, odontophoreangle, &hingeF, &seaweedforce);
 
-			//oldx, oldy, and olda are set equal to x, y, and a respectively before x, y, and a are updated to the new position
-			oldx = x;
-			oldy = y;
-			olda = a;
-			oldytop = ytop;
-			oldybottom = ybottom;
+        //oldx, oldy, and olda are set equal to x, y, and a respectively before x, y, and a are updated to the new position
+        oldx = x;
+        oldy = y;
+        olda = a;
+        oldytop = ytop;
+        oldybottom = ybottom;
 				
-			//take forces and the frequency of N3 and determine odontophore position
-			updateposition(&x, &ytop, &ybottom, &a, &xdot, &ydot, &adot, force1, force2, actN3, &xctop, &xcbottom, &dummyvariable, &odontophoreangle, hingeF);
+        //take forces and the frequency of N3 and determine odontophore position
+        updateposition(&x, &ytop, &ybottom, &a, &xdot, &ydot, &adot, force1, force2, actN3, &xctop, &xcbottom, &dummyvariable, &odontophoreangle, hingeF);
 								
-			//resetting the visco-elastic force to zero to prevent accumulation of visco-elastic forces over large amounts of time
-			//from overwelming the elastic hinge force
-			if ((xdot/oldxdot) < 0) 
-			{
-				F1 = 0;
-			}	
+        //resetting the visco-elastic force to zero to prevent accumulation of visco-elastic forces over large amounts of time
+        //from overwelming the elastic hinge force
+        if ((xdot/oldxdot) < 0)
+        {
+            F1 = 0;
+        }
 				
-			eggtimer += StepSize;
-			time += StepSize; //time advances one time step, run will stop when time becomes larger than the RunDuration
-			printtimer += StepSize;
+        eggtimer += StepSize;
+        time += StepSize; //time advances one time step, run will stop when time becomes larger than the RunDuration
+        printtimer += StepSize;
 
 			
-    if (printtimer > timer) //function will only print every printtimer seconds - keeps file from being too big
-					{
-						//print statement
-						//fprintf(valout, "%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	\n",time, x, freqI2, freqI1I3, freqN3, actN3, a, fitness, aprimeI2 - Ao, aprimeI1I3 - Ao,  LI2opt*musclelengthI2 (a, x, y));
-						//fprintf(valout, "%f	%f	%f	%f	%f	\n",x, printvar2, printvar, passive(printvar), passive(printvar)*2*pi*FnotI2);
-					
-						//fprintf(valout, "%f	%f	%f	%f	%f	%f	%f	%f	%f	%f\n", x, a, OdonAngle(x), lengthtens(printvar), printvar2, force1 - calchingeforce(x, xdot, &F1), calchingeforce(x,xdot,&F1), lengthtens(musclelengthI1I3(ytop,ybottom)), printvar, force2 * printvar);
+        if (printtimer > timer) //function will only print every printtimer seconds - keeps file from being too big
+        {
+            //print statement
+            //fprintf(valout, "%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	\n",time, x, freqI2, freqI1I3, freqN3, actN3, a, fitness, aprimeI2 - Ao, aprimeI1I3 - Ao,  LI2opt*musclelengthI2 (a, x, y));
+            //fprintf(valout, "%f	%f	%f	%f	%f	\n",x, printvar2, printvar, passive(printvar), passive(printvar)*2*pi*FnotI2);
+            
+            //fprintf(valout, "%f	%f	%f	%f	%f	%f	%f	%f	%f	%f\n", x, a, OdonAngle(x), lengthtens(printvar), printvar2, force1 - calchingeforce(x, xdot, &F1), calchingeforce(x,xdot,&F1), lengthtens(musclelengthI1I3(ytop,ybottom)), printvar, force2 * printvar);
+            
+            //fprintf(valout, "%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	\n", time, x, ybottom, ytop, a, freqI2, freqI1I3, I1I3metafreq1, I1I3metafreq2, I1I3metafreq3, freqN3, freqHinge, -calchingeforce2(x, xdot),  -activehingeforce(acthinge, xdot, x), printvar2, dummyvariable, printvar, acthinge, aprimeI1I3, aprimeI2, OdonAngle(x), fitness);
 						
-						//fprintf(valout, "%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	\n", time, x, ybottom, ytop, a, freqI2, freqI1I3, I1I3metafreq1, I1I3metafreq2, I1I3metafreq3, freqN3, freqHinge, -calchingeforce2(x, xdot),  -activehingeforce(acthinge, xdot, x), printvar2, dummyvariable, printvar, acthinge, aprimeI1I3, aprimeI2, OdonAngle(x), fitness);
-						
-						//This is the Fprint for the simulations in the example PDF's I sent Hillel.
-						fprintf(valout, "%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f \n", time, x, a, odontophoreangle, hingeF, fitness, freqI2, freqI1I3, freqN3, freqHinge, aprimeI2, aprimeI1I3, acthinge, fitness, seaweedforce);
+            //This is the Fprint for the simulations in the example PDF's I sent Hillel.
+            fprintf(valout, "%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f \n", time, x, a, odontophoreangle, hingeF, fitness, freqI2, freqI1I3, freqN3, freqHinge, aprimeI2, aprimeI1I3, acthinge, fitness, seaweedforce);
 
-						//resets printtimer 
-						printtimer = 0.0;
-					}
+            //resets printtimer
+            printtimer = 0.0;
+        }
 
 			
-			if (time > 0) //fitness function ignores the initial jiggle into the equilibrium position
+        if (time > 0) //fitness function ignores the initial jiggle into the equilibrium position
 						   // because of the delay in the activation function, no muscle moves before time = 0.4
-			{
-				//updates the fitness / surface area / fitcheck
-		      		fitcalc(x, a, oldx, olda, fitness); //commenting out the old fitness
+        {
+            //updates the fitness / surface area / fitcheck
+            fitcalc(x, a, oldx, olda, fitness); //commenting out the old fitness
 
-				//for odontophore protraction magnitude
-				/*if (x > fitness)
-				{
-					fitness = x;
-				} */
-		
-				//fitcalcbite(x,a,oldx, olda, fitness);
-
-			}		
+            //for odontophore protraction magnitude
+            /*if (x > fitness)
+            {
+                fitness = x;
+            } */
+            //fitcalcbite(x,a,oldx, olda, fitness);
+        }
 				
-		}	
+    }
 
     printf("that's another simulation completed at %f	%f\n", frequencyiterationtime, frequencyiterationtime2);
 
@@ -612,7 +597,9 @@ while(frequencyiterationtime < endfrequencytime)  //loop added to do cyclic freq
 
 	} While loop Removal end */
 
-	}
+    
+    
+}
 
 
 
@@ -1783,9 +1770,8 @@ double OdonAngle2(double x, double hingeforce, double radius, double oldodonangl
 /* Changes the neural variables and seaweed force variable in place using references based on the current time
  */
 
-void updateinputs (double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2)
+void updateinputs (double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2, string behaviorType)
 {
-    string behaviorType = "SwallowPerturbed";
     
     if(behaviorType == "RejectionB")
     {
