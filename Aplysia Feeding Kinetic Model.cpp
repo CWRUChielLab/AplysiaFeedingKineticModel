@@ -211,14 +211,13 @@ int main(int argc, char* argv[])
 {  
     
     // Taking an argument, parsing it to a string
-    //EDIT
-    std::string current_exec_name = argv[0]; // Name of the current exec program
-    std::string first_arge;
+    std::string programName = argv[0];
+    std::string first_argument;
     std::vector<std::string> all_args;
     
     if (argc > 1) {
         
-        first_arge = argv[1];
+        first_argument = argv[1];
         
         all_args.assign(argv + 1, argv + argc);
     }
@@ -505,7 +504,7 @@ while(frequencyiterationtime < endfrequencytime)  //loop added to do cyclic freq
         freqHinge = 0;
             
         //Update Neural variables and seaweed force based on the current time
-        updateinputs(time, freqI2, freqHinge, freqI1I3, freqN3, seaweedforce, a, frequencyiterationtime,  frequencyiterationtime2, first_arge);
+        updateinputs(time, freqI2, freqHinge, freqI1I3, freqN3, seaweedforce, a, frequencyiterationtime,  frequencyiterationtime2, first_argument);
             
             
         //BLARF looking at first protraction first
