@@ -1,6 +1,9 @@
 import os
 import csv
+import matplotlib
+matplotlib.use('Agg') # force matplotlib to not use XWindows backend
 import matplotlib.pyplot as plt
+
 #os.chdir("/Users/tatekeller/Documents/Aplysia Feeding Kinetic Model/AplysiaFeedingKineticModel")
 #The following code reads the SlugOutput2.txt file and converts it to a csv file
 tabDelimitedFile = open("SlugOutput2.txt", "r")
@@ -28,7 +31,7 @@ with open("SlugOutput2-csvTranslated.csv", "r") as file:
             i+=1
 
 #The following line prints the time array to confirm that it contains the correct values
-print(time)
+#print(time)
 
 #The following code reads the SlugOutput2-csvTranslated.csv and saves the position in an array list "position"
 position = []
@@ -41,7 +44,7 @@ with open("SlugOutput2-csvTranslated.csv", "r") as file:
             i+=1
 
 #The following line prints the time array to confirm that it contains the correct values
-print(position)
+#print(position)
 
 #The following code reads the SlugOutput2-csvTranslated.csv and saves the radius in an array list "radius"
 radius = []
@@ -54,7 +57,7 @@ with open("SlugOutput2-csvTranslated.csv", "r") as file:
             i+=1
 
 #The following line prints the time array to confirm that it contains the correct values
-print(radius)
+#print(radius)
 
 #The following code reads the SlugOutput2-csvTranslated.csv and saves the angle in an array list "angle"
 angle = []
@@ -67,7 +70,7 @@ with open("SlugOutput2-csvTranslated.csv", "r") as file:
             i+=1
 
 #The following line prints the time array to confirm that it contains the correct values
-print(angle)
+#print(angle)
 
 #The following code reads the SlugOutput2-csvTranslated.csv and saves the seaweedforce in an array list "seaweedforce"
 seaweedforce = []
@@ -80,7 +83,7 @@ with open("SlugOutput2-csvTranslated.csv", "r") as file:
             i+=1
 
 #The following line prints the time array to confirm that it contains the correct values
-print(seaweedforce)
+#print(seaweedforce)
 
 #The following code reads the SlugOutput2-csvTranslated.csv and saves the Odontophore input in an array list "freqN3"
 freqN3 = []
@@ -93,7 +96,7 @@ with open("SlugOutput2-csvTranslated.csv", "r") as file:
             i+=1
 
 #The following line prints the time array to confirm that it contains the correct values
-print(freqN3)
+#print(freqN3)
 
 #The following code reads the SlugOutput2-csvTranslated.csv and saves the Hinge input in an array list "freqHinge"
 freqHinge = []
@@ -106,7 +109,7 @@ with open("SlugOutput2-csvTranslated.csv", "r") as file:
             i+=1
 
 #The following line prints the time array to confirm that it contains the correct values
-print(freqHinge)
+#print(freqHinge)
 
 #The following code reads the SlugOutput2-csvTranslated.csv and saves the I2 input in an array list "freqI2"
 freqI2 = []
@@ -119,7 +122,7 @@ with open("SlugOutput2-csvTranslated.csv", "r") as file:
             i+=1
 
 #The following line prints the time array to confirm that it contains the correct values
-print(freqI2)
+#print(freqI2)
 
 #The following code reads the SlugOutput2-csvTranslated.csv and saves the I1/I3 input in an array list "freqI1I3"
 freqI1I3 = []
@@ -132,7 +135,7 @@ with open("SlugOutput2-csvTranslated.csv", "r") as file:
             i+=1
 
 #The following line prints the time array to confirm that it contains the correct values
-print(freqI1I3)
+#print(freqI1I3)
 
 #The following code plots the entire figure
 plt.figure(1)
@@ -194,4 +197,5 @@ plt.ylabel(freqI1I3[0])
 plt.axis([0, 9, -5, 25])
 plt.grid(True)
 #Show the entire figure
-plt.show()
+#plt.show()
+plt.savefig("plot.pdf", bbox_inches='tight')

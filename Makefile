@@ -5,7 +5,7 @@ $(EXEC): Aplysia\ Feeding\ Kinetic\ Model.cpp
 
 .PHONY: clean
 clean:
-	rm -rf $(EXEC) SlugOutput2.txt SlugOutput2-csvTranslated.csv *~ .*~
+	rm -rf $(EXEC) SlugOutput2.txt SlugOutput2-csvTranslated.csv plot.pdf *~ .*~
 
 .PHONY: check
 check: $(EXEC)
