@@ -1,5 +1,8 @@
 model
 SlugOutput2.txt
+SlugOutput2-csvTranslated.csv
+Figures/
+plot.pdf
 *~
 
 # Prerequisites
