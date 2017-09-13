@@ -10,17 +10,22 @@ clean:
 .PHONY: check
 check: $(EXEC)
 	./$(EXEC) SwallowPerturbed
-	@echo “SwallowPerturbed:   ” `diff SlugOutput2.txt Check/Output-SwallowPerturbed.txt | wc -l` “deviations”
+	@echo "SwallowPerturbed:" `diff SlugOutput2.txt Check/Output-SwallowPerturbed.txt | wc -l` "deviations"
+	@echo
 	./$(EXEC) Bite
-	@echo “Bite:   ” `diff SlugOutput2.txt Check/Output-Bite.txt | wc -l` “deviations”
+	@echo "Bite:            " `diff SlugOutput2.txt Check/Output-Bite.txt             | wc -l` "deviations"
+	@echo
 	./$(EXEC) RejectionA
-	@echo “RejectionA:   ” `diff SlugOutput2.txt Check/Output-RejectionA.txt | wc -l` “deviations”
+	@echo "RejectionA:      " `diff SlugOutput2.txt Check/Output-RejectionA.txt       | wc -l` "deviations"
+	@echo
 	./$(EXEC) RejectionB
-	@echo “RejectionB:   ” `diff SlugOutput2.txt Check/Output-RejectionB.txt | wc -l` “deviations”
+	@echo "RejectionB:      " `diff SlugOutput2.txt Check/Output-RejectionB.txt       | wc -l` "deviations"
+	@echo
 	./$(EXEC) SwallowA
-	@echo “SwallowA:   ” `diff SlugOutput2.txt Check/Output-SwallowA.txt | wc -l` “deviations”
+	@echo "SwallowA:        " `diff SlugOutput2.txt Check/Output-SwallowA.txt         | wc -l` "deviations"
+	@echo
 	./$(EXEC) SwallowB
-	@echo “SwallowB:   ” `diff SlugOutput2.txt Check/Output-SwallowB.txt | wc -l` “deviations”
+	@echo "SwallowB:        " `diff SlugOutput2.txt Check/Output-SwallowB.txt         | wc -l` "deviations"
 
 .PHONY: blessBite
 blessBite: $(EXEC)
