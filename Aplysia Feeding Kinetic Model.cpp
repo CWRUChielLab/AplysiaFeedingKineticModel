@@ -26,6 +26,7 @@ FILE *neuralinputs;
 #include "math.h"
 #include "stdio.h"
 #include <vector>
+#include <sstream>
 
 /* The constants */
 #define eom 1 /*Equation of Motion, if this is one - using complex equation of motion (NEOM)
@@ -103,6 +104,39 @@ const int inputrows = 740;
 const int NeuronNum = 4; //number of neurons in the network
 
 const double anglestiffness = .0001; //maximum additional rotation speed for odontophore in deg/second
+
+/* Variables used for opening input file*/
+ifstream inputFile;
+string times;
+string positions;
+string radiuss;
+string angles;
+string hingeFs;
+string fitnesss;
+string freqI2s;
+string freqI1I3s;
+string freqN3s;
+string freqHinges;
+string actI2s;
+string actI1I3s;
+string acthinges;
+string seaweedforces;
+
+/*Arrays of stored values from input file*/
+double positionarray[1000];
+double radiusarray[1000];
+double anglearray[1000];
+double hingeFarray[1000];
+double fitnessarray[1000];
+double freqI1I3array[1000];
+double freqN3array[1000];
+double freqHingearray[1000];
+double actI2array[1000];
+double actI1I3array[1000];
+double acthingearray[1000];
+double seaweedforcearray[1000];
+double freqI2array[1000];
+double timearray[1000];
 
 /* My function prototypes */
 //calling the functions
@@ -207,25 +241,37 @@ void updateinputsRejectionA(double time, double & freqI2, double & freqHinge, do
 
 void updateinputsSwallowPerturbed(double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2);
 
+bool openAndRead(string behaviorType);
+
+int timeAdjuster(double timeArray[], double timeStamp);
+
+void updateDynamicInputs(double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2);
+
+string returnFirstLine(string s);
+
+int counter(string str);
+
+int columnChecker();
+
 int main(int argc, char* argv[])
 {  
     
-    // Taking an argument, parsing it to a string
+    /* Taking an argument, parsing it to a string*/
     std::string programName = argv[0];
     std::string first_argument;
     std::vector<std::string> all_args;
-    
     if (argc > 1) {
-        
         first_argument = argv[1];
-        
         all_args.assign(argv + 1, argv + argc);
     }
     
+    /* Opening and reading a file*/
+    openAndRead(first_argument);
+    if(openAndRead(first_argument) == true){
+
     /* Absent minded code variable definitions */
 	const char* filename = "SlugOutput2.txt";
 	const char* filename2 = "NeuralInputs.txt";
-
 
     //variables used to calculate the muscle forces and odontophore position - explained when initialized
     //variables used to calculate the muscle forces and odontophore position - explained when initialized
@@ -351,10 +397,6 @@ int main(int argc, char* argv[])
     Hingeinputcounter = 0;
 		
 		//neuralinputs = fopen(filename2, "r"); //sets up the text file for reading the input.
-
-		
-
-
 
     fprintf(valout, "time	position	radius	angle	hingeF	fitness	freqI2	freqI1I3	freqN3	freqHinge	actI2	actI1I3	acthinge	fitness	seaweedforce\n");
 		
@@ -488,13 +530,9 @@ while(frequencyiterationtime < endfrequencytime)  //loop added to do cyclic freq
 
     time = 0;
 
-
-
-
-
 	while(time < RunDuration) //runs the individual until time is greater than RunDuration
 		{
-        //NeuronOutput is from 0 to 1, multiply be 20 to get freq from 0 to 20
+        //NeuronOutput is from 0 to 1, multip ly be 20 to get freq from 0 to 20
         freqI2 = 0;//circ.NeuronOutput(1) * 20;
         freqI1I3 = 0;//circ.NeuronOutput(2) * 20;
         freqN3 = 0;//circ.NeuronOutput(3) * 20;
@@ -597,7 +635,10 @@ while(frequencyiterationtime < endfrequencytime)  //loop added to do cyclic freq
 	} While loop Removal end */
 
     
-    
+    }
+    else{
+        printf("Please use a correct tab delimited file with either 6 or 15 columns \n");
+    }
 }
 
 
@@ -1797,6 +1838,10 @@ void updateinputs (double time, double & freqI2, double & freqHinge, double & fr
     {
         updateinputsSwallowPerturbed(time, freqI2, freqHinge, freqI1I3, freqN3, seaweedforce, a, frequencyiterationtime, frequencyiterationtime2);
     }
+    else if (behaviorType == "Dynamic")
+    {
+        updateDynamicInputs(time, freqI2, freqHinge, freqI1I3, freqN3, seaweedforce, a, frequencyiterationtime, frequencyiterationtime2);
+    }
     else
     {
         cerr << "Behavior Type Not Recognized"  << endl;
@@ -2082,3 +2127,125 @@ void updateinputsSwallowPerturbed(double time, double & freqI2, double & freqHin
     }
 }
 
+bool openAndRead(string behaviorType)
+{
+    if(behaviorType == "Dynamic"){
+        if(columnChecker() == 15){
+            inputFile.open("SlugInput2.txt");
+            //If the File isn't openable/found then it will fail
+            if(inputFile.fail()){
+                //cout << "File Not Found  ";
+            } //Talk to jeff... Not sure why but the file fails to open every time, but still is read and works as it should..?
+            int count = 0; //while loop counter
+            while ((inputFile >> times >> positions >> radiuss >> angles >> hingeFs >> fitnesss >> freqI2s >> freqI1I3s >> freqN3s >> freqHinges >>actI2s >> actI1I3s >> acthinges >> fitnesss >> seaweedforces))
+            {
+                if(count > 0){ //first (0th) line of file is text
+                    timearray[count-1] = std::stod(times);
+                    positionarray[count-1] = std::stod(positions);
+                    radiusarray[count-1] = std::stod(radiuss);
+                    anglearray[count-1] = std::stod(angles);
+                    hingeFarray[count-1] = std::stod(hingeFs);
+                    fitnessarray[count-1] = std::stod(fitnesss);
+                    freqI2array[count-1] = std::stod(freqI2s);
+                    freqI1I3array[count-1] = std::stod(freqI1I3s);
+                    freqN3array[count-1] = std::stod(freqN3s);
+                    freqHingearray[count-1] = std::stod(freqHinges);
+                    actI2array[count-1] = std::stod(actI2s);
+                    actI1I3array[count-1] = std::stod(actI1I3s);
+                    acthingearray[count-1] = std::stod(acthinges);
+                    seaweedforcearray[count-1] = std::stod(seaweedforces);
+                }
+                count++;
+            }
+            return true;
+        }
+        else if (columnChecker() == 6){
+            inputFile.open("SlugInput2.txt");
+            //If the File isn't openable/found then it will fail
+            if(inputFile.fail()){
+                //cout << "File Not Found  ";
+            } //Talk to jeff... Not sure why but the file fails to open every time, but still is read and works as it should..?
+            int count = 0; //while loop counter
+            while ((inputFile >> times >> freqI2s >> freqI1I3s >> freqN3s >> freqHinges >> seaweedforces))
+            {
+                if(count > 0){ //first (0th) line of file is text
+                    timearray[count-1] = std::stod(times);
+                    freqI2array[count-1] = std::stod(freqI2s);
+                    freqI1I3array[count-1] = std::stod(freqI1I3s);
+                    freqN3array[count-1] = std::stod(freqN3s);
+                    freqHingearray[count-1] = std::stod(freqHinges);
+                    seaweedforcearray[count-1] = std::stod(seaweedforces);
+                }
+                count++;
+            }
+            return true;
+        }
+        else{
+            return false; //The entire program will not run if the behavior type is "dynamic" and there is no correct input
+        }
+    }
+    else {
+        return true;
+    }
+}
+
+/* timeAdjuster takes an double array "timeArray" and double variable "timeStamp" as inputs. It's purpose is to determine
+ what value within an array is closest to the input timeStamp, and output the array index at which that value is located
+ within the array */
+int timeAdjuster(double timeArray[], double timeStamp)
+{
+    int count = 0;
+    while(timeStamp > timeArray[count])
+    {
+        count++;
+    }
+    return count-1; //Fixes cases where input data does not start at zero seconds
+}
+
+/*
+ Updates the inputs of the model to equal the values from the input file at a time
+ */
+void updateDynamicInputs(double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2)
+{
+    freqI2 = freqI2array[timeAdjuster(timearray, time)];
+    freqHinge = freqHingearray[timeAdjuster(timearray, time)];
+    freqI1I3 = freqI1I3array[timeAdjuster(timearray, time)];
+    freqN3 = freqN3array[timeAdjuster(timearray, time)];
+    seaweedforce = seaweedforcearray[timeAdjuster(timearray, time)];
+}
+
+string returnFirstLine(string s){
+    string str;
+    for (int i = 0; i < s.size(); i++)
+    {
+        if(s.at(i) != 10){
+            str += (s.at(i));
+        }
+        else{
+            break;
+        }
+    }
+    return str;
+}
+
+int counter(string str)
+{
+    int count = 0;
+    for (int i = 0; i < str.size(); i++){
+        if(str.at(i) == 9){
+            count++;
+        }
+    }
+    return count+1;
+}
+
+int columnChecker()
+{
+    ifstream inFile;
+    inFile.open("SlugInput2.txt");
+    stringstream strStream;
+    strStream << inFile.rdbuf();
+    string str = strStream.str();
+    string str2 = returnFirstLine(str); //only the first line
+    return counter(str2);
+}
