@@ -39,6 +39,9 @@ FILE *neuralinputs;
 #define protractfit -1 /*if this equals 1 fitcalc will give fitness for protraction
 						if this does not equal one, fitness will be given at retraction only*/
 
+// TATE
+double valueTBD;
+
 const double pi = 3.14159265359;
 const double StepSize = .000008;  //.00001; size of the time step used to evaluate the Euler integrators in the model
 const double timer = 0.01;  //printmodel will print to the text file every "timer" seconds - keeps text file from being too big
@@ -137,6 +140,9 @@ double acthingearray[1000];
 double seaweedforcearray[1000];
 double freqI2array[1000];
 double timearray[1000];
+
+/* Value of columns in the input file*/
+int numberColumns = 0;
 
 /* My function prototypes */
 //calling the functions
@@ -266,6 +272,7 @@ int main(int argc, char* argv[])
     }
     
     /* Opening and reading a file*/
+    numberColumns = columnChecker();
     openAndRead(first_argument);
     if(openAndRead(first_argument) == true){
 
@@ -530,8 +537,18 @@ while(frequencyiterationtime < endfrequencytime)  //loop added to do cyclic freq
 
     time = 0;
 
+        //TATE
+        //printf("%f",freqI2array[0]);
+        //printf("%f",freqHingearray[0]);
+        //printf("%f",freqI1I3array[0]);
+        //printf("%f",freqN3array[0]);
+        
+        
+        
 	while(time < RunDuration) //runs the individual until time is greater than RunDuration
 		{
+            
+            
         //NeuronOutput is from 0 to 1, multip ly be 20 to get freq from 0 to 20
         freqI2 = 0;//circ.NeuronOutput(1) * 20;
         freqI1I3 = 0;//circ.NeuronOutput(2) * 20;
@@ -562,7 +579,7 @@ while(frequencyiterationtime < endfrequencytime)  //loop added to do cyclic freq
         printvar = force1;
 
         //take frequencies and determine the forces
-        printvar = updateforces (x, ytop, ybottom, a, ydot, xdot, oldx, oldytop, oldybottom, olda, freqI2, freqI1I3, &aprimeI2, &aprimeI1I3, &force1, &force2, &F1, &acthinge, freqHinge, odontophoreangle, &hingeF, &seaweedforce);
+        printvar =  updateforces (x, ytop, ybottom, a, ydot, xdot, oldx, oldytop, oldybottom, olda, freqI2, freqI1I3, &aprimeI2, &aprimeI1I3, &force1, &force2, &F1, &acthinge, freqHinge, odontophoreangle, &hingeF, &seaweedforce);
 
         //oldx, oldy, and olda are set equal to x, y, and a respectively before x, y, and a are updated to the new position
         oldx = x;
@@ -617,7 +634,11 @@ while(frequencyiterationtime < endfrequencytime)  //loop added to do cyclic freq
             } */
             //fitcalcbite(x,a,oldx, olda, fitness);
         }
-				
+            // TATE TEST
+            //if(time < 0.00008){
+              //printf("%f \n", aprimeI2);
+            //}
+            //printf("%d \n", numberColumns);
     }
 
     printf("that's another simulation completed at %f	%f\n", frequencyiterationtime, frequencyiterationtime2);
@@ -637,7 +658,7 @@ while(frequencyiterationtime < endfrequencytime)  //loop added to do cyclic freq
     
     }
     else{
-        printf("Please use a correct tab delimited file with either 6 or 15 columns \n");
+        printf("Please use a correct 'windows formatted text' file with either 6 or 15 columns \n");
     }
 }
 
@@ -732,6 +753,10 @@ be added directly to the horizontal force acting on the odontophore.*/
 
 		*force2 =  2 * tensionI1I3 * pi; //+ 2*pi*tensionI2*sin(effectivePhi) taking out I2component on I3 simplemodel;
 		
+        //valueTBD = aprimeI2; //TATE
+        
+        //printf("%f \n",actI2);
+        
 		return (lengthI2);
 	}
 	
@@ -1238,7 +1263,7 @@ of time.  This operation is performed in the model code rather than in calchinge
 			}
 			
 			//equation of motion for Maxwell element
-			F1dot = xdot * S1 - (S1 / Damp1) * *F1;  
+			F1dot = xdot * S1 - (S1 / Damp1) * *F1;
 			*F1 = *F1 + F1dot * StepSize;
 			
 			if (xdot < 0) //prevents the negative spring constant from causing trouble
@@ -1262,8 +1287,9 @@ of time.  This operation is performed in the model code rather than in calchinge
 			
 		/* Making viscoelastic force = 0  Simpmodel */
 		*F1 = 0;
-
+        
 		return (-1 * Fo - *F1 - viscdamp * xdot);
+
 	}
 	
 double updateposition (double *x, double *ytop, double *ybottom, double *a, double *xdot, double *ydot, double *adot, double f1, double f2, double actN3, double *Txc, double *Bxc, double *output, double *Oangle, double hingeforce)
@@ -1739,6 +1765,7 @@ double calchingeforce2 (double xdisplacement, double xvelocity)
 
 double activehingeforce (double activation, double velocity, double length)
 {
+    
 	double HingeLT;
 	double FoHinge =  -600;  // -800;
 
@@ -2090,7 +2117,7 @@ void updateinputsSwallowPerturbed(double time, double & freqI2, double & freqHin
         freqHinge = 0;
     }
     
-    if (time> 3.5)  //time>2.55
+    if (time > 3.5)  //time>2.55
     {
         freqI1I3 = 20;
     }
@@ -2113,7 +2140,7 @@ void updateinputsSwallowPerturbed(double time, double & freqI2, double & freqHin
     if (time > 1.5)
     {
         
-        if (time<2.5)
+        if (time < 2.5)
         {
             seaweedforce = MAXSEAWEEDFORCE * ((a - .005)/.003)*(time - 1.5);
         }
@@ -2130,7 +2157,7 @@ void updateinputsSwallowPerturbed(double time, double & freqI2, double & freqHin
 bool openAndRead(string behaviorType)
 {
     if(behaviorType == "Dynamic"){
-        if(columnChecker() == 15){
+        if(numberColumns == 15){
             inputFile.open("SlugInput2.txt");
             //If the File isn't openable/found then it will fail
             if(inputFile.fail()){
@@ -2159,7 +2186,7 @@ bool openAndRead(string behaviorType)
             }
             return true;
         }
-        else if (columnChecker() == 6){
+        else if (numberColumns == 6){
             inputFile.open("SlugInput2.txt");
             //If the File isn't openable/found then it will fail
             if(inputFile.fail()){
@@ -2180,6 +2207,26 @@ bool openAndRead(string behaviorType)
             }
             return true;
         }
+        else if (numberColumns == 5){
+            inputFile.open("SlugInput2.txt");
+            //If the File isn't openable/found then it will fail
+            if(inputFile.fail()){
+                //cout << "File Not Found  ";
+            } //Talk to jeff... Not sure why but the file fails to open every time, but still is read and works as it should..?
+            int count = 0; //while loop counter
+            while ((inputFile >> times >> freqI2s >> freqI1I3s >> freqN3s >> freqHinges))
+            {
+                if(count > 0){ //first (0th) line of file is text
+                    timearray[count-1] = std::stod(times);
+                    freqI2array[count-1] = std::stod(freqI2s);
+                    freqI1I3array[count-1] = std::stod(freqI1I3s);
+                    freqN3array[count-1] = std::stod(freqN3s);
+                    freqHingearray[count-1] = std::stod(freqHinges);
+                }
+                count++;
+            }
+            return true;
+        }
         else{
             return false; //The entire program will not run if the behavior type is "dynamic" and there is no correct input
         }
@@ -2195,15 +2242,24 @@ bool openAndRead(string behaviorType)
 int timeAdjuster(double timeArray[], double timeStamp)
 {
     int count = 0;
-    while(timeStamp > timeArray[count])
-    {
-        count++;
+    if(numberColumns == 5){
+        while(timeStamp > timeArray[count])
+        {
+            count++;
+        }
     }
-    return count-1; //Fixes cases where input data does not start at zero seconds
+    if(numberColumns == 6){
+        while(timeStamp >= timeArray[count])
+        {
+            count++;
+        }
+    }
+    return count - 1; //Fixes cases where input data does not start at zero seconds
 }
 
 /*
- Updates the inputs of the model to equal the values from the input file at a time
+ Updates the inputs of the model to equal the values from the input file at a time. For seaweed force dependent models, input files must include two values under the seaweed force
+ column. These values represent the times at which forces begin affecting the model, and when the force accelerates. These times for "SwallowPerturbed" are 1.5 and 2.5, respectively
  */
 void updateDynamicInputs(double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2)
 {
@@ -2211,7 +2267,21 @@ void updateDynamicInputs(double time, double & freqI2, double & freqHinge, doubl
     freqHinge = freqHingearray[timeAdjuster(timearray, time)];
     freqI1I3 = freqI1I3array[timeAdjuster(timearray, time)];
     freqN3 = freqN3array[timeAdjuster(timearray, time)];
-    seaweedforce = seaweedforcearray[timeAdjuster(timearray, time)];
+    if(numberColumns == 6){
+        double timeForceBegins, timeForceAccelerates;
+        timeForceBegins = seaweedforcearray[0];
+        timeForceAccelerates = seaweedforcearray[1];
+        if (time > timeForceBegins){
+            if (time < timeForceAccelerates)
+            {
+                seaweedforce = MAXSEAWEEDFORCE * ((a - .005)/.003)*(time - 1.5);
+            }
+            else
+            {
+                seaweedforce =  MAXSEAWEEDFORCE*((a - .005)/.003);
+            }
+        }
+    }
 }
 
 string returnFirstLine(string s){
