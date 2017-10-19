@@ -281,7 +281,6 @@ int main(int argc, char* argv[])
 	const char* filename2 = "NeuralInputs.txt";
 
     //variables used to calculate the muscle forces and odontophore position - explained when initialized
-    //variables used to calculate the muscle forces and odontophore position - explained when initialized
     double x, y, xdot, ydot, adot, xacc;
     double a, b;
     double odontophoreangle;
@@ -1771,12 +1770,12 @@ double activehingeforce (double activation, double velocity, double length)
 
 	HingeLT = -.024*((length+lengthshift)*1000)*((length+lengthshift)*1000) - .04*((length+lengthshift)*1000) +1;
     
-
 	if ((HingeLT > 0) && (activation > Ao))
 		return FoHinge*HingeLT*(activation-Ao);
 	else
-		return 0;
+        return 0;
 }
+
 double OdonAngle2(double x, double hingeforce, double radius, double oldodonangle)
 {
 	double output;
@@ -2259,7 +2258,7 @@ int timeAdjuster(double timeArray[], double timeStamp)
 
 /*
  Updates the inputs of the model to equal the values from the input file at a time. For seaweed force dependent models, input files must include two values under the seaweed force
- column. These values represent the times at which forces begin affecting the model, and when the force accelerates. These times for "SwallowPerturbed" are 1.5 and 2.5, respectively
+ column (and then values of zero to fill spots for the rest of the column). These two values represent the times at which forces begin affecting the model, and when the force reaches its max value. These times for "SwallowPerturbed" are 1.5 and 2.5, respectively.
  */
 void updateDynamicInputs(double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2)
 {
@@ -2268,13 +2267,13 @@ void updateDynamicInputs(double time, double & freqI2, double & freqHinge, doubl
     freqI1I3 = freqI1I3array[timeAdjuster(timearray, time)];
     freqN3 = freqN3array[timeAdjuster(timearray, time)];
     if(numberColumns == 6){
-        double timeForceBegins, timeForceAccelerates;
+        double timeForceBegins, timeForceMaximized;
         timeForceBegins = seaweedforcearray[0];
-        timeForceAccelerates = seaweedforcearray[1];
+        timeForceMaximized = seaweedforcearray[1];
         if (time > timeForceBegins){
-            if (time < timeForceAccelerates)
+            if (time < timeForceMaximized)
             {
-                seaweedforce = MAXSEAWEEDFORCE * ((a - .005)/.003)*(time - 1.5);
+                seaweedforce = MAXSEAWEEDFORCE * ((a - .005)/.003)*(time - timeForceBegins);
             }
             else
             {
