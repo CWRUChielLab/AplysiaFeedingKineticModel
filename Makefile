@@ -74,36 +74,36 @@ figures:
 
 $(FIGDIR)/Plot-Bite.pdf: $(EXEC)
 	./$(EXEC) Bite
-	python PlotVariables.py
+	python PlotVariablesSlugOutput.py
 	mkdir -p $(FIGDIR)
 	mv plot.pdf $@
 
 $(FIGDIR)/Plot-RejectionA.pdf: $(EXEC)
 	./$(EXEC) RejectionA
-	python PlotVariables.py
+	python PlotVariablesSlugOutput.py
 	mkdir -p $(FIGDIR)
 	mv plot.pdf $@
 
 $(FIGDIR)/Plot-RejectionB.pdf: $(EXEC)
 	./$(EXEC) RejectionB
-	python PlotVariables.py
+	python PlotVariablesSlugOutput.py
 	mkdir -p $(FIGDIR)
 	mv plot.pdf $@
 
 $(FIGDIR)/Plot-SwallowA.pdf: $(EXEC)
 	./$(EXEC) SwallowA
-	python PlotVariables.py
+	python PlotVariablesSlugOutput.py
 	mkdir -p $(FIGDIR)
 	mv plot.pdf $@
 
 $(FIGDIR)/Plot-SwallowB.pdf: $(EXEC)
 	./$(EXEC) SwallowB
-	python PlotVariables.py
+	python PlotVariablesSlugOutput.py
 	mkdir -p $(FIGDIR)
 	mv plot.pdf $@
 
 $(FIGDIR)/Plot-SwallowPerturbed.pdf: $(EXEC)
 	./$(EXEC) SwallowPerturbed
-	python PlotVariables.py
+	python PlotVariablesSlugOutput.py
 	mkdir -p $(FIGDIR)
 	mv plot.pdf $@
