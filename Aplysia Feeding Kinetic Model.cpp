@@ -17,7 +17,7 @@ using std::string;
 
 #include <cstdlib> // for exit function
 
-
+FILE *izout;
 FILE *valout;
 FILE *neuralinputs;
 
@@ -45,6 +45,7 @@ double valueTBD;
 const double pi = 3.14159265359;
 const double StepSize = .000008;  //.00001; size of the time step used to evaluate the Euler integrators in the model
 const double timer = 0.01;  //printmodel will print to the text file every "timer" seconds - keeps text file from being too big
+const double izouttimer = 0.00005;
 
 //Newton/Raphson constants
 const double delta = 0.00001;
@@ -143,6 +144,20 @@ double timearray[1000];
 
 /* Value of columns in the input file*/
 int numberColumns = 0;
+
+/* Izhikevich Model Variables and Parameters*/
+//Parameters -- currently set at compile time
+double ia = 0.02; //Parameters a-d
+double ib = 0.2;
+double ic = -65;
+double id = 8;
+double ii = 10; // Applied current
+//Variables
+double membranePotential = -70;
+double membraneRecovery = ib * -70;
+
+//Averaging firing rates variable
+int maxHeightPairCount = 0;
 
 /* My function prototypes */
 //calling the functions
@@ -259,6 +274,20 @@ int counter(string str);
 
 int columnChecker();
 
+double eulersMethod(double stepSize, double intialCondition, double intialFunctionValue);
+
+double membranePotentialdt(double v, double u);
+
+double membraneRecoverydt(double v, double u);
+
+void izhikevichModel(double v, double u);
+
+double period(double averageTime);
+
+double savePeriods();
+
+double averagePeriods(double period);
+
 int main(int argc, char* argv[])
 {  
     
@@ -278,6 +307,7 @@ int main(int argc, char* argv[])
 
     /* Absent minded code variable definitions */
 	const char* filename = "SlugOutput2.txt";
+    const char* filenamei = "Izhikevich.txt";
 	const char* filename2 = "NeuralInputs.txt";
 
     //variables used to calculate the muscle forces and odontophore position - explained when initialized
@@ -332,6 +362,7 @@ int main(int argc, char* argv[])
     double dummyvariable = 0;  //just something to hand to functions for outputs that dont matter
     ifstream inFile;
     valout = fopen(filename, "w"); //opens a text file, valout.txt
+    izout = fopen(filenamei, "w");
     double seaweedforce = 0;  //This is added seaweed force on the odontophore
 
     //********INITIALIZING THE VARIABLES********
@@ -395,6 +426,7 @@ int main(int argc, char* argv[])
     totalfitness = 0; //fitness an individual would receive if the run were stopped (includes partial surface area or partial retraction)
     time = 0; //keeps track of the amount of time the model has run so model will stop after the RunDuration is up
     printtimer = 0;
+        double iztimer = 0;
     I2inputcounter = 0;
     I1I3inputcounter1 = 0;
     I1I3inputcounter2 = 0;
@@ -405,6 +437,8 @@ int main(int argc, char* argv[])
 		//neuralinputs = fopen(filename2, "r"); //sets up the text file for reading the input.
 
     fprintf(valout, "time	position	radius	angle	hingeF	fitness	freqI2	freqI1I3	freqN3	freqHinge	actI2	actI1I3	acthinge	fitness	seaweedforce\n");
+    //Izhikevich
+        fprintf(izout, "time	MembranePotential	MembraneRecovery\n");
 		
     /* Reading the file for neural input */
     i = 0;
@@ -541,8 +575,16 @@ while(frequencyiterationtime < endfrequencytime)  //loop added to do cyclic freq
         //printf("%f",freqHingearray[0]);
         //printf("%f",freqI1I3array[0]);
         //printf("%f",freqN3array[0]);
-        
-        
+    /*
+         ia = 0.02; //Parameters a-d
+         ib = 0.2;
+         ic = -65;
+         id = 8;
+         ii = 10; // Applied current
+        //Variables
+         membranePotential = -70;
+         membraneRecovery = ib * -70;
+        */
         
 	while(time < RunDuration) //runs the individual until time is greater than RunDuration
 		{
@@ -596,11 +638,25 @@ while(frequencyiterationtime < endfrequencytime)  //loop added to do cyclic freq
         {
             F1 = 0;
         }
-				
+            
+        //Izhikevich Model Update -- seconds
+                izhikevichModel(membranePotential, membraneRecovery);
+            
+            
+            
+
+            
         eggtimer += StepSize;
         time += StepSize; //time advances one time step, run will stop when time becomes larger than the RunDuration
         printtimer += StepSize;
+            iztimer += StepSize;
 
+            
+            if(iztimer > izouttimer){
+                //Izhikevich Model Output
+                fprintf(izout , "%f	%f	%f	\n", time, membranePotential, membraneRecovery);
+                iztimer = 0.0;
+            }
 			
         if (printtimer > timer) //function will only print every printtimer seconds - keeps file from being too big
         {
@@ -615,6 +671,9 @@ while(frequencyiterationtime < endfrequencytime)  //loop added to do cyclic freq
             //This is the Fprint for the simulations in the example PDF's I sent Hillel.
             fprintf(valout, "%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f \n", time, x, a, odontophoreangle, hingeF, fitness, freqI2, freqI1I3, freqN3, freqHinge, aprimeI2, aprimeI1I3, acthinge, fitness, seaweedforce);
 
+            //Izhikevich Model Output
+            //fprintf(izout , "%f	%f	%f	\n", time, membranePotential, membraneRecovery);
+            
             //resets printtimer
             printtimer = 0.0;
         }
@@ -2318,3 +2377,69 @@ int columnChecker()
     string str2 = returnFirstLine(str); //only the first line
     return counter(str2);
 }
+
+double eulersMethod(double intialCondition, double intialFunctionValue){
+    return (intialCondition + (StepSize*intialFunctionValue));
+}
+
+double membranePotentialdt(double v, double u){
+    if(v >= 30){
+        return ic;
+    }
+    else{
+        return eulersMethod(v, (((0.04*v*v) + (5*v) + 140 - u + ii) * 1000)); //*1000 converts ms to seconds to be in line with kinetic model
+
+    }
+}
+
+double membraneRecoverydt(double v, double u){
+    if(v >= 30){
+        return u + id;
+    }
+    else{
+        return eulersMethod(u, ((ia * ((ib * v) - u)) * 1000) ); //*1000 converts ms to seconds to be in line with kinetic model
+    }
+}
+
+void izhikevichModel(double v, double u){
+    membranePotential = membranePotentialdt(v, u);
+    membraneRecovery = membraneRecoverydt(v, u);
+}
+
+//code in progress:
+/*
+double period(double averageTime){
+    bool first = false; //If the first peak of max firing rate has been hit
+    bool second = false; //if the second peak of max firing rate has been hit
+    double firstTime, secondTime; //Time the first peak is reached
+    double currentTime = 0;//for now
+    double period;
+    if(currentTime < averageTime){ //if the time at the current moment is less than the time over which the frequencies will be averaged, then these values will continue to be calculated and saved in real time
+        if(v >= 30 && first){//if the max firing rate is hit, and the first peak has already been reached
+            maxHeightPairCount ++;//the number of peaks over the course of the averaging time is counted
+            secondTime = currentTime;//the time the second peak was his is reached
+            second = true;
+        }
+        else if(v >= 30 && !first){//if the max hiring rate is hit, and no peaks have been reached
+            //maxHeightPairCount ++;//the number of peaks over the course of the averaging time is counted -- does this make sense though? only pairs should be counted...
+            firstTime = currentTime;//the time at which the first peak is reached
+            first = true;
+        }
+        if(first && second){//if a pair of peaks have been reached
+            period  = secondTime - firstTime;//record the period between them
+            return period;
+        }
+    }
+    return -1;//All periods should be positive (negative time makes no sense..) so this will be used as a way to represent an incomplete pair
+}
+
+//the amount of Periods should be equal to the maxHeightPairCount
+double savePeriods(){
+    //Need to use some data structure... arrays are easiest but slowest, would have to expand size of array every time a period is saved, would add O(N) per K periods...
+    return 0; //for now
+}
+
+//when averageTime has been reached, the saved periods will be averaged together
+double averagePeriods(double period){
+    return 0; //for now
+}*/
