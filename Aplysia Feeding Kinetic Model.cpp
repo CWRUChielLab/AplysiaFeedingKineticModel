@@ -156,8 +156,13 @@ double ii = 10; // Applied current
 double membranePotential = -70;
 double membraneRecovery = ib * -70;
 
-//Averaging firing rates variable
-int maxHeightPairCount = 0;
+//Averaging firing rates variables
+int maxHeightCount = 0;
+double firstTime = 0;
+double secondTime = 0;
+
+//Test variable for updateinputs with new model
+double izfreq = 0;
 
 /* My function prototypes */
 //calling the functions
@@ -282,11 +287,19 @@ double membraneRecoverydt(double v, double u);
 
 void izhikevichModel(double v, double u);
 
-double period(double averageTime);
+double getMembranePotential();
 
-double savePeriods();
+double period(double averageTime, double v, double time);
 
-double averagePeriods(double period);
+double evaluateFrequency(double averageTime, double v, double time);
+
+double determineAverageIterations(double runDuration, double averageTime, double currentTime);
+
+double determineAverageIterationsV2(double runDuration, double averageTime, double currentTime);
+
+void updateInputsModel(double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2);
+
+void testUpdateInputs(double time, double & izfreq, double runDuration, double averageTime);
 
 int main(int argc, char* argv[])
 {  
@@ -438,7 +451,7 @@ int main(int argc, char* argv[])
 
     fprintf(valout, "time	position	radius	angle	hingeF	fitness	freqI2	freqI1I3	freqN3	freqHinge	actI2	actI1I3	acthinge	fitness	seaweedforce\n");
     //Izhikevich
-        fprintf(izout, "time	MembranePotential	MembraneRecovery\n");
+        fprintf(izout, "time	MembranePotential	MembraneRecovery    izfreq\n");
 		
     /* Reading the file for neural input */
     i = 0;
@@ -602,6 +615,9 @@ while(frequencyiterationtime < endfrequencytime)  //loop added to do cyclic freq
         //Update Neural variables and seaweed force based on the current time
         updateinputs(time, freqI2, freqHinge, freqI1I3, freqN3, seaweedforce, a, frequencyiterationtime,  frequencyiterationtime2, first_argument);
             
+            //TATE
+            testUpdateInputs(time, izfreq, RunDuration, .2); //average firing frequency rates will be updated every .2 seconds to equal what the average firing frequency rate was over the past .2 second. .2 is a good value because if the timeframe is any smaller, there are so few spikes happening during a time frame that frequencies are inaccurately high. If the timeframe was any larger, times at which the neural inputs turn on and off would be inaccurate
+            
             
         //BLARF looking at first protraction first
         //freqI1I3 = 0;
@@ -654,7 +670,7 @@ while(frequencyiterationtime < endfrequencytime)  //loop added to do cyclic freq
             
             if(iztimer > izouttimer){
                 //Izhikevich Model Output
-                fprintf(izout , "%f	%f	%f	\n", time, membranePotential, membraneRecovery);
+                fprintf(izout , "%f	%f	%f	%f	\n", time, membranePotential, membraneRecovery, izfreq);
                 iztimer = 0.0;
             }
 			
@@ -2406,40 +2422,84 @@ void izhikevichModel(double v, double u){
     membraneRecovery = membraneRecoverydt(v, u);
 }
 
-//code in progress:
-/*
-double period(double averageTime){
-    bool first = false; //If the first peak of max firing rate has been hit
-    bool second = false; //if the second peak of max firing rate has been hit
-    double firstTime, secondTime; //Time the first peak is reached
-    double currentTime = 0;//for now
-    double period;
-    if(currentTime < averageTime){ //if the time at the current moment is less than the time over which the frequencies will be averaged, then these values will continue to be calculated and saved in real time
-        if(v >= 30 && first){//if the max firing rate is hit, and the first peak has already been reached
-            maxHeightPairCount ++;//the number of peaks over the course of the averaging time is counted
-            secondTime = currentTime;//the time the second peak was his is reached
-            second = true;
+double getMembranePotential(){
+    return membranePotential; // will be updated with more neurons
+}
+
+double period(double averageTime, double v, double time){
+    double currentTime = time;
+    double totalPeriod, averagePeriod;
+    if(averageTime > currentTime){//While the "averageTime" period is being recorded
+        if((maxHeightCount == 0) && (v >= 30)){//if no spikes have been counted during this "averageTime" period, take the first spike time
+            firstTime = currentTime;
+            maxHeightCount++;
+            //cout << "FIRSTPEAK ";
         }
-        else if(v >= 30 && !first){//if the max hiring rate is hit, and no peaks have been reached
-            //maxHeightPairCount ++;//the number of peaks over the course of the averaging time is counted -- does this make sense though? only pairs should be counted...
-            firstTime = currentTime;//the time at which the first peak is reached
-            first = true;
+        else if ((maxHeightCount > 0) && (v >= 30)){//if there has been spikes counted within this period, continually update the second spike time. the final update will be the last spike's time
+            secondTime = currentTime;
+            maxHeightCount++;
+            //cout << "secondpeak ";
         }
-        if(first && second){//if a pair of peaks have been reached
-            period  = secondTime - firstTime;//record the period between them
-            return period;
-        }
+    }
+    if(((averageTime == currentTime) || (averageTime-StepSize <= currentTime)) && ((secondTime != 0) && (firstTime != 0))){//when the "averageTime" period has ended, do the calculations
+        //-- averageTime-StepSize is important because depending on the averageTime chosen, the currentTime may never equal it (it may never be a factor of the StepSize), so to ensure that this still runs, averageTime-StepSize <= currentTime essentially is logically equivalent to averageTime == currentTime.
+        totalPeriod = (secondTime - firstTime);
+        averagePeriod = totalPeriod/maxHeightCount;
+        //reset the values for next "averageTime" period
+        secondTime = 0;
+        firstTime = 0;
+        maxHeightCount = 0;
+        //cout << "It reset ";
+        return averagePeriod;//return the period that occured over this "averageTime"
     }
     return -1;//All periods should be positive (negative time makes no sense..) so this will be used as a way to represent an incomplete pair
 }
 
-//the amount of Periods should be equal to the maxHeightPairCount
-double savePeriods(){
-    //Need to use some data structure... arrays are easiest but slowest, would have to expand size of array every time a period is saved, would add O(N) per K periods...
-    return 0; //for now
+double evaluateFrequency(double averageTime, double v, double time){
+    double averagePeriod = period(averageTime, v, time);
+    if (averagePeriod != -1){
+        return (1/averagePeriod);
+    }
+    else{
+        return -1;
+    }
 }
 
-//when averageTime has been reached, the saved periods will be averaged together
-double averagePeriods(double period){
-    return 0; //for now
-}*/
+double determineAverageIterations(double runDuration, double averageTime, double currentTime){
+    int numberOfIterations = (int)((runDuration/averageTime)+1);
+    //double finalIterationTimeDuration = (runDuration % averageTime);
+    int currentIteration = (int)(currentTime/averageTime);
+    for(int i = 0; i <= numberOfIterations; i++){
+        if(currentIteration == i && currentIteration != numberOfIterations){
+            return (averageTime*(i));
+        }
+        else if(currentIteration == i && currentIteration != numberOfIterations){
+            
+        }
+    }
+    return -1; //failed
+}
+
+double determineAverageIterationsV2(double runDuration, double averageTime, double currentTime){
+    int numberOfIterations = (int)((runDuration/averageTime)+1);
+    //double finalIterationTimeDuration = (runDuration % averageTime);
+    int currentIteration = (int)(currentTime/averageTime);
+    for(int i = 0; i <= numberOfIterations; i++){
+        if(currentIteration == i){
+            return (averageTime*(i+1));
+        }
+    }
+    return -1; //failed
+}
+
+void testUpdateInputs(double time, double & izfreq, double runDuration, double averageTime){
+    double iterativeTime = determineAverageIterations(runDuration, averageTime, time);
+    double thisAverageTime = determineAverageIterationsV2(runDuration, averageTime, time);
+    if(time > iterativeTime){
+        double freq = evaluateFrequency(thisAverageTime, getMembranePotential(), time);
+        if (freq != -1){
+            izfreq = freq;
+        }
+    }
+}
+
