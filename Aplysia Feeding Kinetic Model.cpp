@@ -147,22 +147,15 @@ int numberColumns = 0;
 
 /* Izhikevich Model Variables and Parameters*/
 //Parameters -- currently set at compile time
-double ia = 0.02; //Parameters a-d
-double ib = 0.2;
-double ic = -65;
-double id = 8;
-double ii = 10; // Applied current
+const double ia = 0.02; //Parameters a-d
+const double ib = 0.2;
+const double ic = -65;
+const double id = 8;
+const double ii = 10; // Applied current
+
 //Variables
-double membranePotential = -70;
-double membraneRecovery = ib * -70;
-
-//Averaging firing rates variables
-int maxHeightCount = 0;
-double firstTime = 0;
-double secondTime = 0;
-
-//Test variable for updateinputs with new model
-double izfreq = 0;
+double membranePotential[4]; // [0]- odontophore, [1]- I1/I3, [2]- Hinge, [3] (maybe) - I2
+double membraneRecovery[4];
 
 /* My function prototypes */
 //calling the functions
@@ -285,21 +278,24 @@ double membranePotentialdt(double v, double u);
 
 double membraneRecoverydt(double v, double u);
 
-void izhikevichModel(double v, double u);
+void izhikevichModel(double v, double u, int index);
 
-double getMembranePotential();
+double getMembranePotential(int index);
 
-double period(double averageTime, double v, double time);
+double period(double averageTime, double v, double time, int index, double & firstTime, double & secondTime, int & maxHeightCount);
 
-double evaluateFrequency(double averageTime, double v, double time);
+double evaluateFrequency(double averageTime, double v, double time, int index, double & firstTime, double & secondTime, int & maxHeightCount);
 
 double determineAverageIterations(double runDuration, double averageTime, double currentTime);
 
 double determineAverageIterationsV2(double runDuration, double averageTime, double currentTime);
 
-void updateInputsModel(double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2);
+void translateIZmodeltofrequency(double time, double & odontophorefreq, double & i1i3freq , double & hingefreq, double runDuration, double averageTime, int index, double & firstTime, double & secondTime, int & maxHeightCount);
 
-void testUpdateInputs(double time, double & izfreq, double runDuration, double averageTime);
+void initializeDoubleArray(double array[], double value);
+
+void initializeIntArray(int array[], int value);
+
 
 int main(int argc, char* argv[])
 {  
@@ -316,7 +312,7 @@ int main(int argc, char* argv[])
     /* Opening and reading a file*/
     numberColumns = columnChecker();
     openAndRead(first_argument);
-    if(openAndRead(first_argument) == true){
+    if(openAndRead(first_argument) == true){ 
 
     /* Absent minded code variable definitions */
 	const char* filename = "SlugOutput2.txt";
@@ -411,6 +407,13 @@ int main(int argc, char* argv[])
     olda = a;
     oldytop = ytop;
     oldybottom = ybottom;
+        
+    //Initialize arrays
+        for(int i = 0; i <= sizeof(membranePotential)-1; i++){
+            initializeDoubleArray(membranePotential, 70);
+            initializeDoubleArray(membraneRecovery, ib * -70);
+            //initializeIntArray(maxHeightCount, 0);
+        }
     
     //activation variables, from Yu et al 1999
     aprimeI2 = 0;
@@ -451,7 +454,7 @@ int main(int argc, char* argv[])
 
     fprintf(valout, "time	position	radius	angle	hingeF	fitness	freqI2	freqI1I3	freqN3	freqHinge	actI2	actI1I3	acthinge	fitness	seaweedforce\n");
     //Izhikevich
-        fprintf(izout, "time	MembranePotential	MembraneRecovery    izfreq\n");
+        fprintf(izout, "time	MembranePotentialo	MembraneRecoveryo	MembranePotentiali	MembraneRecoveryi	MembranePotentialh	MembraneRecoveryh    ofreq    ifreq    hfreq\n");
 		
     /* Reading the file for neural input */
     i = 0;
@@ -574,35 +577,26 @@ while(frequencyiterationtime < endfrequencytime)  //loop added to do cyclic freq
     freqN3 = 0;  //controls the length of the odontophore's major axis
     freqHinge = 0;
 		
+        //initialize freq for iz
+        double i1i3freq = 0;
+        double odontophorefreq = 0;
+        double hingefreq = 0;
+        double i2 = 0;
+        //Averaging firing rates variables
+        int maxHeightCount[4];
+        double firstTime[4];
+        double secondTime[4];
+        
     //component of the visco-elastic hinge force, F1 from Sutton et al 2002
     F1 = 0;
 	
     //fitness calculation variables, making really low for bites!
     fitness = 0.0; //running total of the fitness an individual has earned, tube manipulation
     //fitness = x; //fitness for the maximum protraction trials of biting.
-
     time = 0;
-
-        //TATE
-        //printf("%f",freqI2array[0]);
-        //printf("%f",freqHingearray[0]);
-        //printf("%f",freqI1I3array[0]);
-        //printf("%f",freqN3array[0]);
-    /*
-         ia = 0.02; //Parameters a-d
-         ib = 0.2;
-         ic = -65;
-         id = 8;
-         ii = 10; // Applied current
-        //Variables
-         membranePotential = -70;
-         membraneRecovery = ib * -70;
-        */
         
 	while(time < RunDuration) //runs the individual until time is greater than RunDuration
 		{
-            
-            
         //NeuronOutput is from 0 to 1, multip ly be 20 to get freq from 0 to 20
         freqI2 = 0;//circ.NeuronOutput(1) * 20;
         freqI1I3 = 0;//circ.NeuronOutput(2) * 20;
@@ -614,10 +608,9 @@ while(frequencyiterationtime < endfrequencytime)  //loop added to do cyclic freq
             
         //Update Neural variables and seaweed force based on the current time
         updateinputs(time, freqI2, freqHinge, freqI1I3, freqN3, seaweedforce, a, frequencyiterationtime,  frequencyiterationtime2, first_argument);
-            
-            //TATE
-            testUpdateInputs(time, izfreq, RunDuration, .2); //average firing frequency rates will be updated every .2 seconds to equal what the average firing frequency rate was over the past .2 second. .2 is a good value because if the timeframe is any smaller, there are so few spikes happening during a time frame that frequencies are inaccurately high. If the timeframe was any larger, times at which the neural inputs turn on and off would be inaccurate
-            
+
+        for(int i = 0; i < 3; i++)
+            translateIZmodeltofrequency(time, odontophorefreq, i1i3freq, hingefreq, RunDuration, .2, i, firstTime[i], secondTime[i],maxHeightCount[i]); //average firing frequency rates will be updated every .2 seconds to equal what the average firing frequency rate was over the past .2 second. .2 is a good value because if the timeframe is any smaller, there are so few spikes happening during a time frame that frequencies are inaccurately high. If the timeframe was any larger, times at which the neural inputs turn on and off would be inaccurate
             
         //BLARF looking at first protraction first
         //freqI1I3 = 0;
@@ -655,12 +648,10 @@ while(frequencyiterationtime < endfrequencytime)  //loop added to do cyclic freq
             F1 = 0;
         }
             
-        //Izhikevich Model Update -- seconds
-                izhikevichModel(membranePotential, membraneRecovery);
-            
-            
-            
-
+        //Izhikevich Model Update -- seconds //TATE... why do loops not work?
+            izhikevichModel(membranePotential[0], membraneRecovery[0], 0);
+            izhikevichModel(membranePotential[1], membraneRecovery[1], 1);
+            izhikevichModel(membranePotential[2], membraneRecovery[2], 2);
             
         eggtimer += StepSize;
         time += StepSize; //time advances one time step, run will stop when time becomes larger than the RunDuration
@@ -670,7 +661,7 @@ while(frequencyiterationtime < endfrequencytime)  //loop added to do cyclic freq
             
             if(iztimer > izouttimer){
                 //Izhikevich Model Output
-                fprintf(izout , "%f	%f	%f	%f	\n", time, membranePotential, membraneRecovery, izfreq);
+                fprintf(izout , "%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	\n", time, membranePotential[0], membraneRecovery[0], membranePotential[1], membraneRecovery[1], membranePotential[2], membraneRecovery[2], odontophorefreq, i1i3freq, hingefreq);
                 iztimer = 0.0;
             }
 			
@@ -708,11 +699,6 @@ while(frequencyiterationtime < endfrequencytime)  //loop added to do cyclic freq
             } */
             //fitcalcbite(x,a,oldx, olda, fitness);
         }
-            // TATE TEST
-            //if(time < 0.00008){
-              //printf("%f \n", aprimeI2);
-            //}
-            //printf("%d \n", numberColumns);
     }
 
     printf("that's another simulation completed at %f	%f\n", frequencyiterationtime, frequencyiterationtime2);
@@ -721,15 +707,12 @@ while(frequencyiterationtime < endfrequencytime)  //loop added to do cyclic freq
     fprintf(valout, "%f	%f	%f \n", frequencyiterationtime, frequencyiterationtime2, fitness);
 	printf("that's another simulation completed at %f	%f\n", frequencyiterationtime, frequencyiterationtime2);
     frequencyiterationtime = frequencyiterationtime + frequencystep;
-
 	}
-
+         
 	frequencyiterationtime = startloop1;
     frequencyiterationtime2 = frequencyiterationtime2 + frequencystep2;
 
 	} While loop Removal end */
-
-    
     }
     else{
         printf("Please use a correct 'windows formatted text' file with either 6 or 15 columns \n");
@@ -2241,20 +2224,20 @@ bool openAndRead(string behaviorType)
             while ((inputFile >> times >> positions >> radiuss >> angles >> hingeFs >> fitnesss >> freqI2s >> freqI1I3s >> freqN3s >> freqHinges >>actI2s >> actI1I3s >> acthinges >> fitnesss >> seaweedforces))
             {
                 if(count > 0){ //first (0th) line of file is text
-                    timearray[count-1] = std::stod(times);
-                    positionarray[count-1] = std::stod(positions);
-                    radiusarray[count-1] = std::stod(radiuss);
-                    anglearray[count-1] = std::stod(angles);
-                    hingeFarray[count-1] = std::stod(hingeFs);
-                    fitnessarray[count-1] = std::stod(fitnesss);
-                    freqI2array[count-1] = std::stod(freqI2s);
-                    freqI1I3array[count-1] = std::stod(freqI1I3s);
-                    freqN3array[count-1] = std::stod(freqN3s);
-                    freqHingearray[count-1] = std::stod(freqHinges);
-                    actI2array[count-1] = std::stod(actI2s);
-                    actI1I3array[count-1] = std::stod(actI1I3s);
-                    acthingearray[count-1] = std::stod(acthinges);
-                    seaweedforcearray[count-1] = std::stod(seaweedforces);
+                    timearray[count-1] = atof(times.c_str());
+                    positionarray[count-1] = atof(positions.c_str());
+                    radiusarray[count-1] = atof(radiuss.c_str());
+                    anglearray[count-1] = atof(angles.c_str());
+                    hingeFarray[count-1] = atof(hingeFs.c_str());
+                    fitnessarray[count-1] = atof(fitnesss.c_str());
+                    freqI2array[count-1] = atof(freqI2s.c_str());
+                    freqI1I3array[count-1] = atof(freqI1I3s.c_str());
+                    freqN3array[count-1] = atof(freqN3s.c_str());
+                    freqHingearray[count-1] = atof(freqHinges.c_str());
+                    actI2array[count-1] = atof(actI2s.c_str());
+                    actI1I3array[count-1] = atof(actI1I3s.c_str());
+                    acthingearray[count-1] = atof(acthinges.c_str());
+                    seaweedforcearray[count-1] = atof(seaweedforces.c_str());
                 }
                 count++;
             }
@@ -2270,12 +2253,12 @@ bool openAndRead(string behaviorType)
             while ((inputFile >> times >> freqI2s >> freqI1I3s >> freqN3s >> freqHinges >> seaweedforces))
             {
                 if(count > 0){ //first (0th) line of file is text
-                    timearray[count-1] = std::stod(times);
-                    freqI2array[count-1] = std::stod(freqI2s);
-                    freqI1I3array[count-1] = std::stod(freqI1I3s);
-                    freqN3array[count-1] = std::stod(freqN3s);
-                    freqHingearray[count-1] = std::stod(freqHinges);
-                    seaweedforcearray[count-1] = std::stod(seaweedforces);
+                    timearray[count-1] = atof(times.c_str());
+                    freqI2array[count-1] = atof(freqI2s.c_str());
+                    freqI1I3array[count-1] = atof(freqI1I3s.c_str());
+                    freqN3array[count-1] = atof(freqN3s.c_str());
+                    freqHingearray[count-1] = atof(freqHinges.c_str());
+                    seaweedforcearray[count-1] = atof(seaweedforces.c_str());
                 }
                 count++;
             }
@@ -2291,11 +2274,11 @@ bool openAndRead(string behaviorType)
             while ((inputFile >> times >> freqI2s >> freqI1I3s >> freqN3s >> freqHinges))
             {
                 if(count > 0){ //first (0th) line of file is text
-                    timearray[count-1] = std::stod(times);
-                    freqI2array[count-1] = std::stod(freqI2s);
-                    freqI1I3array[count-1] = std::stod(freqI1I3s);
-                    freqN3array[count-1] = std::stod(freqN3s);
-                    freqHingearray[count-1] = std::stod(freqHinges);
+                    timearray[count-1] = atof(times.c_str());
+                    freqI2array[count-1] = atof(freqI2s.c_str());
+                    freqI1I3array[count-1] = atof(freqI1I3s.c_str());
+                    freqN3array[count-1] = atof(freqN3s.c_str());
+                    freqHingearray[count-1] = atof(freqHinges.c_str());
                 }
                 count++;
             }
@@ -2417,28 +2400,26 @@ double membraneRecoverydt(double v, double u){
     }
 }
 
-void izhikevichModel(double v, double u){
-    membranePotential = membranePotentialdt(v, u);
-    membraneRecovery = membraneRecoverydt(v, u);
+void izhikevichModel(double v, double u, int index){
+    membranePotential[index] = membranePotentialdt(v, u);
+    membraneRecovery[index] = membraneRecoverydt(v, u);
 }
 
-double getMembranePotential(){
-    return membranePotential; // will be updated with more neurons
+double getMembranePotential(int index){
+    return membranePotential[index];
 }
 
-double period(double averageTime, double v, double time){
+double period(double averageTime, double v, double time, int index, double & firstTime, double & secondTime, int & maxHeightCount){
     double currentTime = time;
     double totalPeriod, averagePeriod;
     if(averageTime > currentTime){//While the "averageTime" period is being recorded
         if((maxHeightCount == 0) && (v >= 30)){//if no spikes have been counted during this "averageTime" period, take the first spike time
             firstTime = currentTime;
             maxHeightCount++;
-            //cout << "FIRSTPEAK ";
         }
         else if ((maxHeightCount > 0) && (v >= 30)){//if there has been spikes counted within this period, continually update the second spike time. the final update will be the last spike's time
             secondTime = currentTime;
             maxHeightCount++;
-            //cout << "secondpeak ";
         }
     }
     if(((averageTime == currentTime) || (averageTime-StepSize <= currentTime)) && ((secondTime != 0) && (firstTime != 0))){//when the "averageTime" period has ended, do the calculations
@@ -2449,14 +2430,13 @@ double period(double averageTime, double v, double time){
         secondTime = 0;
         firstTime = 0;
         maxHeightCount = 0;
-        //cout << "It reset ";
         return averagePeriod;//return the period that occured over this "averageTime"
     }
     return -1;//All periods should be positive (negative time makes no sense..) so this will be used as a way to represent an incomplete pair
 }
 
-double evaluateFrequency(double averageTime, double v, double time){
-    double averagePeriod = period(averageTime, v, time);
+double evaluateFrequency(double averageTime, double v, double time, int index, double & firstTime, double & secondTime, int & maxHeightCount){
+    double averagePeriod = period(averageTime, v, time, index, firstTime, secondTime, maxHeightCount);
     if (averagePeriod != -1){
         return (1/averagePeriod);
     }
@@ -2467,7 +2447,6 @@ double evaluateFrequency(double averageTime, double v, double time){
 
 double determineAverageIterations(double runDuration, double averageTime, double currentTime){
     int numberOfIterations = (int)((runDuration/averageTime)+1);
-    //double finalIterationTimeDuration = (runDuration % averageTime);
     int currentIteration = (int)(currentTime/averageTime);
     for(int i = 0; i <= numberOfIterations; i++){
         if(currentIteration == i && currentIteration != numberOfIterations){
@@ -2482,7 +2461,6 @@ double determineAverageIterations(double runDuration, double averageTime, double
 
 double determineAverageIterationsV2(double runDuration, double averageTime, double currentTime){
     int numberOfIterations = (int)((runDuration/averageTime)+1);
-    //double finalIterationTimeDuration = (runDuration % averageTime);
     int currentIteration = (int)(currentTime/averageTime);
     for(int i = 0; i <= numberOfIterations; i++){
         if(currentIteration == i){
@@ -2492,14 +2470,80 @@ double determineAverageIterationsV2(double runDuration, double averageTime, doub
     return -1; //failed
 }
 
-void testUpdateInputs(double time, double & izfreq, double runDuration, double averageTime){
+void translateIZmodeltofrequency(double time, double & odontophorefreq, double & i1i3freq , double & hingefreq, double runDuration, double averageTime, int index, double & firstTime, double & secondTime, int & maxHeightCount){
     double iterativeTime = determineAverageIterations(runDuration, averageTime, time);
     double thisAverageTime = determineAverageIterationsV2(runDuration, averageTime, time);
     if(time > iterativeTime){
-        double freq = evaluateFrequency(thisAverageTime, getMembranePotential(), time);
+        double freq = evaluateFrequency(thisAverageTime, getMembranePotential(index), time, index, firstTime, secondTime, maxHeightCount);
         if (freq != -1){
-            izfreq = freq;
+            if(index == 0){
+                odontophorefreq = freq;
+            }
+            else if(index == 1){
+                i1i3freq = freq;
+            }
+            else if(index == 2){
+                hingefreq = freq;
+            }
         }
     }
 }
 
+//This might not acutally work...?
+void initializeDoubleArray(double array[], double value){
+    for(int i = 0; i < sizeof(array)-1; i++){
+        array[i] = value;
+    }
+}
+
+void initializeIntArray(int array[], int value){
+    for(int i = 0; i < sizeof(array)-1; i++){
+        array[i] = value;
+    }
+}
+/*
+void izBite(){
+    
+    if (time > 0.0)
+    {
+        freqI2 = 20;
+    }
+    
+    if (time > 3.41)
+    {
+        freqI2 = 0;
+    }
+    
+    if (time > 2.36)
+    {
+        freqHinge = 20;  //BLARF was 20
+    }
+    
+    if (time> 6.80)
+    {
+        freqHinge = 0;
+    }
+    
+    if (time> 2.21)
+    {
+        freqI1I3 = 20;   //BLARF was 35
+    }
+    
+    if (time > 6.56)
+    {
+        freqI1I3 = 0;
+    }
+    
+    if (time > 2.15)
+    {
+        freqN3 = 30;  //BLARF was 20
+    }
+    
+    if (time > 4.85)
+    {
+        freqN3 = 0;
+    }
+}*/
+
+//TATE
+//The iz model now models 3-4 neurons, now you just have to add the option for the model to turn on/off at a given time... for now you can set a frequency at the times when it shouldnt be on to 0, and otherwise have the frequency translater run
