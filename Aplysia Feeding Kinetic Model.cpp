@@ -20,6 +20,7 @@ using std::string;
 FILE *izout;
 FILE *valout;
 FILE *neuralinputs;
+FILE *animation;
 
 /* including some files of my own in the rebulid */
 #include <string.h>
@@ -109,6 +110,25 @@ const int NeuronNum = 4; //number of neurons in the network
 
 const double anglestiffness = .0001; //maximum additional rotation speed for odontophore in deg/second
 
+//Tate: I2 variables
+double lengthofI2 = 0;
+double topphiangleofi2 = 0;
+double bottomphiangleofi2 = 0;
+//The furthest back point of the odontophore
+double furthestbackxpoint = 0; //"backxpoint"
+double furthestbackypoint = 0; //"backypoint"
+//Where i2 and i1i3 are in contact (xvalue for top and bottom is constant at 0-r = -.00125)
+double i1i3contacttopy = 0; //Ty1
+double i1i3contactbottomy = 0; //By1
+//Where i2 and the odontophore are first in contact
+double ocontacttopx = 0; //Tx2
+double ocontacttopy = 0; //Ty2
+double ocontactbottomx = 0; //Bx2
+double ocontactbottomy = 0; //By2
+
+double bigxval = 0;
+double i1i3contactx = 0;
+
 /* Variables used for opening input file*/
 ifstream inputFile;
 string times;
@@ -148,9 +168,9 @@ int numberColumns = 0;
 /* Izhikevich Model Variables and Parameters*/
 //Parameters -- currently set at compile time
 const double ia = 0.02; //Parameters a-d
-const double ib = 0.2;
+const double ib = 0.25;
 const double ic = -65;
-const double id = 8;
+const double id = 2;
 const double ii = 10; // Applied current
 
 //Variables
@@ -318,6 +338,7 @@ int main(int argc, char* argv[])
 	const char* filename = "SlugOutput2.txt";
     const char* filenamei = "Izhikevich.txt";
 	const char* filename2 = "NeuralInputs.txt";
+    const char* filenamea = "animationinfo.txt";
 
     //variables used to calculate the muscle forces and odontophore position - explained when initialized
     double x, y, xdot, ydot, adot, xacc;
@@ -372,7 +393,10 @@ int main(int argc, char* argv[])
     ifstream inFile;
     valout = fopen(filename, "w"); //opens a text file, valout.txt
     izout = fopen(filenamei, "w");
+    animation = fopen(filenamea, "w");
     double seaweedforce = 0;  //This is added seaweed force on the odontophore
+        
+
 
     //********INITIALIZING THE VARIABLES********
 		
@@ -410,10 +434,12 @@ int main(int argc, char* argv[])
         
     //Initialize arrays
         for(int i = 0; i <= sizeof(membranePotential)-1; i++){
-            initializeDoubleArray(membranePotential, 70);
+            initializeDoubleArray(membranePotential, -70);
             initializeDoubleArray(membraneRecovery, ib * -70);
             //initializeIntArray(maxHeightCount, 0);
         }
+        membranePotential[0] = -70;
+        membraneRecovery[0] = -14;
     
     //activation variables, from Yu et al 1999
     aprimeI2 = 0;
@@ -454,8 +480,8 @@ int main(int argc, char* argv[])
 
     fprintf(valout, "time	position	radius	angle	hingeF	fitness	freqI2	freqI1I3	freqN3	freqHinge	actI2	actI1I3	acthinge	fitness	seaweedforce\n");
     //Izhikevich
-        fprintf(izout, "time	MembranePotentialo	MembraneRecoveryo	MembranePotentiali	MembraneRecoveryi	MembranePotentialh	MembraneRecoveryh    ofreq    ifreq    hfreq\n");
-		
+        fprintf(izout, "time	MembranePotentialo	MembraneRecoveryo\n"/*MembranePotentiali	MembraneRecoveryi	MembranePotentialh	MembraneRecoveryh    ofreq    ifreq    hfreq\n"*/);
+        fprintf(animation, "time	position	radius	angle	xctop	xcbottom	ytop	ybottom	i1i3radius	i2length	topangle	bottomangle	furthestbackx	furthestbacky	i1i3contacttopy	i1i3contactbottomy	ocontacttopx	ocontacttopy	ocontactbottomx	ocontactbottomy	bigxval	i1i3contactx\n");
     /* Reading the file for neural input */
     i = 0;
     j = 1;
@@ -640,7 +666,8 @@ while(frequencyiterationtime < endfrequencytime)  //loop added to do cyclic freq
 				
         //take forces and the frequency of N3 and determine odontophore position
         updateposition(&x, &ytop, &ybottom, &a, &xdot, &ydot, &adot, force1, force2, actN3, &xctop, &xcbottom, &dummyvariable, &odontophoreangle, hingeF);
-								
+					
+        
         //resetting the visco-elastic force to zero to prevent accumulation of visco-elastic forces over large amounts of time
         //from overwelming the elastic hinge force
         if ((xdot/oldxdot) < 0)
@@ -648,7 +675,14 @@ while(frequencyiterationtime < endfrequencytime)  //loop added to do cyclic freq
             F1 = 0;
         }
             
-        //Izhikevich Model Update -- seconds //TATE... why do loops not work?
+            
+            if(iztimer > izouttimer){
+                //Izhikevich Model Output
+                fprintf(izout , "%f	%f	%f	\n"/*%f	%f	%f	%f	%f	%f	%f	\n"*/, time, membranePotential[0], membraneRecovery[0]/*, membranePotential[1], membraneRecovery[1], membranePotential[2], membraneRecovery[2], odontophorefreq, i1i3freq, hingefreq*/);
+                iztimer = 0.0;
+            }
+            
+        //Izhikevich Model Update -- seconds
             izhikevichModel(membranePotential[0], membraneRecovery[0], 0);
             izhikevichModel(membranePotential[1], membraneRecovery[1], 1);
             izhikevichModel(membranePotential[2], membraneRecovery[2], 2);
@@ -659,11 +693,7 @@ while(frequencyiterationtime < endfrequencytime)  //loop added to do cyclic freq
             iztimer += StepSize;
 
             
-            if(iztimer > izouttimer){
-                //Izhikevich Model Output
-                fprintf(izout , "%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	\n", time, membranePotential[0], membraneRecovery[0], membranePotential[1], membraneRecovery[1], membranePotential[2], membraneRecovery[2], odontophorefreq, i1i3freq, hingefreq);
-                iztimer = 0.0;
-            }
+
 			
         if (printtimer > timer) //function will only print every printtimer seconds - keeps file from being too big
         {
@@ -678,6 +708,7 @@ while(frequencyiterationtime < endfrequencytime)  //loop added to do cyclic freq
             //This is the Fprint for the simulations in the example PDF's I sent Hillel.
             fprintf(valout, "%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f \n", time, x, a, odontophoreangle, hingeF, fitness, freqI2, freqI1I3, freqN3, freqHinge, aprimeI2, aprimeI1I3, acthinge, fitness, seaweedforce);
 
+            fprintf(animation, "%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	\n", time, x, a, odontophoreangle, xctop, xcbottom, ytop, ybottom, y, lengthofI2, topphiangleofi2, bottomphiangleofi2,furthestbackxpoint,furthestbackypoint,i1i3contacttopy,i1i3contactbottomy,ocontacttopx,ocontacttopy,ocontactbottomx,ocontactbottomy,bigxval,i1i3contactx);
             //Izhikevich Model Output
             //fprintf(izout , "%f	%f	%f	\n", time, membranePotential, membraneRecovery);
             
@@ -812,7 +843,12 @@ be added directly to the horizontal force acting on the odontophore.*/
 		
         //valueTBD = aprimeI2; //TATE
         
-        //printf("%f \n",actI2);
+        //Tate- save the values of I2 for animation
+        lengthofI2 = lengthI2;
+        topphiangleofi2 = Tphi;
+        bottomphiangleofi2 = Bphi;
+        
+        
         
 		return (lengthI2);
 	}
@@ -845,7 +881,8 @@ direction.*/
 			
 			
 			//calculate the point where I2 connects to I1/I3
-			x1 = -x - r;
+			x1 = -x - r;//TATE
+            //x1 = 0 - r;
 			Ty1 = ytop;
 			By1 = ybottom;
 			
@@ -894,9 +931,24 @@ direction.*/
 		{
 			*Tphi = pi/2;
 			*Bphi = -pi/2;
-		}		
-		
-		
+		}
+        
+		//Tate: returns
+        furthestbackxpoint = backxpoint;
+        furthestbackypoint = backypoint;
+        
+        i1i3contacttopy = Ty1;
+        i1i3contactbottomy = By1;
+        
+        ocontacttopx = Tx2 + x;
+        ocontacttopy = Ty2;
+        ocontactbottomx = Bx2 + x; //+x?
+        ocontactbottomy = By2;
+        
+        bigxval = furthestx;
+        
+        i1i3contactx = x1 + x;
+
 		return 0;
 	}		
 
@@ -939,7 +991,10 @@ function returns the normalized length of I2 (divided by the optimum length of I
 		{
 			lengthI2 = (ytop - ybottom)/LI2opt;
 		}
-		
+		//Tate returns
+        furthestbackxpoint = backxpoint;
+        furthestbackypoint = backypoint;
+        bigxval = furthestx;
 		
 		return (lengthI2); //returns normalized lengths
 	}
@@ -2501,6 +2556,8 @@ void initializeIntArray(int array[], int value){
         array[i] = value;
     }
 }
+ 
+
 /*
 void izBite(){
     
