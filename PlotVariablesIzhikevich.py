@@ -62,7 +62,7 @@ with open("Izhikevich-csvTranslated.csv", "r") as file:
 
 #The following code plots the entire figure
 figure = plt.figure(figsize = (18,18))
-timeticks = np.arange(0,9,1)
+timeticks = np.arange(0,8.5,1)
 
 #The figure is a Grid with 2 rows, 1 columns.
 gs = gridspec.GridSpec(2, 1)
@@ -70,11 +70,11 @@ gs = gridspec.GridSpec(2, 1)
 #The following code subplots the membrane Potential vs time graph
 potenialgraph = figure.add_subplot(gs[0,0])
 potentialticks = np.arange(-90, 40, 10)
-potenialgraph.plot(time[1:151786],membranePotential[1:151786])
+potenialgraph.plot(time[1:151786],membranePotential[1:151786])#first .008 seconds
 potenialgraph.set_title('Membrane Potential')
 potenialgraph.set_xlabel(time[0] + ' (milliseconds)')
 potenialgraph.set_ylabel(membranePotential[0] + 'mV')
-potenialgraph.axis([0, 9, -90, 40])
+potenialgraph.axis([0, 8.5, -90, 40])
 potenialgraph.set_xticks(timeticks)
 potenialgraph.set_yticks(potentialticks)
 potenialgraph.grid(True)
@@ -86,7 +86,7 @@ recoverygraph.plot(time[1:151786],membraneRecovery[1:151786])
 recoverygraph.set_title('Membrane Recovery')
 recoverygraph.set_xlabel(time[0] + ' (milliseconds)')
 recoverygraph.set_ylabel(membraneRecovery[0])
-recoverygraph.axis([0, 9, -20, 20])
+recoverygraph.axis([0, 8.5, -20, 20])
 recoverygraph.set_xticks(timeticks)
 recoverygraph.set_yticks(recoveryticks)
 recoverygraph.grid(True)

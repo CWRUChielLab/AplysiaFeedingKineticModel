@@ -167,15 +167,16 @@ int numberColumns = 0;
 
 /* Izhikevich Model Variables and Parameters*/
 //Parameters -- currently set at compile time
-const double ia = 0.02; //Parameters a-d
-const double ib = 0.25;
-const double ic = -65;
-const double id = 2;
-const double ii = 10; // Applied current
+const double ia[4] = {.015,.006,.006,.006}; //Parameters a-d
+const double ib[4] = {0.25,0.25,0.25,0.25};
+const double ic[4] = {-65,-65,-65,-65};
+const double id[4] = {8,8,8,8};
+double ii[4] = {0,0,0,0}; // Applied current
 
 //Variables
-double membranePotential[4]; // [0]- odontophore, [1]- I1/I3, [2]- Hinge, [3] (maybe) - I2
+double membranePotential[4]; // [0]- odontophore, [1]- I1/I3, [2]- Hinge, [3] - I2
 double membraneRecovery[4];
+
 
 /* My function prototypes */
 //calling the functions
@@ -266,7 +267,7 @@ void xcCalc(double a, double x, double rotation, double & Txc, double & Bxc, dou
 
 double activehingeforce (double activation, double velocity, double length);
 
-void updateinputs(double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2, string behaviorType);
+void updateinputs(double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2, double odontophorefreq, double i1i3freq, double hingefreq, double i2freq, string behaviorType);
 
 void updateinputsRejectionB(double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2);
 
@@ -294,9 +295,9 @@ int columnChecker();
 
 double eulersMethod(double stepSize, double intialCondition, double intialFunctionValue);
 
-double membranePotentialdt(double v, double u);
+double membranePotentialdt(double v, double u, int index);
 
-double membraneRecoverydt(double v, double u);
+double membraneRecoverydt(double v, double u, int index);
 
 void izhikevichModel(double v, double u, int index);
 
@@ -310,12 +311,23 @@ double determineAverageIterations(double runDuration, double averageTime, double
 
 double determineAverageIterationsV2(double runDuration, double averageTime, double currentTime);
 
-void translateIZmodeltofrequency(double time, double & odontophorefreq, double & i1i3freq , double & hingefreq, double runDuration, double averageTime, int index, double & firstTime, double & secondTime, int & maxHeightCount);
+void translateIZmodeltofrequency(double time, double & odontophorefreq, double & i1i3freq , double & hingefreq, double & i2freq, double runDuration, double averageTime, int index, double & firstTime, double & secondTime, int & maxHeightCount);
 
 void initializeDoubleArray(double array[], double value);
 
 void initializeIntArray(int array[], int value);
 
+void updateinputsIzBite(double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2, double odontophorefreq, double i1i3freq, double hingefreq, double i2freq);
+
+void updateinputsIzSwallowPerturbed(double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2, double odontophorefreq, double i1i3freq, double hingefreq, double i2freq);
+
+void updateinputsIzSwallowA(double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2, double odontophorefreq, double i1i3freq, double hingefreq, double i2freq);
+
+void updateinputsIzSwallowB(double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2, double odontophorefreq, double i1i3freq, double hingefreq, double i2freq);
+
+void updateinputsIzRejectionB(double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2, double odontophorefreq, double i1i3freq, double hingefreq, double i2freq);
+
+void updateinputsIzRejectionA(double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2, double odontophorefreq, double i1i3freq, double hingefreq, double i2freq);
 
 int main(int argc, char* argv[])
 {  
@@ -433,13 +445,13 @@ int main(int argc, char* argv[])
     oldybottom = ybottom;
         
     //Initialize arrays
-        for(int i = 0; i <= sizeof(membranePotential)-1; i++){
+        for(int i = 0; i <= 3; i++){ //0 to 3 = 4 channels
             initializeDoubleArray(membranePotential, -70);
-            initializeDoubleArray(membraneRecovery, ib * -70);
+            initializeDoubleArray(membraneRecovery, ib[i] * -70);//fix tate
             //initializeIntArray(maxHeightCount, 0);
         }
-        membranePotential[0] = -70;
-        membraneRecovery[0] = -14;
+        //membranePotential[0] = -70;
+        //membraneRecovery[0] = -14;
     
     //activation variables, from Yu et al 1999
     aprimeI2 = 0;
@@ -480,8 +492,9 @@ int main(int argc, char* argv[])
 
     fprintf(valout, "time	position	radius	angle	hingeF	fitness	freqI2	freqI1I3	freqN3	freqHinge	actI2	actI1I3	acthinge	fitness	seaweedforce\n");
     //Izhikevich
-        fprintf(izout, "time	MembranePotentialo	MembraneRecoveryo\n"/*MembranePotentiali	MembraneRecoveryi	MembranePotentialh	MembraneRecoveryh    ofreq    ifreq    hfreq\n"*/);
-        fprintf(animation, "time	position	radius	angle	xctop	xcbottom	ytop	ybottom	i1i3radius	i2length	topangle	bottomangle	furthestbackx	furthestbacky	i1i3contacttopy	i1i3contactbottomy	ocontacttopx	ocontacttopy	ocontactbottomx	ocontactbottomy	bigxval	i1i3contactx\n");
+        fprintf(izout, "time	MembranePotentialo	MembraneRecoveryo	ofreq    i1i3freq    hfreq    i2freq    current\n");
+        
+        fprintf(animation, "time	position	radius	angle	xctop	xcbottom	ytop	ybottom	i1i3radius	i2length	topangle	bottomangle	furthestbackx	furthestbacky	i1i3contacttopy	i1i3contactbottomy	ocontacttopx	ocontacttopy	ocontactbottomx	ocontactbottomy	bigxval	i1i3contactx	freqI2	freqI1I3	freqN3	freqHinge\n");
     /* Reading the file for neural input */
     i = 0;
     j = 1;
@@ -603,11 +616,11 @@ while(frequencyiterationtime < endfrequencytime)  //loop added to do cyclic freq
     freqN3 = 0;  //controls the length of the odontophore's major axis
     freqHinge = 0;
 		
-        //initialize freq for iz
+        //initialize freq for iz //TATE becareful not to mix up with freqi1i3 etc
         double i1i3freq = 0;
         double odontophorefreq = 0;
         double hingefreq = 0;
-        double i2 = 0;
+        double i2freq = 0;
         //Averaging firing rates variables
         int maxHeightCount[4];
         double firstTime[4];
@@ -633,10 +646,10 @@ while(frequencyiterationtime < endfrequencytime)  //loop added to do cyclic freq
         freqHinge = 0;
             
         //Update Neural variables and seaweed force based on the current time
-        updateinputs(time, freqI2, freqHinge, freqI1I3, freqN3, seaweedforce, a, frequencyiterationtime,  frequencyiterationtime2, first_argument);
+        updateinputs(time, freqI2, freqHinge, freqI1I3, freqN3, seaweedforce, a, frequencyiterationtime,  frequencyiterationtime2, odontophorefreq,  i1i3freq, hingefreq, i2freq, first_argument);
 
-        for(int i = 0; i < 3; i++)
-            translateIZmodeltofrequency(time, odontophorefreq, i1i3freq, hingefreq, RunDuration, .2, i, firstTime[i], secondTime[i],maxHeightCount[i]); //average firing frequency rates will be updated every .2 seconds to equal what the average firing frequency rate was over the past .2 second. .2 is a good value because if the timeframe is any smaller, there are so few spikes happening during a time frame that frequencies are inaccurately high. If the timeframe was any larger, times at which the neural inputs turn on and off would be inaccurate
+        for(int i = 0; i <= 3; i++)
+            translateIZmodeltofrequency(time, odontophorefreq, i1i3freq, hingefreq, i2freq, RunDuration, .25, i, firstTime[i], secondTime[i],maxHeightCount[i]); //average firing frequency rates will be updated every .2 seconds to equal what the average firing frequency rate was over the past .2 second. .2 is a good value because if the timeframe is any smaller, there are so few spikes happening during a time frame that frequencies are inaccurately high. If the timeframe was any larger, times at which the neural inputs turn on and off would be inaccurate
             
         //BLARF looking at first protraction first
         //freqI1I3 = 0;
@@ -678,7 +691,7 @@ while(frequencyiterationtime < endfrequencytime)  //loop added to do cyclic freq
             
             if(iztimer > izouttimer){
                 //Izhikevich Model Output
-                fprintf(izout , "%f	%f	%f	\n"/*%f	%f	%f	%f	%f	%f	%f	\n"*/, time, membranePotential[0], membraneRecovery[0]/*, membranePotential[1], membraneRecovery[1], membranePotential[2], membraneRecovery[2], odontophorefreq, i1i3freq, hingefreq*/);
+                fprintf(izout , "%f	%f	%f	%f	%f	%f	%f	%f	\n", time, membranePotential[0], membraneRecovery[0], odontophorefreq, i1i3freq, hingefreq, i2freq, ii[0]);
                 iztimer = 0.0;
             }
             
@@ -686,6 +699,7 @@ while(frequencyiterationtime < endfrequencytime)  //loop added to do cyclic freq
             izhikevichModel(membranePotential[0], membraneRecovery[0], 0);
             izhikevichModel(membranePotential[1], membraneRecovery[1], 1);
             izhikevichModel(membranePotential[2], membraneRecovery[2], 2);
+            izhikevichModel(membranePotential[3], membraneRecovery[3], 3);
             
         eggtimer += StepSize;
         time += StepSize; //time advances one time step, run will stop when time becomes larger than the RunDuration
@@ -708,7 +722,7 @@ while(frequencyiterationtime < endfrequencytime)  //loop added to do cyclic freq
             //This is the Fprint for the simulations in the example PDF's I sent Hillel.
             fprintf(valout, "%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f \n", time, x, a, odontophoreangle, hingeF, fitness, freqI2, freqI1I3, freqN3, freqHinge, aprimeI2, aprimeI1I3, acthinge, fitness, seaweedforce);
 
-            fprintf(animation, "%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	\n", time, x, a, odontophoreangle, xctop, xcbottom, ytop, ybottom, y, lengthofI2, topphiangleofi2, bottomphiangleofi2,furthestbackxpoint,furthestbackypoint,i1i3contacttopy,i1i3contactbottomy,ocontacttopx,ocontacttopy,ocontactbottomx,ocontactbottomy,bigxval,i1i3contactx);
+            fprintf(animation, "%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	\n", time, x, a, odontophoreangle, xctop, xcbottom, ytop, ybottom, y, lengthofI2, topphiangleofi2, bottomphiangleofi2,furthestbackxpoint,furthestbackypoint,i1i3contacttopy,i1i3contactbottomy,ocontacttopx,ocontacttopy,ocontactbottomx,ocontactbottomy,bigxval,i1i3contactx,freqI2, freqI1I3, freqN3, freqHinge);
             //Izhikevich Model Output
             //fprintf(izout , "%f	%f	%f	\n", time, membranePotential, membraneRecovery);
             
@@ -881,8 +895,8 @@ direction.*/
 			
 			
 			//calculate the point where I2 connects to I1/I3
-			x1 = -x - r;//TATE
-            //x1 = 0 - r;
+			x1 = -x - r;
+            //x1 = 0 - r; //TATE - This breaks the model
 			Ty1 = ytop;
 			By1 = ybottom;
 			
@@ -932,6 +946,15 @@ direction.*/
 			*Tphi = pi/2;
 			*Bphi = -pi/2;
 		}
+        //Tate
+        /*double abc;
+        if(((Bx2+x) > 0) && ((Bx2+x) <=0)){
+            abc = 1;
+        }
+        else{
+            printf("%f",(Bx2+x));
+        }*/
+        
         
 		//Tate: returns
         furthestbackxpoint = backxpoint;
@@ -1946,10 +1969,23 @@ double OdonAngle2(double x, double hingeforce, double radius, double oldodonangl
 	return output;
 }
 
-/* Changes the neural variables and seaweed force variable in place using references based on the current time
+
+//
+//
+//
+//
+//Code Below Written By Tate Keller
+//
+//An update to Greg Sutton's Kinetic Model that takes a model neuron as neural input
+//
+//
+
+/* 
+ Changes the neural variables and seaweed force variable in place using references based on the current time.
+ "behaviorType" is the argument called when the model is run that determines which kind of feeding behvaior will be modelled. Greg's original neural inputs can be chosen, "Dynamic" allows a peicewise function to be inputted with an input file.
  */
 
-void updateinputs (double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2, string behaviorType)
+void updateinputs (double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2, double odontophorefreq, double i1i3freq, double hingefreq, double i2freq, string behaviorType)
 {
     
     if(behaviorType == "RejectionB")
@@ -1963,7 +1999,6 @@ void updateinputs (double time, double & freqI2, double & freqHinge, double & fr
     else if(behaviorType == "SwallowB")
     {
         updateinputsSwallowB(time, freqI2, freqHinge, freqI1I3, freqN3, seaweedforce, a, frequencyiterationtime, frequencyiterationtime2);
-
     }
     else if(behaviorType == "SwallowA")
     {
@@ -1981,6 +2016,30 @@ void updateinputs (double time, double & freqI2, double & freqHinge, double & fr
     {
         updateDynamicInputs(time, freqI2, freqHinge, freqI1I3, freqN3, seaweedforce, a, frequencyiterationtime, frequencyiterationtime2);
     }
+    else if (behaviorType == "IzhikevichBite")
+    {
+        updateinputsIzBite(time, freqI2, freqHinge, freqI1I3, freqN3, seaweedforce, a, frequencyiterationtime, frequencyiterationtime2, odontophorefreq, i1i3freq, hingefreq, i2freq);
+    }
+    else if(behaviorType == "IzhikevichSwallowPerturbed")
+    {
+        updateinputsIzSwallowPerturbed(time, freqI2, freqHinge, freqI1I3, freqN3, seaweedforce, a, frequencyiterationtime, frequencyiterationtime2, odontophorefreq, i1i3freq, hingefreq, i2freq);
+    }
+    else if(behaviorType == "IzhikevichSwallowA")
+    {
+        updateinputsIzSwallowA(time, freqI2, freqHinge, freqI1I3, freqN3, seaweedforce, a, frequencyiterationtime, frequencyiterationtime2, odontophorefreq, i1i3freq, hingefreq, i2freq);
+    }
+    else if (behaviorType == "IzhikevichSwallowB")
+    {
+        updateinputsIzSwallowB(time, freqI2, freqHinge, freqI1I3, freqN3, seaweedforce, a, frequencyiterationtime, frequencyiterationtime2, odontophorefreq, i1i3freq, hingefreq, i2freq);
+    }
+    else if (behaviorType == "IzhikevichRejectionB")
+    {
+        updateinputsIzRejectionB(time, freqI2, freqHinge, freqI1I3, freqN3, seaweedforce, a, frequencyiterationtime, frequencyiterationtime2, odontophorefreq, i1i3freq, hingefreq, i2freq);
+    }
+    else if (behaviorType == "IzhikevichRejectionA")
+    {
+        updateinputsIzRejectionA(time, freqI2, freqHinge, freqI1I3, freqN3, seaweedforce, a, frequencyiterationtime, frequencyiterationtime2, odontophorefreq, i1i3freq, hingefreq, i2freq);
+    }
     else
     {
         cerr << "Behavior Type Not Recognized"  << endl;
@@ -1988,6 +2047,7 @@ void updateinputs (double time, double & freqI2, double & freqHinge, double & fr
     }
 }
 
+//Greg's Original Code
 void updateinputsRejectionB(double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2)
 {
     //Rejection B sqaure wave inputs
@@ -2032,6 +2092,7 @@ void updateinputsRejectionB(double time, double & freqI2, double & freqHinge, do
      }
 }
 
+//Greg's Original Code
 void updateinputsBite(double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2)
 {
     // Bite square wave inputs
@@ -2076,6 +2137,7 @@ void updateinputsBite(double time, double & freqI2, double & freqHinge, double &
      }
 }
 
+//Greg's Original Code
 void updateinputsSwallowB(double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2)
 {
     //Proposed swallow B code
@@ -2120,6 +2182,7 @@ void updateinputsSwallowB(double time, double & freqI2, double & freqHinge, doub
      }  //End of proposed Swallow B
 }
 
+//Greg's Original Code
 void updateinputsSwallowA(double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2)
 {
     // Beginning of proposed swallow A
@@ -2164,6 +2227,7 @@ void updateinputsSwallowA(double time, double & freqI2, double & freqHinge, doub
      }    //End of proposed swallow A
 }
 
+//Greg's Original Code
 void updateinputsRejectionA(double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2)
 {
     //this is rejection A
@@ -2206,6 +2270,7 @@ void updateinputsRejectionA(double time, double & freqI2, double & freqHinge, do
      }
 }
 
+//Greg's Original Code
 void updateinputsSwallowPerturbed(double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2)
 {
     //this is is Hillel's perturbed swallow
@@ -2266,9 +2331,17 @@ void updateinputsSwallowPerturbed(double time, double & freqI2, double & freqHin
     }
 }
 
+/*
+ * If the argument is "Dynamic", then an input file specifying when neural channels turn on and off must be used as input.
+ * The input file must be named "SlugInput2.txt" to be opened.
+ * When the file is opened, each value is saved in an array at the specified time value.
+ * If this all works correctly, then the values should have been saved accordingly to be used later when updating inputs, and true will be returned by the function. The rest of the program will proceed.
+ * If the input file does not have 15, 6, or 5 columns, then the function will return false, because this kind of file cannot be read
+ */
 bool openAndRead(string behaviorType)
 {
     if(behaviorType == "Dynamic"){
+        //This reads a file of 15 columns. This would be useful when taking a SlugOutput2.txt file as input for example.
         if(numberColumns == 15){
             inputFile.open("SlugInput2.txt");
             //If the File isn't openable/found then it will fail
@@ -2299,6 +2372,7 @@ bool openAndRead(string behaviorType)
             return true;
         }
         else if (numberColumns == 6){
+            //An input file where the first column is time, the second through 5th are neural channels, and the 6th is seaweedforce on/off times
             inputFile.open("SlugInput2.txt");
             //If the File isn't openable/found then it will fail
             if(inputFile.fail()){
@@ -2320,6 +2394,7 @@ bool openAndRead(string behaviorType)
             return true;
         }
         else if (numberColumns == 5){
+            ////An input file where the first column is time, and the second through 5th are neural channels
             inputFile.open("SlugInput2.txt");
             //If the File isn't openable/found then it will fail
             if(inputFile.fail()){
@@ -2432,74 +2507,187 @@ int columnChecker()
     return counter(str2);
 }
 
+/* eulersMethod approximates the solution to a differential equation using a stepsize and an initial condition
+ * initialFunctionValue is the value of a differential equation at a specific time
+ * Y(t+1) = Y(t) + (delta-t) * (Y'(t))
+ * where
+ * Y(t+1) is returned
+ * Y(t) is intialCondition
+ * delta-t is StepSize
+ * Y'(t) is initialFunctionValue
+ */
 double eulersMethod(double intialCondition, double intialFunctionValue){
     return (intialCondition + (StepSize*intialFunctionValue));
 }
 
-double membranePotentialdt(double v, double u){
+/* membranePotentialdt returns the euler-approximation/solution to the V'(t) differential equation from Izhikevich (2003)
+ * As explained in the paper, V'(t) = (.04*(V^2)) + (5 * V) + (140) - (U) + (I)
+ * With the condition, if: V => 30mV, then
+ * V = c
+ *
+ * input v is the izhekevich neuron's current at time t
+ * input u is the izhekevich neuron's recovery variable at time t
+ * input index is the index for the array that pertains to specific modelled izhekevich neuron (0 -> odontophore, 1 -> I1I3 etc)
+ *
+ * membranePotentialdt returns the next time step's (time = t + StepSize) value of v
+ */
+double membranePotentialdt(double v, double u, int index){
     if(v >= 30){
-        return ic;
+        return ic[index];
     }
     else{
-        return eulersMethod(v, (((0.04*v*v) + (5*v) + 140 - u + ii) * 1000)); //*1000 converts ms to seconds to be in line with kinetic model
-
+        return eulersMethod(v, (((0.04*v*v) + (5*v) + 140 - u + ii[index]) * 1000)); //*1000 converts ms to seconds to be in line with kinetic model
     }
 }
 
-double membraneRecoverydt(double v, double u){
+/* membraneRecoverydt returns the euler-approximation/solution to the U'(t) differential equation from Izhikevich (2003)
+ * U'(t) = a * ((b*V) - (U))
+ * With the condition, if: V => 30mV, then
+ * U = U + d
+ *
+ * input v is the izhekevich neuron's current at time t
+ * input u is the izhekevich neuron's recovery variable at time t
+ * input index is the index for the array that pertains to specific modelled izhekevich neuron (0 -> odontophore, 1 -> I1I3 etc)
+ *
+ * membraneRecoverydt returns the next time step's (time = t + StepSize) value of u
+ */
+double membraneRecoverydt(double v, double u, int index){
     if(v >= 30){
-        return u + id;
+        return u + id[index];
     }
     else{
-        return eulersMethod(u, ((ia * ((ib * v) - u)) * 1000) ); //*1000 converts ms to seconds to be in line with kinetic model
+        return eulersMethod(u, ((ia[index] * ((ib[index] * v) - u)) * 1000) ); //*1000 converts ms to seconds to be in line with kinetic model
     }
 }
 
+
+/* izhikevichModel saves the new (current time step) values of v (current) and u (recovery) in arrays that pertain to specific modelled izhekevich neuron
+ *
+ * input v is the izhekevich neuron's current at time t. When called in the main method, it is the v value from the previous time step - membranePotential[index]. This function updates membranePotential[index] to be the neurons current at time t+StepSize.
+ * input u is the izhekevich neuron's recovery variable at time t. When called in the main method, it is the u value from the previous time step - membraneRecovery[index]. This function updates membraneRecovery[index] to be the neurons current at time t+StepSize.
+ * index is the index for the array that pertains to specific modelled izhekevich neuron (membranePotential[0] -> current of odontophore neuron, membranePotential[1] -> current of I1I3 neuron, etc)
+ */
 void izhikevichModel(double v, double u, int index){
-    membranePotential[index] = membranePotentialdt(v, u);
-    membraneRecovery[index] = membraneRecoverydt(v, u);
+    membranePotential[index] = membranePotentialdt(v, u, index);
+    membraneRecovery[index] = membraneRecoverydt(v, u, index);
 }
 
+/*
+ * returns the membrane potential, v, of a specific modelled izhekevich neuron at the current time step
+ */
 double getMembranePotential(int index){
     return membranePotential[index];
 }
 
+/*
+ * Admittedly imperfect function that should calculate the period (time) between the first spike of a model nueron and the last spike of a model neuron over a given time frame (averageTime). It returns the time between the first and last spike of this time frame (averageTime).
+ *
+ * input averageTime is the final time/end of a time frame that the period is being calculated over. For example, for a 8.5 second model run, a time frame to determine period that could be chosen is 1 second (for the purpose of example, really .25 is the best time frame). The first averageTime value would then be = 1 second, and over the first 1 second of the run, the period between the spikes over that time frame will be evaluated. Then the next time frame will be = 2, and the period will be determined from 1 to 2 seconds. This will be done for 2 to 3 seconds, 3 to 4 seconds and so on.
+ * input v is the current at the current time
+ * input time is the currentTime (saved in a variable currentTime)
+ * input index is not needed. I need to edit this code to remove this.
+ * input firstTime is the time at which the first spike during a time frame occurs
+ * input secondTime is the time at which the second spike during a time frame occurs. secondTime is continuously updated so that at the end of the time frame, secondTime is actually equal to the time that the final spike during a time frame occurs
+ * input maxHeightCount is the number of spikes over a time frame
+ */
 double period(double averageTime, double v, double time, int index, double & firstTime, double & secondTime, int & maxHeightCount){
     double currentTime = time;
     double totalPeriod, averagePeriod;
-    if(averageTime > currentTime){//While the "averageTime" period is being recorded
-        if((maxHeightCount == 0) && (v >= 30)){//if no spikes have been counted during this "averageTime" period, take the first spike time
+    if(averageTime > currentTime){//While the time frame is being recorded
+        if((maxHeightCount == 0) && (v >= 30)){//Case 1: if no spikes have been counted during this time frame, take the first spike time
             firstTime = currentTime;
             maxHeightCount++;
         }
-        else if ((maxHeightCount > 0) && (v >= 30)){//if there has been spikes counted within this period, continually update the second spike time. the final update will be the last spike's time
+        else if ((maxHeightCount > 0) && (v >= 30)){//Case 2: if there has been spikes counted within this period, continually update the second spike time. the final update will be the last spike's time
             secondTime = currentTime;
             maxHeightCount++;
         }
+        else if (maxHeightCount == 0){ // Case 3: no spikes ever counted
+            firstTime=0;
+            secondTime=0;
+        }
     }
-    if(((averageTime == currentTime) || (averageTime-StepSize <= currentTime)) && ((secondTime != 0) && (firstTime != 0))){//when the "averageTime" period has ended, do the calculations
-        //-- averageTime-StepSize is important because depending on the averageTime chosen, the currentTime may never equal it (it may never be a factor of the StepSize), so to ensure that this still runs, averageTime-StepSize <= currentTime essentially is logically equivalent to averageTime == currentTime.
+    
+    if(((averageTime == currentTime) || (averageTime-StepSize <= currentTime)) && ((secondTime != 0) && (firstTime != 0))){//when the time frame  has ended, do the calculations
+        //-- averageTime-StepSize is important because depending on the "averageTime" chosen, the currentTime may never exactly equal it (StepSize may not be a factor of the averageTime), so to ensure that this condition still runs, averageTime-StepSize <= currentTime essentially is logically equivalent to averageTime == currentTime given that StepSize is not a factor of averageTime.
         totalPeriod = (secondTime - firstTime);
-        averagePeriod = totalPeriod/maxHeightCount;
+        if(maxHeightCount > 0){ //if secondTime and firstTime exist it shouldnt be an issue that maxHeightCount would be = 0, but this is a second check
+            averagePeriod = totalPeriod/maxHeightCount;
+        }
+        else{ //if there was some error and no spikes occured but times were saved, then the period should be zero
+            averagePeriod = 0;
+        }
         //reset the values for next "averageTime" period
         secondTime = 0;
         firstTime = 0;
         maxHeightCount = 0;
         return averagePeriod;//return the period that occured over this "averageTime"
     }
-    return -1;//All periods should be positive (negative time makes no sense..) so this will be used as a way to represent an incomplete pair
+    
+    if(((averageTime == currentTime) || (averageTime-StepSize <= currentTime)) && ((secondTime == 0) && (firstTime == 0))){//when the "averageTime" period has ended, do the calculations and if the firstTime and secondTime are 0 (Case 3)
+        averagePeriod = 0;
+        //reset the values for next "averageTime" period
+        secondTime = 0;
+        firstTime = 0;
+        maxHeightCount = 0;
+        return averagePeriod;//return the period that occured over this "averageTime"
+    }
+    
+    //Case 4: A single spike is recorded over a time frame
+    if(((averageTime == currentTime) || (averageTime-StepSize <= currentTime)) && ((secondTime != 0) && (firstTime == 0))){//when the "averageTime" period has ended, do the calculations
+        averagePeriod = 0;
+        //reset the values for next "averageTime" period
+        secondTime = 0;
+        firstTime = 0;
+        maxHeightCount = 0;
+        return averagePeriod;//return the period that occured over this "averageTime"
+    }
+    
+    //Case 5: A single spike is recorded over a time frame, The secondTime value is 0 but the first is not.
+    if(((averageTime == currentTime) || (averageTime-StepSize <= currentTime)) && ((secondTime == 0) && (firstTime != 0))){//when the "averageTime" period has ended, do the calculations
+        averagePeriod = 0;
+        //reset the values for next "averageTime" period
+        secondTime = 0;
+        firstTime = 0;
+        maxHeightCount = 0;
+        return averagePeriod;//return the period that occured over this "averageTime"
+    }
+    
+    //Case 3b: No spikes occured, period is 0
+    if(((averageTime == currentTime) || (averageTime-StepSize <= currentTime)) && maxHeightCount == 0){
+        return 0;
+    }
+    
+    return -1;// Case 6?: this method just didnt work at all... All periods should be positive (negative time makes no sense..) so this will be used as a way to represent an incomplete pair
 }
+
+/*
+ * evaluateFrequency takes the averageperiod over a given time frame, and takes the inverse to output the frequency
+ */
 
 double evaluateFrequency(double averageTime, double v, double time, int index, double & firstTime, double & secondTime, int & maxHeightCount){
     double averagePeriod = period(averageTime, v, time, index, firstTime, secondTime, maxHeightCount);
-    if (averagePeriod != -1){
+    if ((averagePeriod != -1) &&(averagePeriod != 0)){ //If the period is -1, the period method failed. If the period is 0, there were no spikes
         return (1/averagePeriod);
     }
-    else{
+    else if(averagePeriod == 0){ //if the period was zero the frequency is zero
+        return 0;
+    }
+    else{ //continue to return the failed message forwards
         return -1;
     }
 }
 
+/* determineAverageIterations is the function that determine the start time of a given time frame. Im realizing now after going back through my code just how awful my variable names are (when I have the chance, I'll rename them). When this method is called in translateIZmodeltofrequency, the reurned value is saved in "iterativeTime", which represents the time at which the given time frame of recording period/frequency begins.
+ *
+ * This function determines how to divide up the run duration of a simulation into time frames. That means that if you have a runDuration of 8.5 seconds, and you choose to evaluate period/frequency over the time frame of .5 seconds, then this function determines that the first time that a time frame begins is at 0 seconds, then .5 seconds, then 1 and so on.
+ *
+ * input runDuration: runDruation of the model (almost always 8.5 seconds)
+ * input averageTime: a terribly named variable that represents the time frame over which period/frequency will be evaluated. .25 is the normal value for this. This means every .25 seconds, the period and frequency of a neuron will be updated.
+ * input currentTime: just the Time the model is currently up to
+ *
+ * output: when the time frame that frequency and period are being calculated at begins. If the "averageTime" is "0.5" and currentTime is "0.25", then the output is 0. If the averageTime is "0.5" and the currentTime is "0.74390", then the output is "0.5"
+ */
 double determineAverageIterations(double runDuration, double averageTime, double currentTime){
     int numberOfIterations = (int)((runDuration/averageTime)+1);
     int currentIteration = (int)(currentTime/averageTime);
@@ -2514,6 +2702,10 @@ double determineAverageIterations(double runDuration, double averageTime, double
     return -1; //failed
 }
 
+/* determineAverageIterationsV2 is another poorly named function (I'll fix these names when I have the chance). It does almost the same thing that determineAverageIterations does, but instead of outputting the time that a time frame begins, it outputs the time the time frame ends. So if the "averageTime" is "0.5" and currentTime is "0.25", then the output is .5. If the averageTime is "0.5" and the currentTime is "0.74390", then the output is "1"
+ *
+ * When this function is called in the translateIZmodeltofrequency, the value is saved in "thisAverageTime". This value is then used when calling the frequency and subsequencial period methods-- if currentTime is less than  "thisAverageTime", then the function continues to count spikes, if currentTime catches up to/is equal to "thisAverageTime", the function stops counting spikes and and calculates the period/frequency.
+ */
 double determineAverageIterationsV2(double runDuration, double averageTime, double currentTime){
     int numberOfIterations = (int)((runDuration/averageTime)+1);
     int currentIteration = (int)(currentTime/averageTime);
@@ -2525,7 +2717,17 @@ double determineAverageIterationsV2(double runDuration, double averageTime, doub
     return -1; //failed
 }
 
-void translateIZmodeltofrequency(double time, double & odontophorefreq, double & i1i3freq , double & hingefreq, double runDuration, double averageTime, int index, double & firstTime, double & secondTime, int & maxHeightCount){
+/* translateIZmodeltofrequency this is the "main" function that interprets the frequency of any given neuron in the model. 
+ *
+ * input time: current time in the model
+ * input odontophorefreq, i1i3freq, hingefreq, i2freq: pointers to the frequency of a neuron, the value will be updated continuously
+ * input runDuration: the constant value of the runDuration of the model (almost always 8.5 seconds)
+ * input averageTime: the time frame over which period/frequency will be calculated. If you choose ".25", for the first .25 seconds of the run, the second .25 seconds, the third .25 seconds (and so on until the modelrun is over), the frequency will be calculated and updated.
+ * input index: the index representing the neuron that this frequency is being calculated for
+ * input firstTime, secondTime, maxHeightCount: pointers to values useful in calculating the frequency/period of a neuron. When this function is called, it is called for the entire array of firstTime, secondTime, and maxHeightCount (that is, firstTime, secondTime, and maxHeightCount are arrays for which each index represents the value for a specific neuron. for example, maxHeightCount[0] is the number of spikes over a given time frame counted for the odontophore (index 0) neuron) 
+ */
+
+void translateIZmodeltofrequency(double time, double & odontophorefreq, double & i1i3freq , double & hingefreq, double & i2freq, double runDuration, double averageTime, int index, double & firstTime, double & secondTime, int & maxHeightCount){
     double iterativeTime = determineAverageIterations(runDuration, averageTime, time);
     double thisAverageTime = determineAverageIterationsV2(runDuration, averageTime, time);
     if(time > iterativeTime){
@@ -2539,6 +2741,9 @@ void translateIZmodeltofrequency(double time, double & odontophorefreq, double &
             }
             else if(index == 2){
                 hingefreq = freq;
+            }
+            else if (index == 3){
+                i2freq = freq;
             }
         }
     }
@@ -2556,51 +2761,310 @@ void initializeIntArray(int array[], int value){
         array[i] = value;
     }
 }
- 
 
-/*
-void izBite(){
-    
+void updateinputsIzBite(double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2, double odontophorefreq, double i1i3freq, double hingefreq, double i2freq){
+ 
     if (time > 0.0)
     {
-        freqI2 = 20;
+        ii[3] = 10; //3
     }
-    
+ 
     if (time > 3.41)
     {
-        freqI2 = 0;
+        ii[3] = 0; //3
     }
-    
+ 
     if (time > 2.36)
     {
-        freqHinge = 20;  //BLARF was 20
+        ii[2] = 10; //2
     }
-    
+ 
     if (time> 6.80)
     {
-        freqHinge = 0;
+        ii[2] = 0; //2
     }
-    
+ 
     if (time> 2.21)
     {
-        freqI1I3 = 20;   //BLARF was 35
+        ii[1] = 10; //1
     }
-    
+ 
     if (time > 6.56)
     {
-        freqI1I3 = 0;
+        ii[1] = 0; //1
     }
-    
+ 
     if (time > 2.15)
     {
-        freqN3 = 30;  //BLARF was 20
+        ii[0] = 10; //0
     }
-    
+ 
     if (time > 4.85)
     {
-        freqN3 = 0;
+        ii[0] = 0; //0
     }
-}*/
+ 
+    // Heres where it gets confusing: freqi2 is related to gregs model (the neural channels), i2freq is related to the izhikevich model (frequency of a model neuron firing)
+    freqI2 = i2freq;
+    freqHinge = hingefreq;
+    freqI1I3 = i1i3freq;
+    freqN3 = odontophorefreq;
+ }
 
-//TATE
-//The iz model now models 3-4 neurons, now you just have to add the option for the model to turn on/off at a given time... for now you can set a frequency at the times when it shouldnt be on to 0, and otherwise have the frequency translater run
+void updateinputsIzSwallowPerturbed(double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2, double odontophorefreq, double i1i3freq, double hingefreq, double i2freq){
+    
+    ii[3] = 10;
+    
+    if (time > 2.05)
+    {
+        ii[3] = 0;
+    }
+    
+    if (time > 2.48)
+    {
+        ii[2] = 10;
+    }
+    
+    if (time> 6.62)
+    {
+        ii[2] = 0;
+    }
+    
+    if (time > 3.5)  //time>2.55
+    {
+        ii[1] = 10;
+    }
+    
+    if (time > 6.62)
+    {
+        ii[1] = 0;
+    }
+    
+    if (time > 1.4) //(time > 1.4)
+    {
+        ii[0] = 10;
+    }
+    
+    if (time > 3.0) //(time > 4.25)
+    {
+        ii[0] = 0;
+    }
+    
+    if (time > 1.5)
+    {
+        
+        if (time < 2.5)
+        {
+            seaweedforce = MAXSEAWEEDFORCE * ((a - .005)/.003)*(time - 1.5);
+        }
+        
+        else
+        {
+            seaweedforce =  MAXSEAWEEDFORCE*((a - .005)/.003);
+        }
+        
+        
+    }
+    // Heres where it gets confusing: freqi2 is related to gregs model (the neural channels), i2freq is related to the izhikevich model (frequency of a model neuron firing)
+    freqI2 = i2freq;
+    freqHinge = hingefreq;
+    freqI1I3 = i1i3freq;
+    freqN3 = odontophorefreq;
+}
+
+void updateinputsIzSwallowA(double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2, double odontophorefreq, double i1i3freq, double hingefreq, double i2freq)
+{
+    // Beginning of proposed swallow A
+    if (time > 0.0)
+    {
+        ii[3] = 10;
+    }
+    
+    if (time > 1.51)
+    {
+        ii[3] = 0;
+    }
+    
+    if (time > 1.8)
+    {
+        ii[2] = 10;
+    }
+    
+    if (time> 5.8)
+    {
+        ii[2] = 00;
+    }
+    
+    if (time> 1.95)
+    {
+        ii[1] = 10;
+    }
+    
+    if (time > 6.3)
+    {
+        ii[1] = 0;
+    }
+    
+    if (time > 1.0)
+    {
+        ii[0] = 10;
+    }
+    
+    if (time > 3.9)
+    {
+        ii[0] = 0;
+    }
+    // Heres where it gets confusing: freqi2 is related to gregs model (the neural channels), i2freq is related to the izhikevich model (frequency of a model neuron firing)
+    freqI2 = i2freq;
+    freqHinge = hingefreq;
+    freqI1I3 = i1i3freq;
+    freqN3 = odontophorefreq;
+
+}
+
+void updateinputsIzSwallowB(double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2, double odontophorefreq, double i1i3freq, double hingefreq, double i2freq)
+{
+    //Proposed swallow B code
+    if (time > 0.0)
+    {
+        ii[3] = 10;
+    }
+    
+    if (time > 2.05)
+    {
+        ii[3] = 0;
+    }
+    
+    if (time > 2.48)
+    {
+        ii[2] = 10;
+    }
+    
+    if (time> 6.62)
+    {
+        ii[2] = 0;
+    }
+    
+    if (time> 2.33)
+    {
+        ii[1] = 10;
+    }
+    
+    if (time > 6.62)
+    {
+        ii[1] = 0;
+    }
+    
+    if (time > frequencyiterationtime) //(time > 1.4)
+    {
+        ii[0] = 10;
+    }
+    
+    if (time > frequencyiterationtime + 2.85) //(time > 4.25)
+    {
+        ii[0] = 0;
+    }
+
+    freqI2 = i2freq;
+    freqHinge = hingefreq;
+    freqI1I3 = i1i3freq;
+    freqN3 = odontophorefreq;
+}
+
+void updateinputsIzRejectionB(double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2, double odontophorefreq, double i1i3freq, double hingefreq, double i2freq)
+{
+    if (time > 0.38)
+    {
+        ii[3] = 10;
+    }
+    
+    if (time > 2.75)
+    {
+        ii[3] = 0;
+    }
+    
+    if (time > 1.01)
+    {
+        ii[2] = 10;  //BLARF was 20
+    }
+    
+    if (time> 7.56)
+    {
+        ii[2] = 0;
+    }
+    
+    if (time> 3.56)
+    {
+        ii[1] = 10;   //BLARF was 35
+    }
+    
+    if (time > 7.69)
+    {
+        ii[1] = 0;
+    }
+    
+    if (time > .8)
+    {
+        ii[0] = 10;  //BLARF was 20
+    }
+    
+    if (time > 2.5)
+    {
+        ii[0] = 0;
+    }
+    freqI2 = i2freq;
+    freqHinge = hingefreq;
+    freqI1I3 = i1i3freq;
+    freqN3 = odontophorefreq;
+}
+
+void updateinputsIzRejectionA(double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2, double odontophorefreq, double i1i3freq, double hingefreq, double i2freq)
+{
+    if (time >.6)
+    {
+        ii[0] = 10;
+    }
+    
+    if (time > 1.7)
+    {
+        ii[0] = 0;
+    }
+    
+    if (time > .26)
+    {
+        ii[3] = 10;
+    }
+    
+    if (time > 1.9)
+    {
+        ii[3] = 0;
+    }
+    
+    if (time>2.5)
+    {
+        ii[1] =  10;
+    }
+    if (time>6.6)
+    {
+        ii[1] = 0;
+    }
+    
+    if (time>1.2)
+    {
+        ii[2] = 10;
+    }
+    if (time> 6.0)
+    {
+        ii[2] = 0;
+    }
+    freqI2 = i2freq;
+    freqHinge = hingefreq;
+    freqI1I3 = i1i3freq;
+    freqN3 = odontophorefreq;
+}
+
+//TATE notes
+/*
+ -The Model has 4 neurons representing four motor pools, I2 I1I3 Hinge and Odontophore/N3
+ -The Model can take arguments to run similar feeding behvaiors to the ones Greg originally provided but now with model neurons
+*/
