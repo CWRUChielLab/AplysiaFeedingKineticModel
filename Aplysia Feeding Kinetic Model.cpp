@@ -167,14 +167,14 @@ int numberColumns = 0;
 
 /* Izhikevich Model Variables and Parameters*/
 //Parameters -- currently set at compile time
-const double ia[4] = {.015,.006,.006,.006}; //Parameters a-d
-const double ib[4] = {0.25,0.25,0.25,0.25};
+const double ia[4] = {.003,.02,.033,.02}; //Parameters a-d
+const double ib[4] = {0.12,0.12,0.12,0.12};
 const double ic[4] = {-65,-65,-65,-65};
 const double id[4] = {8,8,8,8};
 double ii[4] = {0,0,0,0}; // Applied current
 
 //Variables
-double membranePotential[4]; // [0]- odontophore, [1]- I1/I3, [2]- Hinge, [3] - I2
+double membranePotential[4]; // [0]- odontophore, [1]- I1/I3, [2]- Hinge, [3] - I2, [4], [5], [6], [7], [8], [9]
 double membraneRecovery[4];
 
 
@@ -303,15 +303,9 @@ void izhikevichModel(double v, double u, int index);
 
 double getMembranePotential(int index);
 
-double period(double averageTime, double v, double time, int index, double & firstTime, double & secondTime, int & maxHeightCount);
+double evaluatefrequency(double time, double v, bool & firstSpike, bool & secondSpike, double & firstTime, double & secondTime, double & freq);
 
-double evaluateFrequency(double averageTime, double v, double time, int index, double & firstTime, double & secondTime, int & maxHeightCount);
-
-double determineAverageIterations(double runDuration, double averageTime, double currentTime);
-
-double determineAverageIterationsV2(double runDuration, double averageTime, double currentTime);
-
-void translateIZmodeltofrequency(double time, double & odontophorefreq, double & i1i3freq , double & hingefreq, double & i2freq, double runDuration, double averageTime, int index, double & firstTime, double & secondTime, int & maxHeightCount);
+void saveFrequency(double time, double & odontophorefreq, double & i1i3freq , double & hingefreq, double & i2freq, int index, double & firstTime, double & secondTime, bool & firstSpike, bool & secondSpike, double & freq);
 
 void initializeDoubleArray(double array[], double value);
 
@@ -625,6 +619,13 @@ while(frequencyiterationtime < endfrequencytime)  //loop added to do cyclic freq
         int maxHeightCount[4];
         double firstTime[4];
         double secondTime[4];
+        bool firstSpike[4];
+        bool secondSpike[4];
+        double freq[4];
+        freq[0] = 0;
+        freq[1] = 0;
+        freq[2] = 0;
+        freq[3] = 0;
         
     //component of the visco-elastic hinge force, F1 from Sutton et al 2002
     F1 = 0;
@@ -648,9 +649,9 @@ while(frequencyiterationtime < endfrequencytime)  //loop added to do cyclic freq
         //Update Neural variables and seaweed force based on the current time
         updateinputs(time, freqI2, freqHinge, freqI1I3, freqN3, seaweedforce, a, frequencyiterationtime,  frequencyiterationtime2, odontophorefreq,  i1i3freq, hingefreq, i2freq, first_argument);
 
-        for(int i = 0; i <= 3; i++)
-            translateIZmodeltofrequency(time, odontophorefreq, i1i3freq, hingefreq, i2freq, RunDuration, .25, i, firstTime[i], secondTime[i],maxHeightCount[i]); //average firing frequency rates will be updated every .2 seconds to equal what the average firing frequency rate was over the past .2 second. .2 is a good value because if the timeframe is any smaller, there are so few spikes happening during a time frame that frequencies are inaccurately high. If the timeframe was any larger, times at which the neural inputs turn on and off would be inaccurate
-            
+        for(int i = 0; i <= 3; i++){
+            saveFrequency(time, odontophorefreq, i1i3freq , hingefreq, i2freq, i, firstTime[i], secondTime[i], firstSpike[i], secondSpike[i],freq[i]);
+        }
         //BLARF looking at first protraction first
         //freqI1I3 = 0;
         //freqN3 = 0;
@@ -2579,172 +2580,110 @@ double getMembranePotential(int index){
     return membranePotential[index];
 }
 
-/*
- * Admittedly imperfect function that should calculate the period (time) between the first spike of a model nueron and the last spike of a model neuron over a given time frame (averageTime). It returns the time between the first and last spike of this time frame (averageTime).
- *
- * input averageTime is the final time/end of a time frame that the period is being calculated over. For example, for a 8.5 second model run, a time frame to determine period that could be chosen is 1 second (for the purpose of example, really .25 is the best time frame). The first averageTime value would then be = 1 second, and over the first 1 second of the run, the period between the spikes over that time frame will be evaluated. Then the next time frame will be = 2, and the period will be determined from 1 to 2 seconds. This will be done for 2 to 3 seconds, 3 to 4 seconds and so on.
- * input v is the current at the current time
- * input time is the currentTime (saved in a variable currentTime)
- * input index is not needed. I need to edit this code to remove this.
- * input firstTime is the time at which the first spike during a time frame occurs
- * input secondTime is the time at which the second spike during a time frame occurs. secondTime is continuously updated so that at the end of the time frame, secondTime is actually equal to the time that the final spike during a time frame occurs
- * input maxHeightCount is the number of spikes over a time frame
+/*  
+ evaluatefrequency determines the frequency of a neuron model by evalaluating the time between the current spike and the last spike that occurred.
+ In english, heres how the algorithm works:
+ 
+ - If a spike occurs, save spike by setting a boolean, "firstSpike", to true, and save the time when that spike occurred.
+ If another spike occurs within ".5 seconds" Then
+ - Set next spike to second spike, save time.
+ - Determine and return period between first and second spike.
+ - Set second spike to be first spike.
+ Else
+ - Return period to be 0
+ - Remove First Spike Value
+ 
+ The code is split into two parts:
+ Part 1: record when a spike occurs and if it is the first or the second spike to occur in a pair.
+ Part 2: return the frequency based on cases of the boolean spike values
+ 
+ input: 
+ time - the current time step of the model
+ v - the membrane potential of a given model neuron
+ firstSpike - boolean value that is true if a spike is the first in a pair
+ secondSpike - boolean value that is true if a spike is the second in a pair
+ firstTime - the time at which the first spike in a pair occurred
+ secondTime - the time at which the second spike in a pair occured
+ freq - the frequency of a model neuron for the previous pair of spikes
+ 
+ output: the frequency of a model neuron between a pair of spikes
+ 
  */
-double period(double averageTime, double v, double time, int index, double & firstTime, double & secondTime, int & maxHeightCount){
-    double currentTime = time;
-    double totalPeriod, averagePeriod;
-    if(averageTime > currentTime){//While the time frame is being recorded
-        if((maxHeightCount == 0) && (v >= 30)){//Case 1: if no spikes have been counted during this time frame, take the first spike time
-            firstTime = currentTime;
-            maxHeightCount++;
+double evaluatefrequency(double time, double v, bool & firstSpike, bool & secondSpike, double & firstTime, double & secondTime, double & freq){
+    //Part 1: Record Spike
+    if (v >= 30){
+        if(!firstSpike){//If First Spike Boolean value is false (if no spikes have occured)
+            if(!secondSpike){//and if Second Spike Boolean Value is false (should be true that a second spike has not occured if a first one hasnt)
+                firstSpike = true; //record that a first spike has occurred
+                firstTime = time; // and record the time at which this spike happened
+            }
+            else{//and if second spike boolean value is true (weird case, if a second spike is recorded and a first is not... this is an error case)
+                //not sure yet
+            }
         }
-        else if ((maxHeightCount > 0) && (v >= 30)){//Case 2: if there has been spikes counted within this period, continually update the second spike time. the final update will be the last spike's time
-            secondTime = currentTime;
-            maxHeightCount++;
+        else{//If the first spike boolean value is true (a first spike has occured within at most the past .5 seconds)
+            if(!secondSpike){//and the a second spike has not occured
+                secondSpike = true; //record that a second spike has occurred
+                secondTime = time;
+            }
+            else{//and a second spike has occurred
+                //not sure yet
+            }
         }
-        else if (maxHeightCount == 0){ // Case 3: no spikes ever counted
-            firstTime=0;
-            secondTime=0;
+    }
+    //Part 2: Return Frequency
+    if(!firstSpike){//if the First Spike hasnt happenend/ is false
+        if (!secondSpike){ //and Second Spike hasnt happened /is false
+            freq = 0;//TATE
+            return 0; //There is no period yet, there is no frequency yet
+        }
+        else{ //and the Second Spike has happened
+            freq = -1; //TATE
+            return -1; //There is something wrong with the code. A second spike was recorded before a first one was
         }
     }
-    
-    if(((averageTime == currentTime) || (averageTime-StepSize <= currentTime)) && ((secondTime != 0) && (firstTime != 0))){//when the time frame  has ended, do the calculations
-        //-- averageTime-StepSize is important because depending on the "averageTime" chosen, the currentTime may never exactly equal it (StepSize may not be a factor of the averageTime), so to ensure that this condition still runs, averageTime-StepSize <= currentTime essentially is logically equivalent to averageTime == currentTime given that StepSize is not a factor of averageTime.
-        totalPeriod = (secondTime - firstTime);
-        if(maxHeightCount > 0){ //if secondTime and firstTime exist it shouldnt be an issue that maxHeightCount would be = 0, but this is a second check
-            averagePeriod = totalPeriod/maxHeightCount;
+    else{ //if the first spike has happened
+        if(!secondSpike){ //and the second spike hasnt
+            if (time > (firstTime + .5)){ //if .5 seconds have passed since the last spike
+                firstSpike = false; //remove information about this single spike
+                firstTime = 0;
+                freq = 0; //TATE
+                return 0; //There is no period. This case will be changed since there still was a spike, but no frequency can be determined.
+            }
+            else{ //if .5 seconds have not passed since the last spike
+                return freq; //return what the frequency was of the previous pair of spikes
+            }
         }
-        else{ //if there was some error and no spikes occured but times were saved, then the period should be zero
-            averagePeriod = 0;
+        else{ //and the second spike has also happened
+            double period = secondTime-firstTime; //save the period in a variable
+            secondSpike = false;
+            firstSpike = true;
+            firstTime = secondTime; // the time of the second spike will shift
+            secondTime = 0; //Dont know if this works, secondTime info is erased and can be rewritten over
+            freq = 2/period;
+            return freq; //2 spikes divided by the time between the two spikes. This is the frequency in Hz
         }
-        //reset the values for next "averageTime" period
-        secondTime = 0;
-        firstTime = 0;
-        maxHeightCount = 0;
-        return averagePeriod;//return the period that occured over this "averageTime"
     }
-    
-    if(((averageTime == currentTime) || (averageTime-StepSize <= currentTime)) && ((secondTime == 0) && (firstTime == 0))){//when the "averageTime" period has ended, do the calculations and if the firstTime and secondTime are 0 (Case 3)
-        averagePeriod = 0;
-        //reset the values for next "averageTime" period
-        secondTime = 0;
-        firstTime = 0;
-        maxHeightCount = 0;
-        return averagePeriod;//return the period that occured over this "averageTime"
-    }
-    
-    //Case 4: A single spike is recorded over a time frame
-    if(((averageTime == currentTime) || (averageTime-StepSize <= currentTime)) && ((secondTime != 0) && (firstTime == 0))){//when the "averageTime" period has ended, do the calculations
-        averagePeriod = 0;
-        //reset the values for next "averageTime" period
-        secondTime = 0;
-        firstTime = 0;
-        maxHeightCount = 0;
-        return averagePeriod;//return the period that occured over this "averageTime"
-    }
-    
-    //Case 5: A single spike is recorded over a time frame, The secondTime value is 0 but the first is not.
-    if(((averageTime == currentTime) || (averageTime-StepSize <= currentTime)) && ((secondTime == 0) && (firstTime != 0))){//when the "averageTime" period has ended, do the calculations
-        averagePeriod = 0;
-        //reset the values for next "averageTime" period
-        secondTime = 0;
-        firstTime = 0;
-        maxHeightCount = 0;
-        return averagePeriod;//return the period that occured over this "averageTime"
-    }
-    
-    //Case 3b: No spikes occured, period is 0
-    if(((averageTime == currentTime) || (averageTime-StepSize <= currentTime)) && maxHeightCount == 0){
-        return 0;
-    }
-    
-    return -1;// Case 6?: this method just didnt work at all... All periods should be positive (negative time makes no sense..) so this will be used as a way to represent an incomplete pair
 }
 
 /*
- * evaluateFrequency takes the averageperiod over a given time frame, and takes the inverse to output the frequency
+ update the frequency of each motor neuron pool to be what the frequency of the modelled neuron was
  */
 
-double evaluateFrequency(double averageTime, double v, double time, int index, double & firstTime, double & secondTime, int & maxHeightCount){
-    double averagePeriod = period(averageTime, v, time, index, firstTime, secondTime, maxHeightCount);
-    if ((averagePeriod != -1) &&(averagePeriod != 0)){ //If the period is -1, the period method failed. If the period is 0, there were no spikes
-        return (1/averagePeriod);
-    }
-    else if(averagePeriod == 0){ //if the period was zero the frequency is zero
-        return 0;
-    }
-    else{ //continue to return the failed message forwards
-        return -1;
-    }
-}
-
-/* determineAverageIterations is the function that determine the start time of a given time frame. Im realizing now after going back through my code just how awful my variable names are (when I have the chance, I'll rename them). When this method is called in translateIZmodeltofrequency, the reurned value is saved in "iterativeTime", which represents the time at which the given time frame of recording period/frequency begins.
- *
- * This function determines how to divide up the run duration of a simulation into time frames. That means that if you have a runDuration of 8.5 seconds, and you choose to evaluate period/frequency over the time frame of .5 seconds, then this function determines that the first time that a time frame begins is at 0 seconds, then .5 seconds, then 1 and so on.
- *
- * input runDuration: runDruation of the model (almost always 8.5 seconds)
- * input averageTime: a terribly named variable that represents the time frame over which period/frequency will be evaluated. .25 is the normal value for this. This means every .25 seconds, the period and frequency of a neuron will be updated.
- * input currentTime: just the Time the model is currently up to
- *
- * output: when the time frame that frequency and period are being calculated at begins. If the "averageTime" is "0.5" and currentTime is "0.25", then the output is 0. If the averageTime is "0.5" and the currentTime is "0.74390", then the output is "0.5"
- */
-double determineAverageIterations(double runDuration, double averageTime, double currentTime){
-    int numberOfIterations = (int)((runDuration/averageTime)+1);
-    int currentIteration = (int)(currentTime/averageTime);
-    for(int i = 0; i <= numberOfIterations; i++){
-        if(currentIteration == i && currentIteration != numberOfIterations){
-            return (averageTime*(i));
+void saveFrequency(double time, double & odontophorefreq, double & i1i3freq , double & hingefreq, double & i2freq, int index, double & firstTime, double & secondTime, bool & firstSpike, bool & secondSpike, double & freq){
+    double frequency = evaluatefrequency(time, getMembranePotential(index), firstSpike, secondSpike, firstTime, secondTime, freq);
+    if (frequency != -1){
+        if(index == 0){
+            odontophorefreq = frequency;
         }
-        else if(currentIteration == i && currentIteration != numberOfIterations){
-            
+        else if(index == 1){
+            i1i3freq = frequency;
         }
-    }
-    return -1; //failed
-}
-
-/* determineAverageIterationsV2 is another poorly named function (I'll fix these names when I have the chance). It does almost the same thing that determineAverageIterations does, but instead of outputting the time that a time frame begins, it outputs the time the time frame ends. So if the "averageTime" is "0.5" and currentTime is "0.25", then the output is .5. If the averageTime is "0.5" and the currentTime is "0.74390", then the output is "1"
- *
- * When this function is called in the translateIZmodeltofrequency, the value is saved in "thisAverageTime". This value is then used when calling the frequency and subsequencial period methods-- if currentTime is less than  "thisAverageTime", then the function continues to count spikes, if currentTime catches up to/is equal to "thisAverageTime", the function stops counting spikes and and calculates the period/frequency.
- */
-double determineAverageIterationsV2(double runDuration, double averageTime, double currentTime){
-    int numberOfIterations = (int)((runDuration/averageTime)+1);
-    int currentIteration = (int)(currentTime/averageTime);
-    for(int i = 0; i <= numberOfIterations; i++){
-        if(currentIteration == i){
-            return (averageTime*(i+1));
+        else if(index == 2){
+            hingefreq = frequency;
         }
-    }
-    return -1; //failed
-}
-
-/* translateIZmodeltofrequency this is the "main" function that interprets the frequency of any given neuron in the model. 
- *
- * input time: current time in the model
- * input odontophorefreq, i1i3freq, hingefreq, i2freq: pointers to the frequency of a neuron, the value will be updated continuously
- * input runDuration: the constant value of the runDuration of the model (almost always 8.5 seconds)
- * input averageTime: the time frame over which period/frequency will be calculated. If you choose ".25", for the first .25 seconds of the run, the second .25 seconds, the third .25 seconds (and so on until the modelrun is over), the frequency will be calculated and updated.
- * input index: the index representing the neuron that this frequency is being calculated for
- * input firstTime, secondTime, maxHeightCount: pointers to values useful in calculating the frequency/period of a neuron. When this function is called, it is called for the entire array of firstTime, secondTime, and maxHeightCount (that is, firstTime, secondTime, and maxHeightCount are arrays for which each index represents the value for a specific neuron. for example, maxHeightCount[0] is the number of spikes over a given time frame counted for the odontophore (index 0) neuron) 
- */
-
-void translateIZmodeltofrequency(double time, double & odontophorefreq, double & i1i3freq , double & hingefreq, double & i2freq, double runDuration, double averageTime, int index, double & firstTime, double & secondTime, int & maxHeightCount){
-    double iterativeTime = determineAverageIterations(runDuration, averageTime, time);
-    double thisAverageTime = determineAverageIterationsV2(runDuration, averageTime, time);
-    if(time > iterativeTime){
-        double freq = evaluateFrequency(thisAverageTime, getMembranePotential(index), time, index, firstTime, secondTime, maxHeightCount);
-        if (freq != -1){
-            if(index == 0){
-                odontophorefreq = freq;
-            }
-            else if(index == 1){
-                i1i3freq = freq;
-            }
-            else if(index == 2){
-                hingefreq = freq;
-            }
-            else if (index == 3){
-                i2freq = freq;
-            }
+        else if (index == 3){
+            i2freq = frequency;
         }
     }
 }
@@ -3065,6 +3004,9 @@ void updateinputsIzRejectionA(double time, double & freqI2, double & freqHinge, 
 
 //TATE notes
 /*
+- You can just sum the motor neuron frequencies in a pool for now.
+ 
+ What the model currently is:
  -The Model has 4 neurons representing four motor pools, I2 I1I3 Hinge and Odontophore/N3
  -The Model can take arguments to run similar feeding behvaiors to the ones Greg originally provided but now with model neurons
 */
