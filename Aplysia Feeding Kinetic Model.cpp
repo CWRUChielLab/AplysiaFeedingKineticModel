@@ -167,7 +167,7 @@ int numberColumns = 0;
 
 /* Izhikevich Model Variables and Parameters*/
 //Parameters -- currently set at compile time
-const double ia[4] = {.003,.02,.033,.02}; //Parameters a-d
+const double ia[4] = {.034,.021,.021,.021}; //Parameters a-d
 const double ib[4] = {0.12,0.12,0.12,0.12};
 const double ic[4] = {-65,-65,-65,-65};
 const double id[4] = {8,8,8,8};
@@ -2617,28 +2617,22 @@ double evaluatefrequency(double time, double v, bool & firstSpike, bool & second
                 firstSpike = true; //record that a first spike has occurred
                 firstTime = time; // and record the time at which this spike happened
             }
-            else{//and if second spike boolean value is true (weird case, if a second spike is recorded and a first is not... this is an error case)
-                //not sure yet
-            }
         }
         else{//If the first spike boolean value is true (a first spike has occured within at most the past .5 seconds)
             if(!secondSpike){//and the a second spike has not occured
                 secondSpike = true; //record that a second spike has occurred
                 secondTime = time;
             }
-            else{//and a second spike has occurred
-                //not sure yet
-            }
         }
     }
     //Part 2: Return Frequency
     if(!firstSpike){//if the First Spike hasnt happenend/ is false
         if (!secondSpike){ //and Second Spike hasnt happened /is false
-            freq = 0;//TATE
+            freq = 0;
             return 0; //There is no period yet, there is no frequency yet
         }
         else{ //and the Second Spike has happened
-            freq = -1; //TATE
+            freq = -1;
             return -1; //There is something wrong with the code. A second spike was recorded before a first one was
         }
     }
@@ -2647,7 +2641,7 @@ double evaluatefrequency(double time, double v, bool & firstSpike, bool & second
             if (time > (firstTime + .5)){ //if .5 seconds have passed since the last spike
                 firstSpike = false; //remove information about this single spike
                 firstTime = 0;
-                freq = 0; //TATE
+                freq = 0;
                 return 0; //There is no period. This case will be changed since there still was a spike, but no frequency can be determined.
             }
             else{ //if .5 seconds have not passed since the last spike
@@ -2659,7 +2653,7 @@ double evaluatefrequency(double time, double v, bool & firstSpike, bool & second
             secondSpike = false;
             firstSpike = true;
             firstTime = secondTime; // the time of the second spike will shift
-            secondTime = 0; //Dont know if this works, secondTime info is erased and can be rewritten over
+            secondTime = 0; //secondTime info is erased and can be rewritten over
             freq = 2/period;
             return freq; //2 spikes divided by the time between the two spikes. This is the frequency in Hz
         }
