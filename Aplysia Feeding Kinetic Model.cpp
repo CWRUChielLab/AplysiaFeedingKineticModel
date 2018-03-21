@@ -167,15 +167,25 @@ int numberColumns = 0;
 
 /* Izhikevich Model Variables and Parameters*/
 //Parameters -- currently set at compile time
-const double ia[4] = {.034,.021,.021,.021}; //Parameters a-d
+
+const int NUMBEROFNEURONS = 10;
+const double LAGTIME = .5;
+/*const double ia[4] = {.027,.021,.021,.021}; //Parameters a-d
 const double ib[4] = {0.12,0.12,0.12,0.12};
 const double ic[4] = {-65,-65,-65,-65};
 const double id[4] = {8,8,8,8};
-double ii[4] = {0,0,0,0}; // Applied current
+double ii[4] = {0,0,0,0}; // Applied current*/
+
+// [0]- B31/32, [1] - B61/62, [2] - B8a,b, [3] - B3, [4] - B6, [5] - B9, [6] - B38, [7] - B10, [8] - B43, [9] - B7
+const double ia[NUMBEROFNEURONS] = {.021,.009,.015,.01,.008,.008,.0072,.005,.023,.009}; //Parameters a-d
+const double ib[NUMBEROFNEURONS] = {0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12};
+const double ic[NUMBEROFNEURONS] = {-65,-65,-65,-65,-65,-65,-65,-65,-65,-65};
+const double id[NUMBEROFNEURONS] = {8,8,8,8,8,8,8,8,8,8};
+double ii[NUMBEROFNEURONS] = {0,0,0,0,0,0,0,0,0,0}; // Applied current
 
 //Variables
-double membranePotential[4]; // [0]- odontophore, [1]- I1/I3, [2]- Hinge, [3] - I2, [4], [5], [6], [7], [8], [9]
-double membraneRecovery[4];
+double membranePotential[NUMBEROFNEURONS];
+double membraneRecovery[NUMBEROFNEURONS];
 
 
 /* My function prototypes */
@@ -307,9 +317,7 @@ double evaluatefrequency(double time, double v, bool & firstSpike, bool & second
 
 void saveFrequency(double time, double & odontophorefreq, double & i1i3freq , double & hingefreq, double & i2freq, int index, double & firstTime, double & secondTime, bool & firstSpike, bool & secondSpike, double & freq);
 
-void initializeDoubleArray(double array[], double value);
-
-void initializeIntArray(int array[], int value);
+void motorPools(double freq[], double & odontophorefreq, double & i1i3freq , double & hingefreq, double & i2freq);
 
 void updateinputsIzBite(double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2, double odontophorefreq, double i1i3freq, double hingefreq, double i2freq);
 
@@ -439,13 +447,10 @@ int main(int argc, char* argv[])
     oldybottom = ybottom;
         
     //Initialize arrays
-        for(int i = 0; i <= 3; i++){ //0 to 3 = 4 channels
-            initializeDoubleArray(membranePotential, -70);
-            initializeDoubleArray(membraneRecovery, ib[i] * -70);//fix tate
-            //initializeIntArray(maxHeightCount, 0);
+        for(int i = 0; i < NUMBEROFNEURONS; i++){
+            membranePotential[i] = -70;
+            membraneRecovery[i] = ib[i] * -70;
         }
-        //membranePotential[0] = -70;
-        //membraneRecovery[0] = -14;
     
     //activation variables, from Yu et al 1999
     aprimeI2 = 0;
@@ -616,16 +621,18 @@ while(frequencyiterationtime < endfrequencytime)  //loop added to do cyclic freq
         double hingefreq = 0;
         double i2freq = 0;
         //Averaging firing rates variables
-        int maxHeightCount[4];
-        double firstTime[4];
-        double secondTime[4];
-        bool firstSpike[4];
-        bool secondSpike[4];
-        double freq[4];
-        freq[0] = 0;
-        freq[1] = 0;
-        freq[2] = 0;
-        freq[3] = 0;
+        double firstTime[NUMBEROFNEURONS];
+        double secondTime[NUMBEROFNEURONS];
+        bool firstSpike[NUMBEROFNEURONS];
+        bool secondSpike[NUMBEROFNEURONS];
+        double freq[NUMBEROFNEURONS];
+        for(int i = 0; i < NUMBEROFNEURONS; i++){
+            firstSpike[i] = false;
+            secondSpike[i] = false;
+            firstTime[i] = 0;
+            secondTime[i] = 0;
+            freq[i] = 0;
+        }
         
     //component of the visco-elastic hinge force, F1 from Sutton et al 2002
     F1 = 0;
@@ -649,9 +656,11 @@ while(frequencyiterationtime < endfrequencytime)  //loop added to do cyclic freq
         //Update Neural variables and seaweed force based on the current time
         updateinputs(time, freqI2, freqHinge, freqI1I3, freqN3, seaweedforce, a, frequencyiterationtime,  frequencyiterationtime2, odontophorefreq,  i1i3freq, hingefreq, i2freq, first_argument);
 
-        for(int i = 0; i <= 3; i++){
+        for(int i = 0; i < NUMBEROFNEURONS; i++){
             saveFrequency(time, odontophorefreq, i1i3freq , hingefreq, i2freq, i, firstTime[i], secondTime[i], firstSpike[i], secondSpike[i],freq[i]);
         }
+            
+        motorPools(freq, odontophorefreq, i1i3freq , hingefreq, i2freq);
         //BLARF looking at first protraction first
         //freqI1I3 = 0;
         //freqN3 = 0;
@@ -692,16 +701,15 @@ while(frequencyiterationtime < endfrequencytime)  //loop added to do cyclic freq
             
             if(iztimer > izouttimer){
                 //Izhikevich Model Output
-                fprintf(izout , "%f	%f	%f	%f	%f	%f	%f	%f	\n", time, membranePotential[0], membraneRecovery[0], odontophorefreq, i1i3freq, hingefreq, i2freq, ii[0]);
+                fprintf(izout , "%f	%f	%f	%f	%f	%f	%f	%f	\n", time, membranePotential[3], membraneRecovery[3], odontophorefreq, i1i3freq, hingefreq, i2freq, ii[3]);
                 iztimer = 0.0;
             }
             
         //Izhikevich Model Update -- seconds
-            izhikevichModel(membranePotential[0], membraneRecovery[0], 0);
-            izhikevichModel(membranePotential[1], membraneRecovery[1], 1);
-            izhikevichModel(membranePotential[2], membraneRecovery[2], 2);
-            izhikevichModel(membranePotential[3], membraneRecovery[3], 3);
-            
+            for(int i = 0; i < NUMBEROFNEURONS; i++){
+                izhikevichModel(membranePotential[i], membraneRecovery[i], i);
+            }
+
         eggtimer += StepSize;
         time += StepSize; //time advances one time step, run will stop when time becomes larger than the RunDuration
         printtimer += StepSize;
@@ -2618,7 +2626,7 @@ double evaluatefrequency(double time, double v, bool & firstSpike, bool & second
                 firstTime = time; // and record the time at which this spike happened
             }
         }
-        else{//If the first spike boolean value is true (a first spike has occured within at most the past .5 seconds)
+        else{//If the first spike boolean value is true (a first spike has occured within at most the past LAGTIME seconds)
             if(!secondSpike){//and the a second spike has not occured
                 secondSpike = true; //record that a second spike has occurred
                 secondTime = time;
@@ -2638,7 +2646,7 @@ double evaluatefrequency(double time, double v, bool & firstSpike, bool & second
     }
     else{ //if the first spike has happened
         if(!secondSpike){ //and the second spike hasnt
-            if (time > (firstTime + .5)){ //if .5 seconds have passed since the last spike
+            if (time > (firstTime + LAGTIME)){ //if LAGTIME seconds have passed since the last spike
                 firstSpike = false; //remove information about this single spike
                 firstTime = 0;
                 freq = 0;
@@ -2667,74 +2675,69 @@ double evaluatefrequency(double time, double v, bool & firstSpike, bool & second
 void saveFrequency(double time, double & odontophorefreq, double & i1i3freq , double & hingefreq, double & i2freq, int index, double & firstTime, double & secondTime, bool & firstSpike, bool & secondSpike, double & freq){
     double frequency = evaluatefrequency(time, getMembranePotential(index), firstSpike, secondSpike, firstTime, secondTime, freq);
     if (frequency != -1){
-        if(index == 0){
-            odontophorefreq = frequency;
-        }
-        else if(index == 1){
-            i1i3freq = frequency;
-        }
-        else if(index == 2){
-            hingefreq = frequency;
-        }
-        else if (index == 3){
-            i2freq = frequency;
-        }
+        freq = frequency;
     }
 }
 
-//This might not acutally work...?
-void initializeDoubleArray(double array[], double value){
-    for(int i = 0; i < sizeof(array)-1; i++){
-        array[i] = value;
-    }
-}
-
-void initializeIntArray(int array[], int value){
-    for(int i = 0; i < sizeof(array)-1; i++){
-        array[i] = value;
-    }
+void motorPools(double freq[], double & odontophorefreq, double & i1i3freq , double & hingefreq, double & i2freq){
+    odontophorefreq = freq[2];
+    i1i3freq = freq[3] + freq[4] + freq[5] + freq[6] + freq[7] + freq[8];
+    hingefreq = freq[9];
+    i2freq = freq[0] + freq [1];
 }
 
 void updateinputsIzBite(double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2, double odontophorefreq, double i1i3freq, double hingefreq, double i2freq){
  
     if (time > 0.0)
     {
-        ii[3] = 10; //3
+        ii[0] = 10;
+        ii[1] = 10; //I2
     }
  
     if (time > 3.41)
     {
-        ii[3] = 0; //3
+        ii[0] = 0;
+        ii[1] = 0; //I2
     }
  
     if (time > 2.36)
     {
-        ii[2] = 10; //2
+        ii[9] = 10; //Hinge
     }
  
     if (time> 6.80)
     {
-        ii[2] = 0; //2
+        ii[9] = 0; //Hinge
     }
  
     if (time> 2.21)
     {
-        ii[1] = 10; //1
+        ii[3] = 10; //I1/I3
+        ii[4] = 10;
+        ii[5] = 10;
+        ii[6] = 10;
+        ii[7] = 10;
+        ii[8] = 10;
     }
  
     if (time > 6.56)
     {
-        ii[1] = 0; //1
+        ii[3] = 0; //I1/I3
+        ii[4] = 0;
+        ii[5] = 0;
+        ii[6] = 0;
+        ii[7] = 0;
+        ii[8] = 0;
     }
  
     if (time > 2.15)
     {
-        ii[0] = 10; //0
+        ii[2] = 10; //Odontophore
     }
  
     if (time > 4.85)
     {
-        ii[0] = 0; //0
+        ii[2] = 0; //Odontophore
     }
  
     // Heres where it gets confusing: freqi2 is related to gregs model (the neural channels), i2freq is related to the izhikevich model (frequency of a model neuron firing)
@@ -2746,41 +2749,53 @@ void updateinputsIzBite(double time, double & freqI2, double & freqHinge, double
 
 void updateinputsIzSwallowPerturbed(double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2, double odontophorefreq, double i1i3freq, double hingefreq, double i2freq){
     
-    ii[3] = 10;
+        ii[0] = 10;
+        ii[1] = 10;  //I2
     
     if (time > 2.05)
     {
-        ii[3] = 0;
+        ii[0] = 0;
+        ii[1] = 0; //I2
     }
     
     if (time > 2.48)
     {
-        ii[2] = 10;
+        ii[9] = 10; //Hinge
     }
     
     if (time> 6.62)
     {
-        ii[2] = 0;
+        ii[9] = 0; //Hinge
     }
     
     if (time > 3.5)  //time>2.55
     {
-        ii[1] = 10;
+        ii[3] = 10; // I1/I3
+        ii[4] = 10;
+        ii[5] = 10;
+        ii[6] = 10;
+        ii[7] = 10;
+        ii[8] = 10;
     }
     
     if (time > 6.62)
     {
-        ii[1] = 0;
+        ii[3] = 0; // I1/I3
+        ii[4] = 0;
+        ii[5] = 0;
+        ii[6] = 0;
+        ii[7] = 0;
+        ii[8] = 0;
     }
     
     if (time > 1.4) //(time > 1.4)
     {
-        ii[0] = 10;
+        ii[2] = 10; //Odontophore
     }
     
     if (time > 3.0) //(time > 4.25)
     {
-        ii[0] = 0;
+        ii[2] = 0; //Odontophore
     }
     
     if (time > 1.5)
@@ -2810,42 +2825,54 @@ void updateinputsIzSwallowA(double time, double & freqI2, double & freqHinge, do
     // Beginning of proposed swallow A
     if (time > 0.0)
     {
-        ii[3] = 10;
+        ii[0] = 10;
+        ii[1] = 10; //I2
     }
     
     if (time > 1.51)
     {
-        ii[3] = 0;
+        ii[0] = 0;
+        ii[1] = 0; //I2
     }
     
     if (time > 1.8)
     {
-        ii[2] = 10;
+        ii[9] = 10; //Hinge
     }
     
     if (time> 5.8)
     {
-        ii[2] = 00;
+        ii[9] = 00; //Hinge
     }
     
     if (time> 1.95)
     {
-        ii[1] = 10;
+        ii[3] = 10; //I1/I3
+        ii[4] = 10;
+        ii[5] = 10;
+        ii[6] = 10;
+        ii[7] = 10;
+        ii[8] = 10;
     }
     
     if (time > 6.3)
     {
-        ii[1] = 0;
+        ii[3] = 0; //I1/I3
+        ii[4] = 0;
+        ii[5] = 0;
+        ii[6] = 0;
+        ii[7] = 0;
+        ii[8] = 0;
     }
     
     if (time > 1.0)
     {
-        ii[0] = 10;
+        ii[2] = 10; //Odontophore
     }
     
     if (time > 3.9)
     {
-        ii[0] = 0;
+        ii[2] = 0; //Odontophore
     }
     // Heres where it gets confusing: freqi2 is related to gregs model (the neural channels), i2freq is related to the izhikevich model (frequency of a model neuron firing)
     freqI2 = i2freq;
@@ -2860,42 +2887,54 @@ void updateinputsIzSwallowB(double time, double & freqI2, double & freqHinge, do
     //Proposed swallow B code
     if (time > 0.0)
     {
-        ii[3] = 10;
+        ii[0] = 10;
+        ii[1] = 10; //I2
     }
     
     if (time > 2.05)
     {
-        ii[3] = 0;
+        ii[0] = 0;
+        ii[1] = 0; //I2
     }
     
     if (time > 2.48)
     {
-        ii[2] = 10;
+        ii[9] = 10; //Hinge
     }
     
     if (time> 6.62)
     {
-        ii[2] = 0;
+        ii[9] = 0; //Hinge
     }
     
     if (time> 2.33)
     {
-        ii[1] = 10;
+        ii[3] = 10; //I1/I3
+        ii[4] = 10;
+        ii[5] = 10;
+        ii[6] = 10;
+        ii[7] = 10;
+        ii[8] = 10;
     }
     
     if (time > 6.62)
     {
-        ii[1] = 0;
+        ii[3] = 0; //I1/I3
+        ii[4] = 0;
+        ii[5] = 0;
+        ii[6] = 0;
+        ii[7] = 0;
+        ii[8] = 0;
     }
     
     if (time > frequencyiterationtime) //(time > 1.4)
     {
-        ii[0] = 10;
+        ii[2] = 10; //Odontophore
     }
     
     if (time > frequencyiterationtime + 2.85) //(time > 4.25)
     {
-        ii[0] = 0;
+        ii[2] = 0; //Odontophore
     }
 
     freqI2 = i2freq;
@@ -2908,42 +2947,54 @@ void updateinputsIzRejectionB(double time, double & freqI2, double & freqHinge, 
 {
     if (time > 0.38)
     {
-        ii[3] = 10;
+        ii[0] = 10;
+        ii[1] = 10;//I2
     }
     
     if (time > 2.75)
     {
-        ii[3] = 0;
+        ii[0] = 0;
+        ii[1] = 0;//I2
     }
     
     if (time > 1.01)
     {
-        ii[2] = 10;  //BLARF was 20
+        ii[9] = 10;//Hinge
     }
     
     if (time> 7.56)
     {
-        ii[2] = 0;
+        ii[9] = 0;//Hinge
     }
     
     if (time> 3.56)
     {
-        ii[1] = 10;   //BLARF was 35
+        ii[3] = 10; //I1/I3
+        ii[4] = 10;
+        ii[5] = 10;
+        ii[6] = 10;
+        ii[7] = 10;
+        ii[8] = 10;
     }
     
     if (time > 7.69)
     {
-        ii[1] = 0;
+        ii[3] = 0; //I1/I3
+        ii[4] = 0;
+        ii[5] = 0;
+        ii[6] = 0;
+        ii[7] = 0;
+        ii[8] = 0;
     }
     
     if (time > .8)
     {
-        ii[0] = 10;  //BLARF was 20
+        ii[2] = 10; //Odontophore
     }
     
     if (time > 2.5)
     {
-        ii[0] = 0;
+        ii[2] = 0; //Odontophore
     }
     freqI2 = i2freq;
     freqHinge = hingefreq;
@@ -2955,40 +3006,52 @@ void updateinputsIzRejectionA(double time, double & freqI2, double & freqHinge, 
 {
     if (time >.6)
     {
-        ii[0] = 10;
+        ii[2] = 10; //Odontophore
     }
     
     if (time > 1.7)
     {
-        ii[0] = 0;
+        ii[2] = 0; //Odontophore
     }
     
     if (time > .26)
     {
-        ii[3] = 10;
+        ii[0] = 10;
+        ii[1] = 10; //I2
     }
     
     if (time > 1.9)
     {
-        ii[3] = 0;
+        ii[0] = 0;
+        ii[1] = 10; //I2
     }
     
     if (time>2.5)
     {
-        ii[1] =  10;
+        ii[3] = 10; //I1/I3
+        ii[4] = 10;
+        ii[5] = 10;
+        ii[6] = 10;
+        ii[7] = 10;
+        ii[8] = 10;
     }
     if (time>6.6)
     {
-        ii[1] = 0;
+        ii[3] = 0; //I1/I3
+        ii[4] = 0;
+        ii[5] = 0;
+        ii[6] = 0;
+        ii[7] = 0;
+        ii[8] = 0;
     }
     
     if (time>1.2)
     {
-        ii[2] = 10;
+        ii[9] = 10; //Hinge
     }
     if (time> 6.0)
     {
-        ii[2] = 0;
+        ii[9] = 0; //Hinge
     }
     freqI2 = i2freq;
     freqHinge = hingefreq;
@@ -2998,9 +3061,7 @@ void updateinputsIzRejectionA(double time, double & freqI2, double & freqHinge, 
 
 //TATE notes
 /*
-- You can just sum the motor neuron frequencies in a pool for now.
- 
  What the model currently is:
- -The Model has 4 neurons representing four motor pools, I2 I1I3 Hinge and Odontophore/N3
+ -The Model has 10 neurons, fill four motor pools
  -The Model can take arguments to run similar feeding behvaiors to the ones Greg originally provided but now with model neurons
 */
