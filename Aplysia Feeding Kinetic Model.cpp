@@ -2662,8 +2662,8 @@ double evaluatefrequency(double time, double v, bool & firstSpike, bool & second
             firstSpike = true;
             firstTime = secondTime; // the time of the second spike will shift
             secondTime = 0; //secondTime info is erased and can be rewritten over
-            freq = 2/period;
-            return freq; //2 spikes divided by the time between the two spikes. This is the frequency in Hz
+            freq = 1/period;
+            return freq; //1 spike divided by the time between the two spikes. This is the frequency in Hz
         }
     }
 }
