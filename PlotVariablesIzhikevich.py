@@ -1,6 +1,8 @@
 import os
 import csv
 import matplotlib
+import sys
+sys.stdout.write('Starting... \r')
 matplotlib.use('Agg') # force matplotlib to not use XWindows backend
 import matplotlib.pyplot as plt
 import numpy as np
@@ -18,12 +20,15 @@ for line in tabDelimitedFile:
     listInput.append(listLine)
 
 tabDelimitedFile.close()
+sys.stdout.write('File Read \r')
 newFile = open(splitFileToList[0] + "-csvTranslated.csv", "w")
 for line in listInput:
     writeLineForNewFile = ",".join(line)
     newFile.write(writeLineForNewFile + "\n")
 
 newFile.close()
+sys.stdout.write('New File Written \r')
+
 #The following code reads the Izhikevich-csvTranslated.csv and saves the time in an array list "time"
 time = []
 i = 0
@@ -33,7 +38,7 @@ with open("Izhikevich-csvTranslated.csv", "r") as file:
         for column in row:
             time.insert(i,column[0])
             i+=1
-
+sys.stdout.write('Time Written \r')
 #The following line prints the time array to confirm that it contains the correct values
 #print(time)
 
@@ -46,7 +51,7 @@ with open("Izhikevich-csvTranslated.csv", "r") as file:
         for column in row:
             membranePotential.insert(i,column[1])
             i+=1
-
+sys.stdout.write('Membrane Potential Written \r')
 #The following line prints the time array to confirm that it contains the correct values
 #print(membranePotential)
 
@@ -59,7 +64,7 @@ with open("Izhikevich-csvTranslated.csv", "r") as file:
         for column in row:
             membraneRecovery.insert(i,column[2])
             i+=1
-
+sys.stdout.write('Membrane Recovery Written \r')
 #The following code plots the entire figure
 figure = plt.figure(figsize = (18,18))
 timeticks = np.arange(0,8.5,1)

@@ -21,6 +21,7 @@ FILE *izout;
 FILE *valout;
 FILE *neuralinputs;
 FILE *animation;
+FILE *rasterplot;
 
 /* including some files of my own in the rebulid */
 #include <string.h>
@@ -169,15 +170,10 @@ int numberColumns = 0;
 //Parameters -- currently set at compile time
 
 const int NUMBEROFNEURONS = 10;
-const double LAGTIME = .5;
-/*const double ia[4] = {.027,.021,.021,.021}; //Parameters a-d
-const double ib[4] = {0.12,0.12,0.12,0.12};
-const double ic[4] = {-65,-65,-65,-65};
-const double id[4] = {8,8,8,8};
-double ii[4] = {0,0,0,0}; // Applied current*/
+const double LAGTIME = .4;
 
 // [0]- B31/32, [1] - B61/62, [2] - B8a,b, [3] - B3, [4] - B6, [5] - B9, [6] - B38, [7] - B10, [8] - B43, [9] - B7
-const double ia[NUMBEROFNEURONS] = {.021,.009,.015,.01,.008,.008,.0072,.005,.023,.009}; //Parameters a-d
+const double ia[NUMBEROFNEURONS] = {.021*2,.009*2,.015*2,.01*2,.008*2,.008*2,.0072*2,.005*2,.023*2,.009*2}; //Parameters a-d
 const double ib[NUMBEROFNEURONS] = {0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12};
 const double ic[NUMBEROFNEURONS] = {-65,-65,-65,-65,-65,-65,-65,-65,-65,-65};
 const double id[NUMBEROFNEURONS] = {8,8,8,8,8,8,8,8,8,8};
@@ -331,6 +327,10 @@ void updateinputsIzRejectionB(double time, double & freqI2, double & freqHinge, 
 
 void updateinputsIzRejectionA(double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2, double odontophorefreq, double i1i3freq, double hingefreq, double i2freq);
 
+int rasterPlot(int index);
+// [0]- B31/32, [1] - B61/62, [2] - B8a,b, [3] - B3, [4] - B6, [5] - B9, [6] - B38, [7] - B10, [8] - B43, [9] - B7
+bool updateRasterPlot(int & b31, int & b61, int & b8, int & b3, int & b6, int & b9, int & b38, int & b10, int & b43, int & b7);
+
 int main(int argc, char* argv[])
 {  
     
@@ -353,6 +353,7 @@ int main(int argc, char* argv[])
     const char* filenamei = "Izhikevich.txt";
 	const char* filename2 = "NeuralInputs.txt";
     const char* filenamea = "animationinfo.txt";
+    const char* filenamer = "rasterplotinfo.txt";
 
     //variables used to calculate the muscle forces and odontophore position - explained when initialized
     double x, y, xdot, ydot, adot, xacc;
@@ -408,7 +409,22 @@ int main(int argc, char* argv[])
     valout = fopen(filename, "w"); //opens a text file, valout.txt
     izout = fopen(filenamei, "w");
     animation = fopen(filenamea, "w");
+    rasterplot = fopen(filenamer, "w");
     double seaweedforce = 0;  //This is added seaweed force on the odontophore
+        
+    //rasterplot information
+    // [0]- B31/32, [1] - B61/62, [2] - B8a,b, [3] - B3, [4] - B6, [5] - B9, [6] - B38, [7] - B10, [8] - B43, [9] - B7
+    int peakB3132 = 0;
+    int peakB6162 = 0;
+    int peakB8ab = 0;
+    int peakB3 = 0 ;
+    int peakB6 = 0;
+    int peakB9 = 0;
+    int peakB38 = 0;
+    int peakB10 = 0;
+    int peakB43 = 0;
+    int peakB7 = 0;
+    bool peak = false;
         
 
 
@@ -488,12 +504,14 @@ int main(int argc, char* argv[])
     Hingeinputcounter = 0;
 		
 		//neuralinputs = fopen(filename2, "r"); //sets up the text file for reading the input.
-
+    //Print titles for SlugOutput2
     fprintf(valout, "time	position	radius	angle	hingeF	fitness	freqI2	freqI1I3	freqN3	freqHinge	actI2	actI1I3	acthinge	fitness	seaweedforce\n");
-    //Izhikevich
-        fprintf(izout, "time	MembranePotentialo	MembraneRecoveryo	ofreq    i1i3freq    hfreq    i2freq    current\n");
-        
-        fprintf(animation, "time	position	radius	angle	xctop	xcbottom	ytop	ybottom	i1i3radius	i2length	topangle	bottomangle	furthestbackx	furthestbacky	i1i3contacttopy	i1i3contactbottomy	ocontacttopx	ocontacttopy	ocontactbottomx	ocontactbottomy	bigxval	i1i3contactx	freqI2	freqI1I3	freqN3	freqHinge\n");
+    //Titles for Izhikevich output
+    fprintf(izout, "time	MembranePotentialo	MembraneRecoveryo	ofreq    i1i3freq    hfreq    i2freq    current\n");
+    //Titles for animation info
+    fprintf(animation, "time	position	radius	angle	xctop	xcbottom	ytop	ybottom	i1i3radius	i2length	topangle	bottomangle	furthestbackx	furthestbacky	i1i3contacttopy	i1i3contactbottomy	ocontacttopx	ocontacttopy	ocontactbottomx	ocontactbottomy	bigxval	i1i3contactx	freqI2	freqI1I3	freqN3	freqHinge\n");
+    //Titles for rasterplot info // [0]- B31/32, [1] - B61/62, [2] - B8a,b, [3] - B3, [4] - B6, [5] - B9, [6] - B38, [7] - B10, [8] - B43, [9] - B7
+    fprintf(rasterplot, "time	B31/32	B61/62	B8ab	B3	B6	B9	B38	B10	B43	B7\n");
     /* Reading the file for neural input */
     i = 0;
     j = 1;
@@ -560,20 +578,20 @@ BLARF COMMENT REMOVING READING INPUT END */
 			
 			//********ENDING INITIALIZATION********
 
-/* Running the model here */
+        /* Running the model here */
     printf("Dreaming the impossible dream \n" );
-/*printf("%f	%f \n", neuralvariables[1][I2inputcounter], neuralvariables[2][I2inputcounter]);
-printf("%f	%f \n", neuralvariables[1][1], neuralvariables[2][1]);
+        /*printf("%f	%f \n", neuralvariables[1][I2inputcounter], neuralvariables[2][I2inputcounter]);
+         printf("%f	%f \n", neuralvariables[1][1], neuralvariables[2][1]);
 
-printf("%f	%f \n", neuralvariables[1][3], neuralvariables[2][3]);*/
+         printf("%f	%f \n", neuralvariables[1][3], neuralvariables[2][3]);*/
 
-/* WHILE LOOP REMOVED  while(frequencyiterationtime2 < endfrequencytime2) //a second loop to scan two dimensions
-{
+        /* WHILE LOOP REMOVED  while(frequencyiterationtime2 < endfrequencytime2) //a second loop to scan two dimensions
+         {
 	
-while(frequencyiterationtime < endfrequencytime)  //loop added to do cyclic frequency checks
-{   */
+    while(frequencyiterationtime < endfrequencytime)  //loop added to do cyclic frequency checks
+    {   */
 
-//redo of initialization for the run
+        //redo of initialization for the run
 		
     //variables for the physics - see geometry diagram in Valerie Snyder's notebook 4/24/02
     //Guidebook pg. 1 diagram
@@ -615,24 +633,24 @@ while(frequencyiterationtime < endfrequencytime)  //loop added to do cyclic freq
     freqN3 = 0;  //controls the length of the odontophore's major axis
     freqHinge = 0;
 		
-        //initialize freq for iz //TATE becareful not to mix up with freqi1i3 etc
-        double i1i3freq = 0;
-        double odontophorefreq = 0;
-        double hingefreq = 0;
-        double i2freq = 0;
-        //Averaging firing rates variables
-        double firstTime[NUMBEROFNEURONS];
-        double secondTime[NUMBEROFNEURONS];
-        bool firstSpike[NUMBEROFNEURONS];
-        bool secondSpike[NUMBEROFNEURONS];
-        double freq[NUMBEROFNEURONS];
-        for(int i = 0; i < NUMBEROFNEURONS; i++){
-            firstSpike[i] = false;
-            secondSpike[i] = false;
-            firstTime[i] = 0;
-            secondTime[i] = 0;
-            freq[i] = 0;
-        }
+    //initialize freq for iz //TATE becareful not to mix up with freqi1i3 etc
+    double i1i3freq = 0;
+    double odontophorefreq = 0;
+    double hingefreq = 0;
+    double i2freq = 0;
+    //Averaging firing rates variables
+    double firstTime[NUMBEROFNEURONS];
+    double secondTime[NUMBEROFNEURONS];
+    bool firstSpike[NUMBEROFNEURONS];
+    bool secondSpike[NUMBEROFNEURONS];
+    double freq[NUMBEROFNEURONS];
+    for(int i = 0; i < NUMBEROFNEURONS; i++){
+        firstSpike[i] = false;
+        secondSpike[i] = false;
+        firstTime[i] = 0;
+        secondTime[i] = 0;
+        freq[i] = 0;
+    }
         
     //component of the visco-elastic hinge force, F1 from Sutton et al 2002
     F1 = 0;
@@ -689,31 +707,42 @@ while(frequencyiterationtime < endfrequencytime)  //loop added to do cyclic freq
 				
         //take forces and the frequency of N3 and determine odontophore position
         updateposition(&x, &ytop, &ybottom, &a, &xdot, &ydot, &adot, force1, force2, actN3, &xctop, &xcbottom, &dummyvariable, &odontophoreangle, hingeF);
-					
+            //resetting the visco-elastic force to zero to prevent accumulation of visco-elastic forces over large amounts of time
+            //from overwelming the elastic hinge force
+            
         
-        //resetting the visco-elastic force to zero to prevent accumulation of visco-elastic forces over large amounts of time
-        //from overwelming the elastic hinge force
+        peak = updateRasterPlot(peakB3132, peakB6162, peakB8ab, peakB3, peakB6, peakB9, peakB38, peakB10, peakB43, peakB7);
+        
+
+            
         if ((xdot/oldxdot) < 0)
         {
             F1 = 0;
         }
             
             
-            if(iztimer > izouttimer){
+        if(iztimer > izouttimer){
                 //Izhikevich Model Output
-                fprintf(izout , "%f	%f	%f	%f	%f	%f	%f	%f	\n", time, membranePotential[3], membraneRecovery[3], odontophorefreq, i1i3freq, hingefreq, i2freq, ii[3]);
-                iztimer = 0.0;
-            }
+            fprintf(izout , "%f	%f	%f	%f	%f	%f	%f	%f	\n", time, membranePotential[3], membraneRecovery[3], odontophorefreq, i1i3freq, hingefreq, i2freq, ii[3]);
+            iztimer = 0.0;
+        }
+            
+        if(peak){
+            fprintf(rasterplot, "%f	%d	%d	%d	%d	%d	%d	%d	%d	%d	%d	\n", time, peakB3132, peakB6162, peakB8ab, peakB3, peakB6, peakB9, peakB38, peakB10, peakB43, peakB7);
+        }
+            
+        peak = false;
+            
             
         //Izhikevich Model Update -- seconds
-            for(int i = 0; i < NUMBEROFNEURONS; i++){
-                izhikevichModel(membranePotential[i], membraneRecovery[i], i);
-            }
+        for(int i = 0; i < NUMBEROFNEURONS; i++){
+            izhikevichModel(membranePotential[i], membraneRecovery[i], i);
+        }
 
         eggtimer += StepSize;
         time += StepSize; //time advances one time step, run will stop when time becomes larger than the RunDuration
         printtimer += StepSize;
-            iztimer += StepSize;
+        iztimer += StepSize;
 
             
 
@@ -2680,10 +2709,10 @@ void saveFrequency(double time, double & odontophorefreq, double & i1i3freq , do
 }
 
 void motorPools(double freq[], double & odontophorefreq, double & i1i3freq , double & hingefreq, double & i2freq){
-    odontophorefreq = freq[2];
-    i1i3freq = freq[3] + freq[4] + freq[5] + freq[6] + freq[7] + freq[8];
-    hingefreq = freq[9];
-    i2freq = freq[0] + freq [1];
+    odontophorefreq = freq[2] * 2;
+    i1i3freq = (freq[3] + freq[4] + freq[5] + freq[6] + freq[7] + freq[8]) / 3;
+    hingefreq = freq[9] * 2;
+    i2freq = (freq[0] + freq [1]) / 2 ;
 }
 
 void updateinputsIzBite(double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2, double odontophorefreq, double i1i3freq, double hingefreq, double i2freq){
@@ -2710,7 +2739,7 @@ void updateinputsIzBite(double time, double & freqI2, double & freqHinge, double
         ii[9] = 0; //Hinge
     }
  
-    if (time> 2.21)
+    if (time > 2.21)
     {
         ii[3] = 10; //I1/I3
         ii[4] = 10;
@@ -2763,7 +2792,7 @@ void updateinputsIzSwallowPerturbed(double time, double & freqI2, double & freqH
         ii[9] = 10; //Hinge
     }
     
-    if (time> 6.62)
+    if (time > 6.62)
     {
         ii[9] = 0; //Hinge
     }
@@ -2840,12 +2869,12 @@ void updateinputsIzSwallowA(double time, double & freqI2, double & freqHinge, do
         ii[9] = 10; //Hinge
     }
     
-    if (time> 5.8)
+    if (time > 5.8)
     {
         ii[9] = 00; //Hinge
     }
     
-    if (time> 1.95)
+    if (time > 1.95)
     {
         ii[3] = 10; //I1/I3
         ii[4] = 10;
@@ -2962,12 +2991,12 @@ void updateinputsIzRejectionB(double time, double & freqI2, double & freqHinge, 
         ii[9] = 10;//Hinge
     }
     
-    if (time> 7.56)
+    if (time > 7.56)
     {
         ii[9] = 0;//Hinge
     }
     
-    if (time> 3.56)
+    if (time > 3.56)
     {
         ii[3] = 10; //I1/I3
         ii[4] = 10;
@@ -3026,7 +3055,7 @@ void updateinputsIzRejectionA(double time, double & freqI2, double & freqHinge, 
         ii[1] = 10; //I2
     }
     
-    if (time>2.5)
+    if (time > 2.5)
     {
         ii[3] = 10; //I1/I3
         ii[4] = 10;
@@ -3035,7 +3064,7 @@ void updateinputsIzRejectionA(double time, double & freqI2, double & freqHinge, 
         ii[7] = 10;
         ii[8] = 10;
     }
-    if (time>6.6)
+    if (time > 6.6)
     {
         ii[3] = 0; //I1/I3
         ii[4] = 0;
@@ -3045,11 +3074,11 @@ void updateinputsIzRejectionA(double time, double & freqI2, double & freqHinge, 
         ii[8] = 0;
     }
     
-    if (time>1.2)
+    if (time > 1.2)
     {
         ii[9] = 10; //Hinge
     }
-    if (time> 6.0)
+    if (time > 6.0)
     {
         ii[9] = 0; //Hinge
     }
@@ -3058,6 +3087,34 @@ void updateinputsIzRejectionA(double time, double & freqI2, double & freqHinge, 
     freqI1I3 = i1i3freq;
     freqN3 = odontophorefreq;
 }
+
+int rasterPlot(int index){
+    if (getMembranePotential(index) >= 30){
+        return 1;
+    }
+    else
+        return 0;
+}
+
+bool updateRasterPlot(int & b31, int & b61, int & b8, int & b3, int & b6, int & b9, int & b38, int & b10, int & b43, int & b7){
+    b31 = rasterPlot(0);
+    b61 = rasterPlot(1);
+    b8 = rasterPlot(2);
+    b3 = rasterPlot(3);
+    b6 = rasterPlot(4);
+    b9 = rasterPlot(5);
+    b38 = rasterPlot(6);
+    b10 = rasterPlot(7);
+    b43 = rasterPlot(8);
+    b7 = rasterPlot(9);
+    if( b31 == 1 || b61 == 1 || b8 == 1 || b3 == 1 || b6 == 1 || b9 == 1 || b38 == 1 || b10 == 1 || b43 == 1 || b7 == 1 ){
+        return true;
+    }
+    else{
+        return false;
+    }
+}
+
 
 //TATE notes
 /*

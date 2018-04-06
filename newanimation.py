@@ -24,7 +24,7 @@ moviefile = "animation.mp4"
 width = 1600
 height = 800
 #frames per second
-fps = 25
+fps = 20
 #bitrate to reduce compression
 br = 2000
 #moviesize
@@ -487,18 +487,18 @@ i1i3graph.text(-0.5140,00, '0', color='black', fontsize=4)
 #i1i3graph.grid(True)
 
 #The following code subplots the Hinge input vs time graph
-hingeticks = np.arange(-5,15, 5)
+hingeticks = np.arange(-5,25, 5)
 hingegraph.plot(time[1:850],freqHingearray[1:850])
 #hingegraph.set_title('Hinge Input', fontsize = 4)
 #hingegraph.set_xlabel(time[0] + ' (seconds)', fontsize = 2)
 hingegraph.set_ylabel(freqHingearray[0] + ' (Hz)', fontsize = 2)
-hingegraph.axis([0, 9, -5, 15], fontsize = 2)
+hingegraph.axis([0, 9, -5, 25], fontsize = 2)
 hingegraph.set_xticks(timeticks)
 hingegraph.set_yticks(hingeticks)
 hingegraph.tick_params(labelsize=3)
 hingegraph.set_axis_off()
 hingegraph.text(9.0140,10, '- HINGE -', color='black', fontsize=4)
-hingegraph.text(-0.5140,10, '10', color='black', fontsize=4)
+hingegraph.text(-0.5140,20, '20', color='black', fontsize=4)
 hingegraph.text(-0.5140,00, '0', color='black', fontsize=4)
 #hingegraph.grid(True)
 
@@ -801,5 +801,5 @@ with moviewriter.saving(plt.gcf(), moviefile, dpi):
         a.add_artist(i2top)
         a.add_artist(i2bottom)
         moviewriter.grab_frame()
-        i = i+4
+        i = i+5
 moviewriter.finish()
