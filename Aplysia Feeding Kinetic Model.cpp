@@ -328,7 +328,7 @@ void updateinputsIzRejectionB(double time, double & freqI2, double & freqHinge, 
 void updateinputsIzRejectionA(double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2, double odontophorefreq, double i1i3freq, double hingefreq, double i2freq);
 
 int rasterPlot(int index);
-// [0]- B31/32, [1] - B61/62, [2] - B8a,b, [3] - B3, [4] - B6, [5] - B9, [6] - B38, [7] - B10, [8] - B43, [9] - B7
+// [0]- B31/32, [1] - B61/62, [2] - B8a, [3] - B3, [4] - B6, [5] - B9, [6] - B38, [7] - B10, [8] - B43, [9] - B7, [10] - B8b
 bool updateRasterPlot(int & b31, int & b61, int & b8a, int & b3, int & b6, int & b9, int & b38, int & b10, int & b43, int & b7, int & b8b);
 
 int main(int argc, char* argv[])
@@ -413,7 +413,7 @@ int main(int argc, char* argv[])
     double seaweedforce = 0;  //This is added seaweed force on the odontophore
         
     //rasterplot information
-    // [0]- B31/32, [1] - B61/62, [2] - B8a,b, [3] - B3, [4] - B6, [5] - B9, [6] - B38, [7] - B10, [8] - B43, [9] - B7
+    // [0]- B31/32, [1] - B61/62, [2] - B8ab, [3] - B3, [4] - B6, [5] - B9, [6] - B38, [7] - B10, [8] - B43, [9] - B7, [10] - B8b
     int peakB3132 = 0;
     int peakB6162 = 0;
     int peakB8a = 0;
@@ -511,7 +511,8 @@ int main(int argc, char* argv[])
     fprintf(izout, "time	MembranePotentialo	MembraneRecoveryo	ofreq    i1i3freq    hfreq    i2freq    current\n");
     //Titles for animation info
     fprintf(animation, "time	position	radius	angle	xctop	xcbottom	ytop	ybottom	i1i3radius	i2length	topangle	bottomangle	furthestbackx	furthestbacky	i1i3contacttopy	i1i3contactbottomy	ocontacttopx	ocontacttopy	ocontactbottomx	ocontactbottomy	bigxval	i1i3contactx	freqI2	freqI1I3	freqN3	freqHinge\n");
-    //Titles for rasterplot info // [0]- B31/32, [1] - B61/62, [2] - B8a,b, [3] - B3, [4] - B6, [5] - B9, [6] - B38, [7] - B10, [8] - B43, [9] - B7
+    //Titles for rasterplot info
+    // [0]- B31/32, [1] - B61/62, [2] - B8a, [3] - B3, [4] - B6, [5] - B9, [6] - B38, [7] - B10, [8] - B43, [9] - B7, [10] - B8b
     fprintf(rasterplot, "time	B31/32	B61/62	B8a	B3	B6	B9	B38	B10	B43	B7	B8b\n");
     /* Reading the file for neural input */
     i = 0;
@@ -3133,6 +3134,6 @@ bool updateRasterPlot(int & b31, int & b61, int & b8a, int & b3, int & b6, int &
 //TATE notes
 /*
  What the model currently is:
- -The Model has 10 neurons, fill four motor pools
+ -The Model has 11 neurons, they fill four motor pools
  -The Model can take arguments to run similar feeding behvaiors to the ones Greg originally provided but now with model neurons
 */
