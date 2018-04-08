@@ -169,15 +169,15 @@ int numberColumns = 0;
 /* Izhikevich Model Variables and Parameters*/
 //Parameters -- currently set at compile time
 
-const int NUMBEROFNEURONS = 10;
+const int NUMBEROFNEURONS = 11;
 const double LAGTIME = .4;
 
-// [0]- B31/32, [1] - B61/62, [2] - B8a,b, [3] - B3, [4] - B6, [5] - B9, [6] - B38, [7] - B10, [8] - B43, [9] - B7
-const double ia[NUMBEROFNEURONS] = {.021*2,.009*2,.015*2,.01*2,.008*2,.008*2,.0072*2,.005*2,.023*2,.009*2}; //Parameters a-d
-const double ib[NUMBEROFNEURONS] = {0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12};
-const double ic[NUMBEROFNEURONS] = {-65,-65,-65,-65,-65,-65,-65,-65,-65,-65};
-const double id[NUMBEROFNEURONS] = {8,8,8,8,8,8,8,8,8,8};
-double ii[NUMBEROFNEURONS] = {0,0,0,0,0,0,0,0,0,0}; // Applied current
+// [0]- B31/32, [1] - B61/62, [2] - B8a, [3] - B3, [4] - B6, [5] - B9, [6] - B38, [7] - B10, [8] - B43, [9] - B7, [10] - B8b
+const double ia[NUMBEROFNEURONS] = {.049,0.0207,.0338,.023,.0182,.0182,0.0165,0.0115,0.0557,0.0207,.0338}; //Parameters a-d
+const double ib[NUMBEROFNEURONS] = {0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12};
+const double ic[NUMBEROFNEURONS] = {-65,-65,-65,-65,-65,-65,-65,-65,-65,-65,-65};
+const double id[NUMBEROFNEURONS] = {8,8,8,8,8,8,8,8,8,8,8};
+double ii[NUMBEROFNEURONS] = {0,0,0,0,0,0,0,0,0,0,0}; // Applied current
 
 //Variables
 double membranePotential[NUMBEROFNEURONS];
@@ -329,7 +329,7 @@ void updateinputsIzRejectionA(double time, double & freqI2, double & freqHinge, 
 
 int rasterPlot(int index);
 // [0]- B31/32, [1] - B61/62, [2] - B8a,b, [3] - B3, [4] - B6, [5] - B9, [6] - B38, [7] - B10, [8] - B43, [9] - B7
-bool updateRasterPlot(int & b31, int & b61, int & b8, int & b3, int & b6, int & b9, int & b38, int & b10, int & b43, int & b7);
+bool updateRasterPlot(int & b31, int & b61, int & b8a, int & b3, int & b6, int & b9, int & b38, int & b10, int & b43, int & b7, int & b8b);
 
 int main(int argc, char* argv[])
 {  
@@ -416,7 +416,8 @@ int main(int argc, char* argv[])
     // [0]- B31/32, [1] - B61/62, [2] - B8a,b, [3] - B3, [4] - B6, [5] - B9, [6] - B38, [7] - B10, [8] - B43, [9] - B7
     int peakB3132 = 0;
     int peakB6162 = 0;
-    int peakB8ab = 0;
+    int peakB8a = 0;
+    int peakB8b = 0;
     int peakB3 = 0 ;
     int peakB6 = 0;
     int peakB9 = 0;
@@ -511,7 +512,7 @@ int main(int argc, char* argv[])
     //Titles for animation info
     fprintf(animation, "time	position	radius	angle	xctop	xcbottom	ytop	ybottom	i1i3radius	i2length	topangle	bottomangle	furthestbackx	furthestbacky	i1i3contacttopy	i1i3contactbottomy	ocontacttopx	ocontacttopy	ocontactbottomx	ocontactbottomy	bigxval	i1i3contactx	freqI2	freqI1I3	freqN3	freqHinge\n");
     //Titles for rasterplot info // [0]- B31/32, [1] - B61/62, [2] - B8a,b, [3] - B3, [4] - B6, [5] - B9, [6] - B38, [7] - B10, [8] - B43, [9] - B7
-    fprintf(rasterplot, "time	B31/32	B61/62	B8ab	B3	B6	B9	B38	B10	B43	B7\n");
+    fprintf(rasterplot, "time	B31/32	B61/62	B8a	B3	B6	B9	B38	B10	B43	B7	B8b\n");
     /* Reading the file for neural input */
     i = 0;
     j = 1;
@@ -711,7 +712,7 @@ BLARF COMMENT REMOVING READING INPUT END */
             //from overwelming the elastic hinge force
             
         
-        peak = updateRasterPlot(peakB3132, peakB6162, peakB8ab, peakB3, peakB6, peakB9, peakB38, peakB10, peakB43, peakB7);
+        peak = updateRasterPlot(peakB3132, peakB6162, peakB8a, peakB3, peakB6, peakB9, peakB38, peakB10, peakB43, peakB7, peakB8b);
         
 
             
@@ -728,7 +729,7 @@ BLARF COMMENT REMOVING READING INPUT END */
         }
             
         if(peak){
-            fprintf(rasterplot, "%f	%d	%d	%d	%d	%d	%d	%d	%d	%d	%d	\n", time, peakB3132, peakB6162, peakB8ab, peakB3, peakB6, peakB9, peakB38, peakB10, peakB43, peakB7);
+            fprintf(rasterplot, "%f	%d	%d	%d	%d	%d	%d	%d	%d	%d	%d	%d	\n", time, peakB3132, peakB6162, peakB8a, peakB3, peakB6, peakB9, peakB38, peakB10, peakB43, peakB7, peakB8b);
         }
             
         peak = false;
@@ -2709,9 +2710,9 @@ void saveFrequency(double time, double & odontophorefreq, double & i1i3freq , do
 }
 
 void motorPools(double freq[], double & odontophorefreq, double & i1i3freq , double & hingefreq, double & i2freq){
-    odontophorefreq = freq[2] * 2;
+    odontophorefreq = freq[2] + freq[10];
     i1i3freq = (freq[3] + freq[4] + freq[5] + freq[6] + freq[7] + freq[8]) / 3;
-    hingefreq = freq[9] * 2;
+    hingefreq = freq[9];// * 2;
     i2freq = (freq[0] + freq [1]) / 2 ;
 }
 
@@ -2762,11 +2763,13 @@ void updateinputsIzBite(double time, double & freqI2, double & freqHinge, double
     if (time > 2.15)
     {
         ii[2] = 10; //Odontophore
+        ii[10] = 10;
     }
  
     if (time > 4.85)
     {
         ii[2] = 0; //Odontophore
+        ii[10] = 0;
     }
  
     // Heres where it gets confusing: freqi2 is related to gregs model (the neural channels), i2freq is related to the izhikevich model (frequency of a model neuron firing)
@@ -2820,11 +2823,13 @@ void updateinputsIzSwallowPerturbed(double time, double & freqI2, double & freqH
     if (time > 1.4) //(time > 1.4)
     {
         ii[2] = 10; //Odontophore
+        ii[10] = 10;
     }
     
     if (time > 3.0) //(time > 4.25)
     {
         ii[2] = 0; //Odontophore
+        ii[10] = 0;
     }
     
     if (time > 1.5)
@@ -2897,11 +2902,13 @@ void updateinputsIzSwallowA(double time, double & freqI2, double & freqHinge, do
     if (time > 1.0)
     {
         ii[2] = 10; //Odontophore
+        ii[10] = 10;
     }
     
     if (time > 3.9)
     {
         ii[2] = 0; //Odontophore
+        ii[10] = 0;
     }
     // Heres where it gets confusing: freqi2 is related to gregs model (the neural channels), i2freq is related to the izhikevich model (frequency of a model neuron firing)
     freqI2 = i2freq;
@@ -2959,11 +2966,13 @@ void updateinputsIzSwallowB(double time, double & freqI2, double & freqHinge, do
     if (time > frequencyiterationtime) //(time > 1.4)
     {
         ii[2] = 10; //Odontophore
+        ii[10] = 10;
     }
     
     if (time > frequencyiterationtime + 2.85) //(time > 4.25)
     {
         ii[2] = 0; //Odontophore
+        ii[10] = 0;
     }
 
     freqI2 = i2freq;
@@ -3019,11 +3028,13 @@ void updateinputsIzRejectionB(double time, double & freqI2, double & freqHinge, 
     if (time > .8)
     {
         ii[2] = 10; //Odontophore
+        ii[10] = 10;
     }
     
     if (time > 2.5)
     {
         ii[2] = 0; //Odontophore
+        ii[10] = 0;
     }
     freqI2 = i2freq;
     freqHinge = hingefreq;
@@ -3036,11 +3047,13 @@ void updateinputsIzRejectionA(double time, double & freqI2, double & freqHinge, 
     if (time >.6)
     {
         ii[2] = 10; //Odontophore
+        ii[10] = 10;
     }
     
     if (time > 1.7)
     {
         ii[2] = 0; //Odontophore
+        ii[10] = 0;
     }
     
     if (time > .26)
@@ -3096,10 +3109,10 @@ int rasterPlot(int index){
         return 0;
 }
 
-bool updateRasterPlot(int & b31, int & b61, int & b8, int & b3, int & b6, int & b9, int & b38, int & b10, int & b43, int & b7){
+bool updateRasterPlot(int & b31, int & b61, int & b8a, int & b3, int & b6, int & b9, int & b38, int & b10, int & b43, int & b7, int & b8b){
     b31 = rasterPlot(0);
     b61 = rasterPlot(1);
-    b8 = rasterPlot(2);
+    b8a = rasterPlot(2);
     b3 = rasterPlot(3);
     b6 = rasterPlot(4);
     b9 = rasterPlot(5);
@@ -3107,7 +3120,8 @@ bool updateRasterPlot(int & b31, int & b61, int & b8, int & b3, int & b6, int & 
     b10 = rasterPlot(7);
     b43 = rasterPlot(8);
     b7 = rasterPlot(9);
-    if( b31 == 1 || b61 == 1 || b8 == 1 || b3 == 1 || b6 == 1 || b9 == 1 || b38 == 1 || b10 == 1 || b43 == 1 || b7 == 1 ){
+    b8b = rasterPlot(10);
+    if( b31 == 1 || b61 == 1 || b8a == 1 || b3 == 1 || b6 == 1 || b9 == 1 || b38 == 1 || b10 == 1 || b43 == 1 || b7 == 1 || b8b == 1 ){
         return true;
     }
     else{

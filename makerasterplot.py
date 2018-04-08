@@ -142,6 +142,17 @@ with open("rasterplotinfo-csvTranslated.csv", "r") as file:
             i+=1
 sys.stdout.write('B7 Saved \r')
 
+#The following code reads the rasterplotinfo-csvTranslated.csv and saves the time in an array list "time"
+b8b = []
+i = 0
+with open("rasterplotinfo-csvTranslated.csv", "r") as file:
+    row = csv.reader(file)
+    while i < row_count:
+        for column in row:
+            b8b.insert(i,column[11])
+            i+=1
+sys.stdout.write('B8b Saved \r')
+
 b31moment = []
 for i in range(1,row_count):
     if(float(b31[i]) == 1):
@@ -192,6 +203,11 @@ for i in range(1,row_count):
     if(float(b7[i]) == 1):
         b7moment.append(time[i])
 
+b8bmoment = []
+for i in range(1,row_count):
+    if(float(b8b[i]) == 1):
+        b8bmoment.append(time[i])
+
 gs = gridspec.GridSpec(1, 1)
 figure = plt.figure(figsize = (18,18))
 rasterplot = figure.add_subplot(gs[0,0])
@@ -226,16 +242,21 @@ b43momentarray = x.astype(np.float)
 x = np.array(b7moment[:])
 b7momentarray = x.astype(np.float)
 
-rasterplot.eventplot(((b7momentarray[:]), (b43momentarray[:]), (b10momentarray[:]),(b38momentarray[:]), (b9momentarray[:]), (b6momentarray[:]),(b3momentarray[:]),(b8momentarray[:]),(b61momentarray[:]),(b31momentarray[:])), linelengths = [.9,.9,.9,.9,.9,.9,.9,.9,.9,.9], colors = ['dimgray', 'dodgerblue', 'dodgerblue', 'dodgerblue', 'dodgerblue', 'dodgerblue', 'dodgerblue', 'coral', 'mediumseagreen', 'mediumseagreen'], linewidths = [.7,.7,.7,.7,.7,.7,.7,.7,.7,.7])
+x = np.array(b8bmoment[:])
+b8bmomentarray = x.astype(np.float)
+
+rasterplot.eventplot(((b7momentarray[:]), (b43momentarray[:]), (b10momentarray[:]),(b38momentarray[:]), (b9momentarray[:]), (b6momentarray[:]),(b3momentarray[:]),(b8bmomentarray[:]),(b8momentarray[:]),(b61momentarray[:]),(b31momentarray[:])), linelengths = [.9,.9,.9,.9,.9,.9,.9,.9,.9,.9,.9], colors = ['dimgray', 'dodgerblue', 'dodgerblue', 'dodgerblue', 'dodgerblue', 'dodgerblue', 'dodgerblue', 'coral', 'coral', 'mediumseagreen', 'mediumseagreen'], linewidths = [.7,.7,.7,.7,.7,.7,.7,.7,.7,.7,.7])
+
 timeticks = np.arange(0,9,.5)
-neuralticks = np.arange(0,10,1)
+neuralticks = np.arange(0,11,1)
 rasterplot.set_yticks(neuralticks)
 rasterplot.set_yticklabels([])
 rasterplot.set_xticks(timeticks)
 rasterplot.grid(True)
-rasterplot.text(-0.5,8.95, 'B31/32',color = 'black', fontsize=20,horizontalalignment = 'right')
-rasterplot.text(-0.5,7.95, 'B61/62',color = 'black', fontsize=20,horizontalalignment = 'right')
-rasterplot.text(-0.5,6.95, 'B8',color = 'black', fontsize=20,horizontalalignment = 'right')
+rasterplot.text(-0.5,9.95, 'B31/32',color = 'black', fontsize=20,horizontalalignment = 'right')
+rasterplot.text(-0.5,8.95, 'B61/62',color = 'black', fontsize=20,horizontalalignment = 'right')
+rasterplot.text(-0.5,7.95, 'B8a',color = 'black', fontsize=20,horizontalalignment = 'right')
+rasterplot.text(-0.5,6.95, 'B8b',color = 'black', fontsize=20,horizontalalignment = 'right')
 rasterplot.text(-0.5,5.95, 'B3',color = 'black', fontsize=20,horizontalalignment = 'right')
 rasterplot.text(-0.5,4.95, 'B6',color = 'black', fontsize=20,horizontalalignment = 'right')
 rasterplot.text(-0.5,3.95, 'B9',color = 'black', fontsize=20,horizontalalignment = 'right')
@@ -243,5 +264,22 @@ rasterplot.text(-0.5,2.95, 'B38',color = 'black', fontsize=20,horizontalalignmen
 rasterplot.text(-0.5,1.95, 'B10',color = 'black', fontsize=20,horizontalalignment = 'right')
 rasterplot.text(-0.5,0.95, 'B43',color = 'black', fontsize=20,horizontalalignment = 'right')
 rasterplot.text(-0.5,-0.05, 'B7',color = 'black', fontsize=20,horizontalalignment = 'right')
+
+rasterplot.text(8.55,9.95, '%2.1f Hz' % ((len(b31momentarray)-1)/(b31momentarray[-1]-b31momentarray[0])),color = 'black', fontsize=20,horizontalalignment = 'left')
+rasterplot.text(8.55,8.95, '%2.1f Hz' % ((len(b61momentarray)-1)/(b61momentarray[-1]-b61momentarray[0])),color = 'black', fontsize=20,horizontalalignment = 'left')
+rasterplot.text(8.55,7.95, '%2.1f Hz' % ((len(b8momentarray)-1)/(b8momentarray[-1]-b8momentarray[0])),color = 'black', fontsize=20,horizontalalignment = 'left')
+rasterplot.text(8.55,6.95, '%2.1f Hz' % ((len(b8bmomentarray)-1)/(b8bmomentarray[-1]-b8bmomentarray[0])),color = 'black', fontsize=20,horizontalalignment = 'left')
+rasterplot.text(8.55,5.95, '%2.1f Hz' % ((len(b3momentarray)-1)/(b3momentarray[-1]-b3momentarray[0])),color = 'black', fontsize=20,horizontalalignment = 'left')
+rasterplot.text(8.55,4.95, '%2.1f Hz' % ((len(b6momentarray)-1)/(b6momentarray[-1]-b6momentarray[0])),color = 'black', fontsize=20,horizontalalignment = 'left')
+rasterplot.text(8.55,3.95, '%2.1f Hz' % ((len(b9momentarray)-1)/(b9momentarray[-1]-b9momentarray[0])),color = 'black', fontsize=20,horizontalalignment = 'left')
+rasterplot.text(8.55,2.95, '%2.1f Hz' % ((len(b38momentarray)-1)/(b38momentarray[-1]-b38momentarray[0])),color = 'black', fontsize=20,horizontalalignment = 'left')
+rasterplot.text(8.55,1.95, '%2.1f Hz' % ((len(b10momentarray)-1)/(b10momentarray[-1]-b10momentarray[0])),color = 'black', fontsize=20,horizontalalignment = 'left')
+rasterplot.text(8.55,0.95, '%2.1f Hz' % ((len(b43momentarray)-1)/(b43momentarray[-1]-b43momentarray[0])),color = 'black', fontsize=20,horizontalalignment = 'left')
+rasterplot.text(8.55,-0.05, '%2.1f Hz' % ((len(b7momentarray)-1)/(b7momentarray[-1]-b7momentarray[0])),color = 'black', fontsize=20,horizontalalignment = 'left')
+
+
+
+
+
 plt.title('Raster Plot', fontsize=40)
 figure.savefig("RasterPlot.pdf")
