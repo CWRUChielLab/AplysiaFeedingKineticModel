@@ -29,12 +29,17 @@ for line in listInput:
 newFile.close()
 sys.stdout.write('New File Written \r')
 
+with open("Izhikevich-csvTranslated.csv","r") as file:
+    reader = csv.reader(file)
+    data = list(reader)
+    row_count = len(data)
+
 #The following code reads the Izhikevich-csvTranslated.csv and saves the time in an array list "time"
 time = []
 i = 0
 with open("Izhikevich-csvTranslated.csv", "r") as file:
      row = csv.reader(file)
-     while i < 151786:
+     while i < row_count:
         for column in row:
             time.insert(i,column[0])
             i+=1
@@ -47,7 +52,7 @@ membranePotential = []
 i = 0
 with open("Izhikevich-csvTranslated.csv", "r") as file:
     row = csv.reader(file)
-    while i < 151786:
+    while i < row_count:
         for column in row:
             membranePotential.insert(i,column[1])
             i+=1
@@ -60,7 +65,7 @@ membraneRecovery = []
 i = 0
 with open("Izhikevich-csvTranslated.csv", "r") as file:
     row = csv.reader(file)
-    while i < 151786:
+    while i < row_count:
         for column in row:
             membraneRecovery.insert(i,column[2])
             i+=1
@@ -75,7 +80,7 @@ gs = gridspec.GridSpec(2, 1)
 #The following code subplots the membrane Potential vs time graph
 potenialgraph = figure.add_subplot(gs[0,0])
 potentialticks = np.arange(-90, 40, 10)
-potenialgraph.plot(time[1:151786],membranePotential[1:151786])#first .008 seconds
+potenialgraph.plot(time[1:row_count],membranePotential[1:row_count])#first .008 seconds
 potenialgraph.set_title('Membrane Potential')
 potenialgraph.set_xlabel(time[0] + ' (milliseconds)')
 potenialgraph.set_ylabel(membranePotential[0] + 'mV')
@@ -87,7 +92,7 @@ potenialgraph.grid(True)
 #The following code subplots the membrane recovery vs time graph
 recoverygraph = figure.add_subplot(gs[1,0])
 recoveryticks = np.arange(-20, 20, 2)
-recoverygraph.plot(time[1:151786],membraneRecovery[1:151786])
+recoverygraph.plot(time[1:row_count],membraneRecovery[1:row_count])
 recoverygraph.set_title('Membrane Recovery')
 recoverygraph.set_xlabel(time[0] + ' (milliseconds)')
 recoverygraph.set_ylabel(membraneRecovery[0])
