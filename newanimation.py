@@ -2,7 +2,7 @@ import os
 import sys
 import csv
 import matplotlib
-#matplotlib.use('Agg') # force matplotlib to not use XWindows backend
+matplotlib.use('Agg') # force matplotlib to not use XWindows backend
 from math import sqrt
 import matplotlib.gridspec as gridspec
 from scipy.interpolate import spline
@@ -743,8 +743,8 @@ def reseti1i3(i1i3graph):
 #set which movie writer class is being used
 if animation.FFMpegWriter.isAvailable():
     movieWriterClass = animation.FFMpegWriter
-#elif animation.AVConvWvriter.isAvailable():
-    #movieWriterClass = animation.AVConvWriter
+elif animation.AVConvWriter.isAvailable():
+    movieWriterClass = animation.AVConvWriter
 else:
     sys.stderr.write('video converter missing')
     exit()
@@ -802,4 +802,3 @@ with moviewriter.saving(plt.gcf(), moviefile, dpi):
         a.add_artist(i2bottom)
         moviewriter.grab_frame()
         i = i+5
-moviewriter.finish()
