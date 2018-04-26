@@ -2,7 +2,7 @@ import os
 import sys
 import csv
 import matplotlib
-#matplotlib.use('Agg') # force matplotlib to not use XWindows backend
+matplotlib.use('Agg') # force matplotlib to not use XWindows backend
 from math import sqrt
 import matplotlib.gridspec as gridspec
 from scipy.interpolate import spline
@@ -429,7 +429,7 @@ a.text(-.0240,.015, 'Level of Activation (Hz):', color='Black', fontsize=4)
 
 #a text
 toptextI2 = a.text(.0140,.0175, '- I 2 -', color='black', fontsize=4)
-toptextN3 = a.text(-.008,.0175, '- N 3 -', color='black', fontsize=4)
+toptextN3 = a.text(-.008,.0175, '- I 4 -', color='black', fontsize=4)
 toptexti1i3 = a.text(-.0020,.0175, '- I 1 I 3 -', color='black', fontsize=4)
 toptexthinge = a.text(.0045,.0175, '- H I N G E -', color='black', fontsize=4)
 bottomtexti2 = a.text(.0140,.015, '%2.1f' % float(freqi2array[1]), color='black', fontsize=4)
@@ -471,18 +471,18 @@ n3graph.text(-0.5140,35, '35', color='black', fontsize=4)
 n3graph.text(-0.5140,00, '0', color='black', fontsize=4)
 #n3graph.grid(True)
 #The following code subplots the I1/I3 vs time graph
-i1i3ticks = np.arange(-5,75,5)
+i1i3ticks = np.arange(-5,65,5)
 i1i3graph.plot(time[1:850],freqi1i3array[1:850])
 #i1i3graph.set_title('I1/I3 Input', fontsize = 4)
 i1i3graph.set_xlabel(time[0] + ' (seconds)', fontsize = 2)
 i1i3graph.set_ylabel(freqi1i3array[0] + ' (Hz)', fontsize = 2)
-i1i3graph.axis([0, 9, -5, 75])
+i1i3graph.axis([0, 9, -5, 65])
 i1i3graph.set_xticks(timeticks)
 i1i3graph.set_yticks(i1i3ticks)
 i1i3graph.tick_params(labelsize=3)
 i1i3graph.set_axis_off()
 i1i3graph.text(9.0140,10, '- I 1 I 3 -', color='black', fontsize=4)
-i1i3graph.text(-0.5140,65, '65', color='black', fontsize=4)
+i1i3graph.text(-0.5140,55, '55', color='black', fontsize=4)
 i1i3graph.text(-0.5140,00, '0', color='black', fontsize=4)
 #i1i3graph.grid(True)
 
@@ -647,9 +647,9 @@ def maketoptextI2(figure, discretemoment, toptexti2):
 
 def maketoptextN3(figure, discretemoment, toptextN3):
     if float(freqN3array[discretemoment]) == 0:
-        toptextN3 = figure.text(-.008,.0175, '- N 3 -', color='black', fontsize=4)
+        toptextN3 = figure.text(-.008,.0175, '- I 4 -', color='black', fontsize=4)
     elif float(freqN3array[discretemoment]) > 0:
-        toptextN3 = figure.text(-.008,.0175, '- N 3 -', color='green', fontsize=4)
+        toptextN3 = figure.text(-.008,.0175, '- I 4 -', color='green', fontsize=4)
     else:
         toptextN3 = figure.text(-.008,.0175, '%f' % float(freqN3array[discretemoment]), color='red', fontsize=4)
     return toptextN3
@@ -743,8 +743,8 @@ def reseti1i3(i1i3graph):
 #set which movie writer class is being used
 if animation.FFMpegWriter.isAvailable():
     movieWriterClass = animation.FFMpegWriter
-#elif animation.AVConvWvriter.isAvailable():
-    #movieWriterClass = animation.AVConvWriter
+elif animation.AVConvWriter.isAvailable():
+    movieWriterClass = animation.AVConvWriter
 else:
     sys.stderr.write('video converter missing')
     exit()
@@ -802,4 +802,3 @@ with moviewriter.saving(plt.gcf(), moviefile, dpi):
         a.add_artist(i2bottom)
         moviewriter.grab_frame()
         i = i+5
-moviewriter.finish()
