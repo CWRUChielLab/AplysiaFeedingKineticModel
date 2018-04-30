@@ -197,6 +197,10 @@ double ii[NUMBEROFNEURONS] = {0,0,0,0,0,0,0,0,0,0,0}; // Applied current
 double membranePotential[NUMBEROFNEURONS];
 double membraneRecovery[NUMBEROFNEURONS];
 
+//Synapse Variables
+const double Gsyn = .3;
+const double Esyn = 40;
+
 
 /* My function prototypes */
 //calling the functions
@@ -350,6 +354,8 @@ int rasterPlot(int index);
 bool updateRasterPlot(int & b31, int & b61, int & b8a, int & b3, int & b6, int & b9, int & b38, int & b10, int & b43, int & b7, int & b8b);
 
 void updateNeuromechanicalInputs(double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2, double odontophorefreq, double i1i3freq, double hingefreq, double i2freq, int count);
+
+double synapseModel(double s, double Vpost);
 
 int main(int argc, char* argv[])
 {  
@@ -3367,24 +3373,29 @@ void updateNeuromechanicalInputs(double time, double & freqI2, double & freqHing
         
         //lots and lots of loops...
         thistimestep = timeAdjuster(timearray, time, count);
+        double i1i3S = i1i3poolarray[thistimestep];
+        double hingeS = hingepoolarray[thistimestep];
+        double i2S = i2poolarray[thistimestep];
+        double i4S = i4poolarray[thistimestep];
+        
         //I1/I3: B3, B6, B9, B10, B38, B43
-        ii[3] = 10*i1i3poolarray[thistimestep];
-        ii[4] = 10*i1i3poolarray[thistimestep];
-        ii[5] = 10*i1i3poolarray[thistimestep];
-        ii[6] = 10*i1i3poolarray[thistimestep];
-        ii[7] = 10*i1i3poolarray[thistimestep];
-        ii[8] = 10*i1i3poolarray[thistimestep];
+        ii[3] = synapseModel(i1i3S, membranePotential[3]);
+        ii[4] = synapseModel(i1i3S, membranePotential[4]);
+        ii[5] = synapseModel(i1i3S, membranePotential[5]);
+        ii[6] = synapseModel(i1i3S, membranePotential[6]);
+        ii[7] = synapseModel(i1i3S, membranePotential[7]);
+        ii[8] = synapseModel(i1i3S, membranePotential[8]);
         
         //Hinge: B7
-        ii[9] = 10*hingepoolarray[thistimestep];
+        ii[9] = synapseModel(hingeS, membranePotential[9]);
         
         //I2: B31/32 B61/62
-        ii[0] = 10*i2poolarray[thistimestep];
-        ii[1] = 10*i2poolarray[thistimestep];
+        ii[0] = synapseModel(i2S, membranePotential[0]);
+        ii[1] = synapseModel(i2S, membranePotential[1]);
     
         //I4: B8a and B8b
-        ii[2] = 10*i4poolarray[thistimestep];
-        ii[10] = 10*i4poolarray[thistimestep];
+        ii[2] = synapseModel(i4S, membranePotential[2]);
+        ii[10] = synapseModel(i4S, membranePotential[10]);
      
         freqI2 = i2freq;
         freqHinge = hingefreq;
@@ -3404,13 +3415,13 @@ void updateNeuromechanicalInputs(double time, double & freqI2, double & freqHing
     }
 }
 
-/*
-double synapseModel(){
+
+double synapseModel(double s, double Vpost){
     
-    return = g_syn * s * (E_syn - V_post)
- 
+    return ( Gsyn * s * (Esyn - Vpost) );
+    
 }
-*/
+
 
 
 //TATE notes
