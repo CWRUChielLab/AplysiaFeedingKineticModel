@@ -147,6 +147,11 @@ string actI1I3s;
 string acthinges;
 string seaweedforces;
 
+string as;
+string bs;
+string cs;
+string ds;
+
 /*Arrays of stored values from input file*/
 double positionarray[1000];
 double radiusarray[1000];
@@ -162,6 +167,15 @@ double acthingearray[1000];
 double seaweedforcearray[1000];
 double freqI2array[1000];
 double timearray[1000];
+
+double i1i3poolarray[900000];
+double i2poolarray[900000];
+double i4poolarray[900000];
+double hingepoolarray[900000];
+
+int filerowcount = 0;
+
+
 
 /* Value of columns in the input file*/
 int numberColumns = 0;
@@ -273,7 +287,7 @@ void xcCalc(double a, double x, double rotation, double & Txc, double & Bxc, dou
 
 double activehingeforce (double activation, double velocity, double length);
 
-void updateinputs(double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2, double odontophorefreq, double i1i3freq, double hingefreq, double i2freq, string behaviorType);
+void updateinputs(double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2, double odontophorefreq, double i1i3freq, double hingefreq, double i2freq, string behaviorType, int count);
 
 void updateinputsRejectionB(double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2);
 
@@ -289,9 +303,9 @@ void updateinputsSwallowPerturbed(double time, double & freqI2, double & freqHin
 
 bool openAndRead(string behaviorType);
 
-int timeAdjuster(double timeArray[], double timeStamp);
+int timeAdjuster(double timeArray[], double timeStamp, int count);
 
-void updateDynamicInputs(double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2);
+void updateDynamicInputs(double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2, int count);
 
 string returnFirstLine(string s);
 
@@ -327,9 +341,15 @@ void updateinputsIzRejectionB(double time, double & freqI2, double & freqHinge, 
 
 void updateinputsIzRejectionA(double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2, double odontophorefreq, double i1i3freq, double hingefreq, double i2freq);
 
+void updateinputsIzExampleSwallow(double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2, double odontophorefreq, double i1i3freq, double hingefreq, double i2freq);
+
+void updateinputsIzSwallowBmoreaccurate(double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2, double odontophorefreq, double i1i3freq, double hingefreq, double i2freq);
+
 int rasterPlot(int index);
 // [0]- B31/32, [1] - B61/62, [2] - B8a, [3] - B3, [4] - B6, [5] - B9, [6] - B38, [7] - B10, [8] - B43, [9] - B7, [10] - B8b
 bool updateRasterPlot(int & b31, int & b61, int & b8a, int & b3, int & b6, int & b9, int & b38, int & b10, int & b43, int & b7, int & b8b);
+
+void updateNeuromechanicalInputs(double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2, double odontophorefreq, double i1i3freq, double hingefreq, double i2freq, int count);
 
 int main(int argc, char* argv[])
 {  
@@ -674,7 +694,7 @@ BLARF COMMENT REMOVING READING INPUT END */
         freqHinge = 0;
             
         //Update Neural variables and seaweed force based on the current time
-        updateinputs(time, freqI2, freqHinge, freqI1I3, freqN3, seaweedforce, a, frequencyiterationtime,  frequencyiterationtime2, odontophorefreq,  i1i3freq, hingefreq, i2freq, first_argument);
+        updateinputs(time, freqI2, freqHinge, freqI1I3, freqN3, seaweedforce, a, frequencyiterationtime,  frequencyiterationtime2, odontophorefreq,  i1i3freq, hingefreq, i2freq, first_argument, filerowcount);
 
         for(int i = 0; i < NUMBEROFNEURONS; i++){
             saveFrequency(time, odontophorefreq, i1i3freq , hingefreq, i2freq, i, firstTime[i], secondTime[i], firstSpike[i], secondSpike[i],freq[i]);
@@ -800,7 +820,7 @@ BLARF COMMENT REMOVING READING INPUT END */
 	} While loop Removal end */
     }
     else{
-        printf("Please use a correct 'windows formatted text' file with either 6 or 15 columns \n");
+        printf("\nERROR: Unreadable File... Too Many or Too Few Columns in File... \nKINETIC MODEL INPUT: \n If you want to use an input file to the Kinetic model, include a tab delimited text file with 6 columns \n Alternatively, you can rename a previous SlugOutput2.txt file as SlugInput2.txt (should have 15 columns), and run that as input. \nNEUROMECHANICAL MODEL INPUT: \n If you want to use an input file to the Neuromechanical model, include a tab delimited text file with 5 columns \n \n \n");
     }
 }
 
@@ -2025,7 +2045,7 @@ double OdonAngle2(double x, double hingeforce, double radius, double oldodonangl
  "behaviorType" is the argument called when the model is run that determines which kind of feeding behvaior will be modelled. Greg's original neural inputs can be chosen, "Dynamic" allows a peicewise function to be inputted with an input file.
  */
 
-void updateinputs (double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2, double odontophorefreq, double i1i3freq, double hingefreq, double i2freq, string behaviorType)
+void updateinputs (double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2, double odontophorefreq, double i1i3freq, double hingefreq, double i2freq, string behaviorType, int count)
 {
     
     if(behaviorType == "RejectionB")
@@ -2054,7 +2074,7 @@ void updateinputs (double time, double & freqI2, double & freqHinge, double & fr
     }
     else if (behaviorType == "Dynamic")
     {
-        updateDynamicInputs(time, freqI2, freqHinge, freqI1I3, freqN3, seaweedforce, a, frequencyiterationtime, frequencyiterationtime2);
+        updateDynamicInputs(time, freqI2, freqHinge, freqI1I3, freqN3, seaweedforce, a, frequencyiterationtime, frequencyiterationtime2, count);
     }
     else if (behaviorType == "IzhikevichBite")
     {
@@ -2079,6 +2099,18 @@ void updateinputs (double time, double & freqI2, double & freqHinge, double & fr
     else if (behaviorType == "IzhikevichRejectionA")
     {
         updateinputsIzRejectionA(time, freqI2, freqHinge, freqI1I3, freqN3, seaweedforce, a, frequencyiterationtime, frequencyiterationtime2, odontophorefreq, i1i3freq, hingefreq, i2freq);
+    }
+    else if (behaviorType == "IzExampleSwallow")
+    {
+    updateinputsIzExampleSwallow(time, freqI2, freqHinge, freqI1I3, freqN3, seaweedforce, a, frequencyiterationtime, frequencyiterationtime2, odontophorefreq, i1i3freq, hingefreq, i2freq);
+    }
+    else if (behaviorType == "IzSwallowBmoreaccurate")
+    {
+        updateinputsIzSwallowBmoreaccurate(time, freqI2, freqHinge, freqI1I3, freqN3, seaweedforce, a, frequencyiterationtime, frequencyiterationtime2, odontophorefreq, i1i3freq, hingefreq, i2freq);
+    }
+    else if (behaviorType == "NeuromechanicalInput")
+    {
+        updateNeuromechanicalInputs(time, freqI2, freqHinge, freqI1I3, freqN3, seaweedforce, a, frequencyiterationtime, frequencyiterationtime2, odontophorefreq, i1i3freq, hingefreq, i2freq, count);
     }
     else
     {
@@ -2380,7 +2412,7 @@ void updateinputsSwallowPerturbed(double time, double & freqI2, double & freqHin
  */
 bool openAndRead(string behaviorType)
 {
-    if(behaviorType == "Dynamic"){
+    if(behaviorType == "Dynamic" || behaviorType == "NeuromechanicalInput"){
         //This reads a file of 15 columns. This would be useful when taking a SlugOutput2.txt file as input for example.
         if(numberColumns == 15){
             inputFile.open("SlugInput2.txt");
@@ -2411,7 +2443,7 @@ bool openAndRead(string behaviorType)
             }
             return true;
         }
-        else if (numberColumns == 6){
+        else if (numberColumns == 6){ /* SIX COLUMNS WILL BE USED AS INPUT TO GREG's ORIGINAL KINETIC MODEL*/
             //An input file where the first column is time, the second through 5th are neural channels, and the 6th is seaweedforce on/off times
             inputFile.open("SlugInput2.txt");
             //If the File isn't openable/found then it will fail
@@ -2433,7 +2465,7 @@ bool openAndRead(string behaviorType)
             }
             return true;
         }
-        else if (numberColumns == 5){
+        else if (numberColumns == 5){/* FIVE COLUMNS WILL BE USED AS INPUT TO THE NEUROMECHANICAL MODEL -- THAT IS OUTPUT FROM SHANNON's NEURAL NETWORK WILL BE INPUT TO THE MOTOR NEURONS*/
             ////An input file where the first column is time, and the second through 5th are neural channels
             inputFile.open("SlugInput2.txt");
             //If the File isn't openable/found then it will fail
@@ -2441,14 +2473,14 @@ bool openAndRead(string behaviorType)
                 //cout << "File Not Found  ";
             } //Talk to jeff... Not sure why but the file fails to open every time, but still is read and works as it should..?
             int count = 0; //while loop counter
-            while ((inputFile >> times >> freqI2s >> freqI1I3s >> freqN3s >> freqHinges))
+            while ((inputFile >> times >> as >> bs >> cs >> ds))
             {
                 if(count > 0){ //first (0th) line of file is text
                     timearray[count-1] = atof(times.c_str());
-                    freqI2array[count-1] = atof(freqI2s.c_str());
-                    freqI1I3array[count-1] = atof(freqI1I3s.c_str());
-                    freqN3array[count-1] = atof(freqN3s.c_str());
-                    freqHingearray[count-1] = atof(freqHinges.c_str());
+                    i1i3poolarray[count-1] = atof(as.c_str());
+                    i2poolarray[count-1] = atof(bs.c_str());
+                    i4poolarray[count-1] = atof(cs.c_str());
+                    hingepoolarray[count-1] = atof(ds.c_str());
                 }
                 count++;
             }
@@ -2466,21 +2498,22 @@ bool openAndRead(string behaviorType)
 /* timeAdjuster takes an double array "timeArray" and double variable "timeStamp" as inputs. It's purpose is to determine
  what value within an array is closest to the input timeStamp, and output the array index at which that value is located
  within the array */
-int timeAdjuster(double timeArray[], double timeStamp)
+int timeAdjuster(double timeArray[], double timeStamp, int count)
 {
-    int count = 0;
+    //int count = 0; //TATE
     if(numberColumns == 5){
-        while(timeStamp > timeArray[count])
+        if(timeStamp > timeArray[count])
         {
             count++;
         }
     }
     if(numberColumns == 6){
-        while(timeStamp >= timeArray[count])
+        if(timeStamp >= timeArray[count])
         {
             count++;
         }
     }
+    filerowcount = count;
     return count - 1; //Fixes cases where input data does not start at zero seconds
 }
 
@@ -2488,13 +2521,16 @@ int timeAdjuster(double timeArray[], double timeStamp)
  Updates the inputs of the model to equal the values from the input file at a time. For seaweed force dependent models, input files must include two values under the seaweed force
  column (and then values of zero to fill spots for the rest of the column). These two values represent the times at which forces begin affecting the model, and when the force reaches its max value. These times for "SwallowPerturbed" are 1.5 and 2.5, respectively.
  */
-void updateDynamicInputs(double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2)
+void updateDynamicInputs(double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2, int count)
 {
-    freqI2 = freqI2array[timeAdjuster(timearray, time)];
-    freqHinge = freqHingearray[timeAdjuster(timearray, time)];
-    freqI1I3 = freqI1I3array[timeAdjuster(timearray, time)];
-    freqN3 = freqN3array[timeAdjuster(timearray, time)];
     if(numberColumns == 6){
+        int thistimestep = timeAdjuster(timearray, time, count);
+        
+        freqI2 = freqI2array[thistimestep];
+        freqHinge = freqHingearray[thistimestep];
+        freqI1I3 = freqI1I3array[thistimestep];
+        freqN3 = freqN3array[thistimestep];
+        
         double timeForceBegins, timeForceMaximized;
         timeForceBegins = seaweedforcearray[0];
         timeForceMaximized = seaweedforcearray[1];
@@ -2507,6 +2543,16 @@ void updateDynamicInputs(double time, double & freqI2, double & freqHinge, doubl
             {
                 seaweedforce =  MAXSEAWEEDFORCE*((a - .005)/.003);
             }
+        }
+    }
+    else if (numberColumns == 5){
+        if(time == 0){
+            cout << "\n Input file did not have 6 columns, it had 5 columns. \n Did you mean to run the input file to the neuromechanical model? \n \n";
+        }
+    }
+    else{ /* The "unreachable" error message...*/
+        if(time == 0){
+            cout << "\n ERROR: Unreadable File... Too Many or Too Few Columns in File... \n If you want to use an input file to the Kinetic model, include a tab delimited text file with 6 columns \n If you want to use an input file to the Neuromechanical model, include a tab delimited text file with 5 columns \n \n";
         }
     }
 }
@@ -2711,10 +2757,10 @@ void saveFrequency(double time, double & odontophorefreq, double & i1i3freq , do
 }
 
 void motorPools(double freq[], double & odontophorefreq, double & i1i3freq , double & hingefreq, double & i2freq){
-    odontophorefreq = freq[2] + freq[10];
-    i1i3freq = (freq[3] + freq[4] + freq[5] + freq[6] + freq[7] + freq[8]) / 3;
-    hingefreq = freq[9];// * 2;
-    i2freq = (freq[0] + freq [1]) / 2 ;
+    odontophorefreq = (freq[2] + freq[10]);
+    i1i3freq = (freq[6]) + (freq[3] + freq[4] + freq[5] + freq[7] + freq[8]);
+    hingefreq = (freq[9]);
+    i2freq = (freq[0] + freq [1]);
 }
 
 void updateinputsIzBite(double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2, double odontophorefreq, double i1i3freq, double hingefreq, double i2freq){
@@ -2922,58 +2968,59 @@ void updateinputsIzSwallowA(double time, double & freqI2, double & freqHinge, do
 void updateinputsIzSwallowB(double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2, double odontophorefreq, double i1i3freq, double hingefreq, double i2freq)
 {
     //Proposed swallow B code
-    if (time > 0.0)
+    // [0]- B31/32, [1] - B61/62, [2] - B8a, [3] - B3, [4] - B6, [5] - B9, [6] - B38, [7] - B10, [8] - B43, [9] - B7, [10] - B8b
+    if (time > 0.0)//I2
     {
-        ii[0] = 10;
-        ii[1] = 10; //I2
+        ii[0] = 10; //B31/32
+        ii[1] = 10; //B61/62
     }
     
-    if (time > 2.05)
+    if (time > 2.05)//I2
     {
-        ii[0] = 0;
-        ii[1] = 0; //I2
+        ii[0] = 0;//B61/62
+        ii[1] = 0;//B61/62
     }
     
-    if (time > 2.48)
+    if (time > 2.48)//Hinge
     {
-        ii[9] = 10; //Hinge
+        ii[9] = 10; //B7
     }
     
-    if (time> 6.62)
+    if (time> 6.62)//Hinge
     {
-        ii[9] = 0; //Hinge
+        ii[9] = 0; //B7
     }
     
-    if (time> 2.33)
+    if (time> 2.33)//I1/I3
     {
-        ii[3] = 10; //I1/I3
-        ii[4] = 10;
-        ii[5] = 10;
-        ii[6] = 10;
-        ii[7] = 10;
-        ii[8] = 10;
+        ii[3] = 10; //B3
+        ii[4] = 10; //B6
+        ii[5] = 10; //B9
+        ii[6] = 10; //B38
+        ii[7] = 10; //B10
+        ii[8] = 10; //B43
     }
     
-    if (time > 6.62)
+    if (time > 6.62)//I1/I3
     {
-        ii[3] = 0; //I1/I3
-        ii[4] = 0;
-        ii[5] = 0;
-        ii[6] = 0;
-        ii[7] = 0;
-        ii[8] = 0;
+        ii[3] = 0; //B3
+        ii[4] = 0; //B6
+        ii[5] = 0; //B9
+        ii[6] = 0; //B38
+        ii[7] = 0; //B10
+        ii[8] = 0; //B43
     }
     
-    if (time > frequencyiterationtime) //(time > 1.4)
+    if (time > frequencyiterationtime) //(time > 1.4) //Odontophore
     {
-        ii[2] = 10; //Odontophore
-        ii[10] = 10;
+        ii[2] = 10; //B8a
+        ii[10] = 10; //B8b
     }
     
-    if (time > frequencyiterationtime + 2.85) //(time > 4.25)
+    if (time > frequencyiterationtime + 2.85) //(time > 4.25) //Odontophore
     {
-        ii[2] = 0; //Odontophore
-        ii[10] = 0;
+        ii[2] = 0; //B8a
+        ii[10] = 0; //B8b
     }
 
     freqI2 = i2freq;
@@ -3102,6 +3149,184 @@ void updateinputsIzRejectionA(double time, double & freqI2, double & freqHinge, 
     freqN3 = odontophorefreq;
 }
 
+void updateinputsIzExampleSwallow(double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2, double odontophorefreq, double i1i3freq, double hingefreq, double i2freq)
+{
+    //Proposed swallow B code
+    // [0]- B31/32, [1] - B61/62, [2] - B8a, [3] - B3, [4] - B6, [5] - B9, [6] - B38, [7] - B10, [8] - B43, [9] - B7, [10] - B8b
+    if(time > 1)//
+    {
+        ii[0] = 10; //B31/32
+    }
+    if(time > 2.8)//
+    {
+        ii[0] = 0; //B31/32
+    }
+    if(time > 1)//
+    {
+        ii[1] = 10; //B61/62
+    }
+    if(time > 2.8)//
+    {
+        ii[1] = 0; //B61/62
+    }
+    if(time > 2.2)//
+    {
+        ii[2] = 10; //B8a
+    }
+    if(time > 5.7)//
+    {
+        ii[2] = 0; //B8a
+    }
+    if(time > 4.15)
+    {
+        ii[3] = 10; //B3
+    }
+    if(time > 5.4)
+    {
+        ii[3] = 0; //B3
+    }
+    if(time > 3.6)
+    {
+        ii[4] = 10; //B6
+    }
+    if(time > 5.6)
+    {
+        ii[4] = 0; //B6
+    }
+    if(time > 3.6)
+    {
+        ii[5] = 10; //B9
+    }
+    if(time > 5.6)
+    {
+        ii[5] = 0; //B9
+    }
+    if(time > 0.25)
+    {
+        ii[6] = 10; //B38
+    }
+    if(time > 1.65)
+    {
+        ii[6] = 0; //B38
+    }
+    if(time > 2.8)
+    {
+        ii[7] = 10; //B10
+    }
+    if(time > 5.6)
+    {
+        ii[7] = 0; //B10
+    }
+    if(time > 5.6)
+    {
+        ii[8] = 10; //B43
+    }
+    if(time > 6)
+    {
+        ii[8] = 0; //B43
+    }
+    if(time > 2.8)
+    {
+        ii[9] = 10; //B7
+    }
+    if(time > 6)//
+    {
+        ii[9] = 0; //B7
+    }
+    if(time > 2.2)//
+    {
+        ii[10] = 10; //B8b
+    }
+    if(time > 5.7)//
+    {
+        ii[10] = 0; //B8b
+    }
+    
+    
+    freqI2 = i2freq;
+    freqHinge = hingefreq;
+    freqI1I3 = i1i3freq;
+    freqN3 = odontophorefreq;
+}
+
+void updateinputsIzSwallowBmoreaccurate(double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2, double odontophorefreq, double i1i3freq, double hingefreq, double i2freq)
+{
+    //Proposed swallow B code
+    // [0]- B31/32, [1] - B61/62, [2] - B8a, [3] - B3, [4] - B6, [5] - B9, [6] - B38, [7] - B10, [8] - B43, [9] - B7, [10] - B8b
+    if (time > 0.0)//I2 and B38
+    {
+        ii[0] = 10; //B31/32
+        ii[1] = 10; //B61/62
+        ii[6] = 10;//B38
+    }
+    if(time > .3){
+        ii[6] = 0; // B38
+    }
+    
+    if (time > 2.05)//I2
+    {
+        ii[0] = 0;//B61/62
+        ii[1] = 0;//B61/62
+    }
+    
+    if (time > 2.48)//Hinge
+    {
+        ii[9] = 10; //B7
+    }
+    
+    if (time> 6.62)//Hinge
+    {
+        ii[9] = 0; //B7
+    }
+    
+    if (time> 2.33)//I1/I3
+    {
+        ii[7] = 10; //B10
+    }
+    
+    if (time > 3.4)//I1/I3 //on for 4.3 til 6.62
+    {
+        ii[7] = 0; //B10
+        ii[4] = 10; //B6
+        ii[5] = 10; //B9
+    }
+    
+    if(time > 6.08){
+        ii[4] = 0; //B6
+        ii[5] = 0; //B9
+        ii[8] = 10; //B43
+    }
+    
+    if(time > 3.668){
+        ii[3] = 10; //B3
+    }
+    
+    if(time > 5.358){
+        ii[3] = 0; //B3
+    }
+    
+    if(time > 6.62){
+        ii[8] = 0; //B43
+    }
+    
+    if (time > frequencyiterationtime) //(time > 1.4) //Odontophore
+    {
+        ii[2] = 10; //B8a
+        ii[10] = 10; //B8b
+    }
+    
+    if (time > frequencyiterationtime + 2.85) //(time > 4.25) //Odontophore
+    {
+        ii[2] = 0; //B8a
+        ii[10] = 0; //B8b
+    }
+    
+    freqI2 = i2freq;
+    freqHinge = hingefreq;
+    freqI1I3 = i1i3freq;
+    freqN3 = odontophorefreq;
+}
+
 int rasterPlot(int index){
     if (getMembranePotential(index) >= 30){
         return 1;
@@ -3129,6 +3354,63 @@ bool updateRasterPlot(int & b31, int & b61, int & b8a, int & b3, int & b6, int &
         return false;
     }
 }
+
+void updateNeuromechanicalInputs(double time, double & freqI2, double & freqHinge, double & freqI1I3, double & freqN3, double & seaweedforce, double a, double frequencyiterationtime, double frequencyiterationtime2, double odontophorefreq, double i1i3freq, double hingefreq, double i2freq, int count)
+{
+    // The reference comment:
+    // [0]- B31/32, [1] - B61/62, [2] - B8a, [3] - B3, [4] - B6,
+    // [5] - B9, [6] - B38, [7] - B10, [8] - B43, [9] - B7, [10] - B8b
+    int thistimestep = 0;
+    if(numberColumns == 5){
+        
+        /* Pools: */
+        
+        //lots and lots of loops...
+        thistimestep = timeAdjuster(timearray, time, count);
+        //I1/I3: B3, B6, B9, B10, B38, B43
+        ii[3] = 10*i1i3poolarray[thistimestep];
+        ii[4] = 10*i1i3poolarray[thistimestep];
+        ii[5] = 10*i1i3poolarray[thistimestep];
+        ii[6] = 10*i1i3poolarray[thistimestep];
+        ii[7] = 10*i1i3poolarray[thistimestep];
+        ii[8] = 10*i1i3poolarray[thistimestep];
+        
+        //Hinge: B7
+        ii[9] = 10*hingepoolarray[thistimestep];
+        
+        //I2: B31/32 B61/62
+        ii[0] = 10*i2poolarray[thistimestep];
+        ii[1] = 10*i2poolarray[thistimestep];
+    
+        //I4: B8a and B8b
+        ii[2] = 10*i4poolarray[thistimestep];
+        ii[10] = 10*i4poolarray[thistimestep];
+     
+        freqI2 = i2freq;
+        freqHinge = hingefreq;
+        freqI1I3 = i1i3freq;
+        freqN3 = odontophorefreq;
+
+    }
+    else if (numberColumns == 6){
+        if(time == 0){
+            cout << "\n Input file did not have 5 columns, it had 6 columns. \n Did you mean to run the input file to the kinetic model? \n \n";
+        }
+    }
+    else{ /* The "unreachable" error message...*/
+        if(time == 0){
+            cout << "\n ERROR: Unreadable File... Too Many or Too Few Columns in File... \n If you want to use an input file to the Kinetic model, include a tab delimited text file with 6 columns \n If you want to use an input file to the Neuromechanical model, include a tab delimited text file with 5 columns \n \n";
+        }
+    }
+}
+
+/*
+double synapseModel(){
+    
+    return = g_syn * s * (E_syn - V_post)
+ 
+}
+*/
 
 
 //TATE notes
