@@ -3,7 +3,7 @@ import csv
 import sys
 sys.stdout.write('Starting... \r')
 import matplotlib
-#matplotlib.use('Agg') # force matplotlib to not use XWindows backend
+matplotlib.use('Agg') # force matplotlib to not use XWindows backend
 import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib.gridspec as gridspec
