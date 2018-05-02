@@ -166,7 +166,7 @@ double actI1I3array[1000];
 double acthingearray[1000];
 double seaweedforcearray[1000];
 double freqI2array[1000];
-double timearray[1000];
+double timearray[900000];
 
 double i1i3poolarray[900000];
 double i2poolarray[900000];
@@ -198,7 +198,7 @@ double membranePotential[NUMBEROFNEURONS];
 double membraneRecovery[NUMBEROFNEURONS];
 
 //Synapse Variables
-const double Gsyn = .3;
+const double Gsyn = .15;
 const double Esyn = 40;
 
 
@@ -2483,8 +2483,8 @@ bool openAndRead(string behaviorType)
             {
                 if(count > 0){ //first (0th) line of file is text
                     timearray[count-1] = atof(times.c_str());
-                    i1i3poolarray[count-1] = atof(as.c_str());
-                    i2poolarray[count-1] = atof(bs.c_str());
+                    i2poolarray[count-1] = atof(as.c_str());
+                    i1i3poolarray[count-1] = atof(bs.c_str());
                     i4poolarray[count-1] = atof(cs.c_str());
                     hingepoolarray[count-1] = atof(ds.c_str());
                 }
@@ -3369,14 +3369,16 @@ void updateNeuromechanicalInputs(double time, double & freqI2, double & freqHing
     int thistimestep = 0;
     if(numberColumns == 5){
         
-        /* Pools: */
-        
-        //lots and lots of loops...
+
+        /* Initialize values */
         thistimestep = timeAdjuster(timearray, time, count);
         double i1i3S = i1i3poolarray[thistimestep];
         double hingeS = hingepoolarray[thistimestep];
         double i2S = i2poolarray[thistimestep];
         double i4S = i4poolarray[thistimestep];
+        
+        
+        /* Pools: */
         
         //I1/I3: B3, B6, B9, B10, B38, B43
         ii[3] = synapseModel(i1i3S, membranePotential[3]);
@@ -3417,9 +3419,15 @@ void updateNeuromechanicalInputs(double time, double & freqI2, double & freqHing
 
 
 double synapseModel(double s, double Vpost){
-    
-    return ( Gsyn * s * (Esyn - Vpost) );
-    
+    double value = ( Gsyn * s * (Esyn - Vpost) );
+    if (value < 10)
+    {
+        return value;
+    }
+    else
+    {
+        return 10;
+    }
 }
 
 
