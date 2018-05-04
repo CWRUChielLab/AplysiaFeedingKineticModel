@@ -3209,11 +3209,11 @@ void updateinputsIzExampleSwallow(double time, double & freqI2, double & freqHin
     }
     if(time > 0.25)
     {
-        ii[6] = 10; //B38
+        ii[6] = 10; //B38 pro 0
     }
     if(time > 1.65)
     {
-        ii[6] = 0; //B38
+        ii[6] = 0; //B38 pro
     }
     if(time > 2.8)
     {
@@ -3394,7 +3394,7 @@ void updateNeuromechanicalInputs(double time, double & freqI2, double & freqHing
         //I2: B31/32 B61/62
         ii[0] = synapseModel(i2S, membranePotential[0]);
         ii[1] = synapseModel(i2S, membranePotential[1]);
-    
+
         //I4: B8a and B8b
         ii[2] = synapseModel(i4S, membranePotential[2]);
         ii[10] = synapseModel(i4S, membranePotential[10]);
@@ -3424,7 +3424,7 @@ double synapseModel(double s, double Vpost){
     {
         return value;
     }
-    else
+    else //current cap
     {
         return 10;
     }
