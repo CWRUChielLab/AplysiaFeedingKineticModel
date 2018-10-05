@@ -33,14 +33,14 @@ FILE *mechout;
 
 /* The constants */
 #define eom 1 /*Equation of Motion, if this is one - using complex equation of motion (NEOM)
-									if this is two - using simple equation of motion (SEOM)
-									if this is three - using the new simple equation of motion (NSEOM)*/
+                                    if this is two - using simple equation of motion (SEOM)
+                                    if this is three - using the new simple equation of motion (NSEOM)*/
 
 #define inputcheck 1 /*if this equals 1 will let you input neuron values into printmodel (ignores GA)
-						if this does not equal one, code will run a GA */
+                        if this does not equal one, code will run a GA */
 
 #define protractfit -1 /*if this equals 1 fitcalc will give fitness for protraction
-						if this does not equal one, fitness will be given at retraction only*/
+                        if this does not equal one, fitness will be given at retraction only*/
 
 // #define debug /* comment to hide debug print statements, uncomment to show */
 #ifdef debug
@@ -218,68 +218,68 @@ const double Esyn = 40;
 //calling the functions
 
 double updateforces (double x, double ytop, double ybottom, double a, double ydot, double xdot, double oldx, double oldytop, double oldybottom, double olda,
-					 double freqI2, double freqI1I3, double *aprimeI2, double *aprimeI1I3, double *force1, double *force2,
-					 double *F1, double *HingeAct, double hingefrequency, double Oangle, double *hingeforce, double *externalforce);
+                     double freqI2, double freqI1I3, double *aprimeI2, double *aprimeI1I3, double *force1, double *force2,
+                     double *F1, double *HingeAct, double hingefrequency, double Oangle, double *hingeforce, double *externalforce);
   //updateforces takes the current position of the odontophore and I1/I3 and the frequency of stimulation of the muscles
   //and calculates the forces on the odontophore
 
 double musclelengthI2 (double a, double x, double ytop, double ybottom, double Oangle);
-	//takes the position of the odontophore and calculates the length of the I2 muscle
+    //takes the position of the odontophore and calculates the length of the I2 muscle
 
 double fixI2length (double);
-	//adjusts I2 length to give results that are consistent with the biology
+    //adjusts I2 length to give results that are consistent with the biology
 
 double musclelengthI1I3 (double ytop, double ybottom);
-	//takes the position of I1/I3 and calculates the length of I1I3
+    //takes the position of I1/I3 and calculates the length of I1I3
 
 double musclevelocityI2 (double oldx, double oldytop, double oldybottom, double olda, double x, double ytop, double ybottom, double a, double Oangle);
-	//takes the current and previous positions of the odontophore and I1/I3 and calculates the velocity of I2
+    //takes the current and previous positions of the odontophore and I1/I3 and calculates the velocity of I2
 
 double musclevelocityI1I3 (double ytop, double ybottom, double oldytop, double oldybottom);
-	//takes the change in position of I1/I3 and calculates the velocity of I1/I3
+    //takes the change in position of I1/I3 and calculates the velocity of I1/I3
 
 double activationI2 (double frequency, double *aprime);
-	//calculates the activation of I2 given the frequency of stimulation
+    //calculates the activation of I2 given the frequency of stimulation
 
 double activationI1I3 (double frequency, double *aprime);
-	//calculates the activation of I1/I3 given the frequency of stimulation
+    //calculates the activation of I1/I3 given the frequency of stimulation
 
 double activationN3(double frequency, double *act, double time);
-	//calculates the activation of the shape change given the output frequency of N3
+    //calculates the activation of the shape change given the output frequency of N3
 
 double secondactivationN3(double frequency, double *act, double time);
-	//calculates the activation of the shape change given the output frequency of N3
+    //calculates the activation of the shape change given the output frequency of N3
 
 double passive (double);
-	//calculates the passive forces of a muscle given its normalized length
+    //calculates the passive forces of a muscle given its normalized length
 
 double lengthtens (double);
-	//calculates the length tension of a muscle given its normalized length
+    //calculates the length tension of a muscle given its normalized length
 
 double forcevelocity (double);
-	//calculates the force velocity of a muscle given its velocity
+    //calculates the force velocity of a muscle given its velocity
 
 double calchingeforce (double, double, double *);
-	//calculates the passive hinge force given the current position and velocity of the odontophore
+    //calculates the passive hinge force given the current position and velocity of the odontophore
 
 double calchingeforce2 (double, double);
 
 double updateposition (double *x, double *ytop, double *ybottom, double *a, double *xdot, double *ydot, double *adot, double f1, double f2, double actN3, double *Txc, double *Bxc, double *output, double *Oangle, double hingeforce);
-	//takes the forces on the odontophore and finds the new position of the odontophore and I1/I3
+    //takes the forces on the odontophore and finds the new position of the odontophore and I1/I3
 
 double calcphi (double x, double ytop, double ybottom, double a, double *Tphi, double *Bphi, double Oangle);
-	//calculates the angle of the straight piece of I2 with respect to the horizontal
-	//this is used in the calculation of I2's force
+    //calculates the angle of the straight piece of I2 with respect to the horizontal
+    //this is used in the calculation of I2's force
 
 double contactslope (double *, double *, double *, double *, double *, double Oangle);
-	//calculates the slope of the tangent angle at the point of contact between the odontophore and
-	//I1/I3 and updates the point of contact (xc, yc)
+    //calculates the slope of the tangent angle at the point of contact between the odontophore and
+    //I1/I3 and updates the point of contact (xc, yc)
 
 void fitcalc (double x, double a, double oldx, double olda, double & fitness);
-	//updates an individual's fitness
+    //updates an individual's fitness
 
 double power(double, double);
-	//takes the first number and raises it to the second number's power (positive powers only)
+    //takes the first number and raises it to the second number's power (positive powers only)
 
 double topEllipseSlope(double a, double xc, double rotation, double & yc);
 
@@ -288,13 +288,13 @@ double topEllipseSlope2(double a, double xc, double rotation, double & yc);
 double bottomEllipseSlope(double a, double xc, double rotation, double & yc);
 
 double topI1I3slope(double x, double xc);
-	/*slope of top I1I3 ring (bottom circle curve*/
+    /*slope of top I1I3 ring (bottom circle curve*/
 
 double bottomI1I3slope(double x, double xc);
-	/*slope of bottom I1I3 ring (top circle curve*/
+    /*slope of bottom I1I3 ring (top circle curve*/
 
 double OdonAngle(double x);
-	/*gives the odontophore's rotation given its position*/
+    /*gives the odontophore's rotation given its position*/
 
 double OdonAngle2(double x, double hingeforce, double radius, double oldodonangle);
     /* This code rotates the odontophore as a function of hinge force and current radius */
@@ -387,12 +387,12 @@ int main(int argc, char* argv[])
     if(openAndRead(first_argument) == true){
 
     /* Absent minded code variable definitions */
-	const char* filename = "SlugOutput2.txt";
+    const char* filename = "SlugOutput2.txt";
     const char* filenamei = "Izhikevich.txt";
-	const char* filename2 = "NeuralInputs.txt";
+    const char* filename2 = "NeuralInputs.txt";
     const char* filenamea = "animationinfo.txt";
     const char* filenamer = "rasterplotinfo.txt";
-	const char* filenameMechanics = "output-mechanics.csv";
+    const char* filenameMechanics = "output-mechanics.csv";
 
     //variables used to calculate the muscle forces and odontophore position - explained when initialized
     double x, y, xdot, ydot, adot, xacc;
@@ -405,17 +405,17 @@ int main(int argc, char* argv[])
     double hingeF = 0;
     double xctop, xcbottom, yctop, ycbottom, ytop, ybottom, topslope, bottomslope, rotation;
 
-	// variables for multi-ring I1/I3
-	double aprimeI1I3_MULTIRING[N_RINGS];
-	double freqI1I3_MULTIRING[N_RINGS];
-	double xctop_MULTIRING[N_RINGS];
-	double xcbottom_MULTIRING[N_RINGS];
-	double yctop_MULTIRING[N_RINGS];
-	double ycbottom_MULTIRING[N_RINGS];
-	double ytop_MULTIRING[N_RINGS];
-	double ybottom_MULTIRING[N_RINGS];
-	double topslope_MULTIRING[N_RINGS];
-	double bottomslope_MULTIRING[N_RINGS];
+    // variables for multi-ring I1/I3
+    double aprimeI1I3_MULTIRING[N_RINGS];
+    double freqI1I3_MULTIRING[N_RINGS];
+    double xctop_MULTIRING[N_RINGS];
+    double xcbottom_MULTIRING[N_RINGS];
+    double yctop_MULTIRING[N_RINGS];
+    double ycbottom_MULTIRING[N_RINGS];
+    double ytop_MULTIRING[N_RINGS];
+    double ybottom_MULTIRING[N_RINGS];
+    double topslope_MULTIRING[N_RINGS];
+    double bottomslope_MULTIRING[N_RINGS];
 
     //fitness calculation variables - explained when initialized
     double fitness;
@@ -450,7 +450,7 @@ int main(int argc, char* argv[])
     double frequencyiterationtime = startloop1; //Code added to run loops of frequency code
     double endfrequencytime = 1.1;  //BLARF CHANGED TO ONLY CYCLE ONCE
     double frequencystep = .1;
-	double frequencyiterationtime2 = 0;
+    double frequencyiterationtime2 = 0;
     double endfrequencytime2 = 0.1;
     double frequencystep2 = .1;  //BLARF CHANGED TO ONLY CYCLE ONCE
     double checker = 1;
@@ -461,7 +461,7 @@ int main(int argc, char* argv[])
     izout = fopen(filenamei, "w");
     animation = fopen(filenamea, "w");
     rasterplot = fopen(filenamer, "w");
-	mechout = fopen(filenameMechanics, "w");
+    mechout = fopen(filenameMechanics, "w");
     double seaweedforce = 0;  //This is added seaweed force on the odontophore
 
     //rasterplot information
@@ -500,35 +500,35 @@ int main(int argc, char* argv[])
     xctop = -0.0037;
     xcbottom = -0.0037;
 
-	debug_print("=== INITIALIZATION ===\n");
+    debug_print("=== INITIALIZATION ===\n");
     xcCalc(a, -1*x, odontophoreangle, xctop, xcbottom, yctop, ycbottom, topslope, bottomslope);
 
     ytop = yctop + sqrt(r*r - (-1*x - xctop)*(-1*x - xctop));
     ybottom = ycbottom - sqrt(r*r - (-1*x - xcbottom)*(-1*x - xcbottom)); //initializing contact point
 
-	// initialize multi-ring I1/I3
-	for (i=0; i<N_RINGS; i++)
-	{
-		xctop_MULTIRING[i] = -0.0037;
-		xcbottom_MULTIRING[i] = -0.0037;
-		xcCalc(a, -1*x+(i*2*r), odontophoreangle, xctop_MULTIRING[i], xcbottom_MULTIRING[i], yctop_MULTIRING[i], ycbottom_MULTIRING[i], topslope_MULTIRING[i], bottomslope_MULTIRING[i]);
+    // initialize multi-ring I1/I3
+    for (i=0; i<N_RINGS; i++)
+    {
+        xctop_MULTIRING[i] = -0.0037;
+        xcbottom_MULTIRING[i] = -0.0037;
+        xcCalc(a, -1*x+(i*2*r), odontophoreangle, xctop_MULTIRING[i], xcbottom_MULTIRING[i], yctop_MULTIRING[i], ycbottom_MULTIRING[i], topslope_MULTIRING[i], bottomslope_MULTIRING[i]);
 
-		if (isnan(xctop_MULTIRING[i])) // ring not contacting odontophore
-		{
-			// These constants are where a ring will stay if it is not in
-			// contact with the odontophore. They were chosen somewhat
-			// arbitrarily: they are the positions of the original one-torus
-			// I1/I3 model (always in contact with the odontophore) when fully
-			// contracted at 20 Hz with simultaneous 20 Hz hinge stimulation.
-			ytop_MULTIRING[i] = 0.00341734;
-			ybottom_MULTIRING[i] = -0.00341734;
-		}
-		else // ring contacting odontophore
-		{
-			ytop_MULTIRING[i]    = yctop_MULTIRING[i]    + sqrt(r*r - power((-1*x+(i*2*r) - xctop_MULTIRING[i]),2));
-			ybottom_MULTIRING[i] = ycbottom_MULTIRING[i] - sqrt(r*r - power((-1*x+(i*2*r) - xcbottom_MULTIRING[i]),2)); //initializing contact point
-		}
-	}
+        if (isnan(xctop_MULTIRING[i])) // ring not contacting odontophore
+        {
+            // These constants are where a ring will stay if it is not in
+            // contact with the odontophore. They were chosen somewhat
+            // arbitrarily: they are the positions of the original one-torus
+            // I1/I3 model (always in contact with the odontophore) when fully
+            // contracted at 20 Hz with simultaneous 20 Hz hinge stimulation.
+            ytop_MULTIRING[i] = 0.00341734;
+            ybottom_MULTIRING[i] = -0.00341734;
+        }
+        else // ring contacting odontophore
+        {
+            ytop_MULTIRING[i]    = yctop_MULTIRING[i]    + sqrt(r*r - power((-1*x+(i*2*r) - xctop_MULTIRING[i]),2));
+            ybottom_MULTIRING[i] = ycbottom_MULTIRING[i] - sqrt(r*r - power((-1*x+(i*2*r) - xcbottom_MULTIRING[i]),2)); //initializing contact point
+        }
+    }
 
     force1 = 0.000; //horizontal force acting on odontophore
     force2 = 0.000; //vertical force acting on the I1/I3 torus
@@ -555,7 +555,7 @@ int main(int argc, char* argv[])
     //freqI2 and freqI1I3 are the frequency of stimulation of I2 and I1/I3 respectively
     freqI2 = 0;
     freqI1I3 = 0;
-	freqN3 = 0;  //controls the length of the odontophore's major axis
+    freqN3 = 0;  //controls the length of the odontophore's major axis
 
     //component of the visco-elastic hinge force, F1 from Sutton et al 2002
     F1 = 0;
@@ -581,81 +581,81 @@ int main(int argc, char* argv[])
     RNinputcounter = 0;
     Hingeinputcounter = 0;
 
-		//neuralinputs = fopen(filename2, "r"); //sets up the text file for reading the input.
+        //neuralinputs = fopen(filename2, "r"); //sets up the text file for reading the input.
     //Print titles for SlugOutput2
-    fprintf(valout, "time	position	radius	angle	hingeF	fitness	freqI2	freqI1I3	freqN3	freqHinge	actI2	actI1I3	acthinge	fitness	seaweedforce\n");
+    fprintf(valout, "time\tposition\tradius\tangle\thingeF\tfitness\tfreqI2\tfreqI1I3\tfreqN3\tfreqHinge\tactI2\tactI1I3\tacthinge\tfitness\tseaweedforce\n");
     //Titles for Izhikevich output
-    fprintf(izout, "time	MembranePotentialo	MembraneRecoveryo	ofreq    i1i3freq    hfreq    i2freq    current\n");
+    fprintf(izout, "time\tMembranePotentialo\tMembraneRecoveryo\tofreq\ti1i3freq\thfreq\ti2freq\tcurrent\n");
     //Titles for animation info
-    fprintf(animation, "time	position	radius	angle	xctop	xcbottom	ytop	ybottom	i1i3radius	i2length	topangle	bottomangle	furthestbackx	furthestbacky	i1i3contacttopy	i1i3contactbottomy	ocontacttopx	ocontacttopy	ocontactbottomx	ocontactbottomy	bigxval	i1i3contactx	freqI2	freqI1I3	freqN3	freqHinge\n");
+    fprintf(animation, "time\tposition\tradius\tangle\txctop\txcbottom\tytop\tybottom\ti1i3radius\ti2length\ttopangle\tbottomangle\tfurthestbackx\tfurthestbacky\ti1i3contacttopy\ti1i3contactbottomy\tocontacttopx\tocontacttopy\tocontactbottomx\tocontactbottomy\tbigxval\ti1i3contactx\tfreqI2\tfreqI1I3\tfreqN3\tfreqHinge\n");
     //Titles for rasterplot info
     // [0]- B31/32, [1] - B61/62, [2] - B8a, [3] - B3, [4] - B6, [5] - B9, [6] - B38, [7] - B10, [8] - B43, [9] - B7, [10] - B8b
-    fprintf(rasterplot, "time	B31/32	B61/62	B8a	B3	B6	B9	B38	B10	B43	B7	B8b\n");
+    fprintf(rasterplot, "time\tB31/32\tB61/62\tB8a\tB3\tB6\tB9\tB38\tB10\tB43\tB7\tB8b\n");
 
-	fprintf(mechout, "time,x,ytop,ybottom,");
-	for (int i = 0; i < N_RINGS; i++)
-	{
-		fprintf(mechout, "ytop%d,ybottom%d,", i, i);
-	}
-	fprintf(mechout, "a,odontophoreangle,lengthofI2,topphiangleofi2,bottomphiangleofi2,i1i3contacttopy,i1i3contactbottomy,ocontacttopx,ocontacttopy,ocontactbottomx,ocontactbottomy\n");
+    fprintf(mechout, "time,x,ytop,ybottom,");
+    for (int i = 0; i < N_RINGS; i++)
+    {
+        fprintf(mechout, "ytop%d,ybottom%d,", i, i);
+    }
+    fprintf(mechout, "a,odontophoreangle,lengthofI2,topphiangleofi2,bottomphiangleofi2,i1i3contacttopy,i1i3contactbottomy,ocontacttopx,ocontacttopy,ocontactbottomx,ocontactbottomy\n");
 
     /* Reading the file for neural input */
     i = 0;
     j = 1;
 
         /*while (j<inputrows)
-		{
-		printf("Scan3 %i \n", j);
+        {
+        printf("Scan3 %i \n", j);
 
-		i = j;
-		printf("Scan4 %i \n", j);
+        i = j;
+        printf("Scan4 %i \n", j);
 
-		fscanf(neuralinputs, "%f	%f	%f	%f	%f	%f	%f	%f	%f	%f", &neuralvariables[1][i], &neuralvariables[2][i],&neuralvariables[3][i], &neuralvariables[4][i], &neuralvariables[5][i], &neuralvariables[6][i],&neuralvariables[7][i], &neuralvariables[8][i], &neuralvariables[9][i], &neuralvariables[10][i]);
+        fscanf(neuralinputs, "%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f", &neuralvariables[1][i], &neuralvariables[2][i],&neuralvariables[3][i], &neuralvariables[4][i], &neuralvariables[5][i], &neuralvariables[6][i],&neuralvariables[7][i], &neuralvariables[8][i], &neuralvariables[9][i], &neuralvariables[10][i]);
 
-		printf("Scan %i \n", j);
-		j=j+1;
-		printf("Scan2 %i \n", j);
+        printf("Scan %i \n", j);
+        j=j+1;
+        printf("Scan2 %i \n", j);
 
-		}*/
+        }*/
 
-	/*indata.open("NeuralInputs.txt"); // opens the file
+    /*indata.open("NeuralInputs.txt"); // opens the file
 
-	 if(!indata)
-	  { // file couldn't be opened
-		 cerr << "Error Spam: file could not be opened" << endl;
-		 exit(1);
-	  }
-	 else
-	 {
-		 cout << "Found It!" << endl;
-	 }  */
+     if(!indata)
+      { // file couldn't be opened
+         cerr << "Error Spam: file could not be opened" << endl;
+         exit(1);
+      }
+     else
+     {
+         cout << "Found It!" << endl;
+     }  */
 /*  BLARF COMMENT REMOVING READING INPUT
 // Reading the data into the model
-		indata >> num;
+        indata >> num;
 
-		while ( !indata.eof() )
-		{
-		// keep reading until end-of-file
-
-
-
-		if (rowcounter > 11)
-		{
-			rowcounter = 0;
-			columncounter++;
-		}
-
-		neuralvariables[rowcounter][columncounter] = num;
-
-		//cout << "The next number is " << neuralvariables[rowcounter][columncounter] << endl;
-		rowcounter = rowcounter +1;
+        while ( !indata.eof() )
+        {
+        // keep reading until end-of-file
 
 
-		//cout << columncounter << endl;
-		//cout << rowcounter << endl;
 
-		indata >> num; // sets EOF flag if no value found
-  	   }
+        if (rowcounter > 11)
+        {
+            rowcounter = 0;
+            columncounter++;
+        }
+
+        neuralvariables[rowcounter][columncounter] = num;
+
+        //cout << "The next number is " << neuralvariables[rowcounter][columncounter] << endl;
+        rowcounter = rowcounter +1;
+
+
+        //cout << columncounter << endl;
+        //cout << rowcounter << endl;
+
+        indata >> num; // sets EOF flag if no value found
+       }
 
    indata.close();
    cout << "End-of-file reached.." << endl;
@@ -663,13 +663,13 @@ int main(int argc, char* argv[])
 
 BLARF COMMENT REMOVING READING INPUT END */
 
-			//********ENDING INITIALIZATION********
+            //********ENDING INITIALIZATION********
 
         /* Running the model here */
-        /*printf("%f	%f \n", neuralvariables[1][I2inputcounter], neuralvariables[2][I2inputcounter]);
-         printf("%f	%f \n", neuralvariables[1][1], neuralvariables[2][1]);
+        /*printf("%f\t%f \n", neuralvariables[1][I2inputcounter], neuralvariables[2][I2inputcounter]);
+         printf("%f\t%f \n", neuralvariables[1][1], neuralvariables[2][1]);
 
-         printf("%f	%f \n", neuralvariables[1][3], neuralvariables[2][3]);*/
+         printf("%f\t%f \n", neuralvariables[1][3], neuralvariables[2][3]);*/
 
         /* WHILE LOOP REMOVED  while(frequencyiterationtime2 < endfrequencytime2) //a second loop to scan two dimensions
          {
@@ -746,10 +746,10 @@ BLARF COMMENT REMOVING READING INPUT END */
     //fitness = x; //fitness for the maximum protraction trials of biting.
     time = 0;
 
-	debug_print("\n=== ENTERING MAIN LOOP ===\n");
-	printf("Dreaming the impossible dream \n" );
-	while(time < RunDuration) //runs the individual until time is greater than RunDuration
-		{
+    debug_print("\n=== ENTERING MAIN LOOP ===\n");
+    printf("Dreaming the impossible dream \n" );
+    while(time < RunDuration) //runs the individual until time is greater than RunDuration
+        {
         //NeuronOutput is from 0 to 1, multip ly be 20 to get freq from 0 to 20
         freqI2 = 0;//circ.NeuronOutput(1) * 20;
         freqI1I3 = 0;//circ.NeuronOutput(2) * 20;
@@ -811,12 +811,12 @@ BLARF COMMENT REMOVING READING INPUT END */
 
         if(iztimer > izouttimer){
                 //Izhikevich Model Output
-            fprintf(izout , "%f	%f	%f	%f	%f	%f	%f	%f	\n", time, membranePotential[3], membraneRecovery[3], odontophorefreq, i1i3freq, hingefreq, i2freq, ii[3]);
+            fprintf(izout , "%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t\n", time, membranePotential[3], membraneRecovery[3], odontophorefreq, i1i3freq, hingefreq, i2freq, ii[3]);
             iztimer = 0.0;
         }
 
         if(peak){
-            fprintf(rasterplot, "%f	%d	%d	%d	%d	%d	%d	%d	%d	%d	%d	%d	\n", time, peakB3132, peakB6162, peakB8a, peakB3, peakB6, peakB9, peakB38, peakB10, peakB43, peakB7, peakB8b);
+            fprintf(rasterplot, "%f\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t\n", time, peakB3132, peakB6162, peakB8a, peakB3, peakB6, peakB9, peakB38, peakB10, peakB43, peakB7, peakB8b);
         }
 
         peak = false;
@@ -838,26 +838,26 @@ BLARF COMMENT REMOVING READING INPUT END */
         if (printtimer > timer) //function will only print every printtimer seconds - keeps file from being too big
         {
             //print statement
-            //fprintf(valout, "%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	\n",time, x, freqI2, freqI1I3, freqN3, actN3, a, fitness, aprimeI2 - Ao, aprimeI1I3 - Ao,  LI2opt*musclelengthI2 (a, x, y));
-            //fprintf(valout, "%f	%f	%f	%f	%f	\n",x, printvar2, printvar, passive(printvar), passive(printvar)*2*pi*FnotI2);
+            //fprintf(valout, "%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t\n",time, x, freqI2, freqI1I3, freqN3, actN3, a, fitness, aprimeI2 - Ao, aprimeI1I3 - Ao,  LI2opt*musclelengthI2 (a, x, y));
+            //fprintf(valout, "%f\t%f\t%f\t%f\t%f\t\n",x, printvar2, printvar, passive(printvar), passive(printvar)*2*pi*FnotI2);
 
-            //fprintf(valout, "%f	%f	%f	%f	%f	%f	%f	%f	%f	%f\n", x, a, OdonAngle(x), lengthtens(printvar), printvar2, force1 - calchingeforce(x, xdot, &F1), calchingeforce(x,xdot,&F1), lengthtens(musclelengthI1I3(ytop,ybottom)), printvar, force2 * printvar);
+            //fprintf(valout, "%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n", x, a, OdonAngle(x), lengthtens(printvar), printvar2, force1 - calchingeforce(x, xdot, &F1), calchingeforce(x,xdot,&F1), lengthtens(musclelengthI1I3(ytop,ybottom)), printvar, force2 * printvar);
 
-            //fprintf(valout, "%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	\n", time, x, ybottom, ytop, a, freqI2, freqI1I3, I1I3metafreq1, I1I3metafreq2, I1I3metafreq3, freqN3, freqHinge, -calchingeforce2(x, xdot),  -activehingeforce(acthinge, xdot, x), printvar2, dummyvariable, printvar, acthinge, aprimeI1I3, aprimeI2, OdonAngle(x), fitness);
+            //fprintf(valout, "%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t\n", time, x, ybottom, ytop, a, freqI2, freqI1I3, I1I3metafreq1, I1I3metafreq2, I1I3metafreq3, freqN3, freqHinge, -calchingeforce2(x, xdot),  -activehingeforce(acthinge, xdot, x), printvar2, dummyvariable, printvar, acthinge, aprimeI1I3, aprimeI2, OdonAngle(x), fitness);
 
             //This is the Fprint for the simulations in the example PDF's I sent Hillel.
-            fprintf(valout, "%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f \n", time, x, a, odontophoreangle, hingeF, fitness, freqI2, freqI1I3, freqN3, freqHinge, aprimeI2, aprimeI1I3, acthinge, fitness, seaweedforce);
+            fprintf(valout, "%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f \n", time, x, a, odontophoreangle, hingeF, fitness, freqI2, freqI1I3, freqN3, freqHinge, aprimeI2, aprimeI1I3, acthinge, fitness, seaweedforce);
 
-            fprintf(animation, "%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	%f	\n", time, x, a, odontophoreangle, xctop, xcbottom, ytop, ybottom, y, lengthofI2, topphiangleofi2, bottomphiangleofi2,furthestbackxpoint,furthestbackypoint,i1i3contacttopy,i1i3contactbottomy,ocontacttopx,ocontacttopy,ocontactbottomx,ocontactbottomy,bigxval,i1i3contactx,freqI2, freqI1I3, freqN3, freqHinge);
+            fprintf(animation, "%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t\n", time, x, a, odontophoreangle, xctop, xcbottom, ytop, ybottom, y, lengthofI2, topphiangleofi2, bottomphiangleofi2,furthestbackxpoint,furthestbackypoint,i1i3contacttopy,i1i3contactbottomy,ocontacttopx,ocontacttopy,ocontactbottomx,ocontactbottomy,bigxval,i1i3contactx,freqI2, freqI1I3, freqN3, freqHinge);
             //Izhikevich Model Output
-            //fprintf(izout , "%f	%f	%f	\n", time, membranePotential, membraneRecovery);
+            //fprintf(izout , "%f\t%f\t%f\t\n", time, membranePotential, membraneRecovery);
 
-			fprintf(mechout, "%f,%f,%f,%f,", time, x, ytop, ybottom);
-			for (int i = 0; i < N_RINGS; i++)
-			{
-				fprintf(mechout, "%f,%f,", ytop_MULTIRING[i], ybottom_MULTIRING[i]);
-			}
-			fprintf(mechout, "%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f\n", a, odontophoreangle, lengthofI2, topphiangleofi2, bottomphiangleofi2, i1i3contacttopy, i1i3contactbottomy, ocontacttopx, ocontacttopy, ocontactbottomx, ocontactbottomy);
+            fprintf(mechout, "%f,%f,%f,%f,", time, x, ytop, ybottom);
+            for (int i = 0; i < N_RINGS; i++)
+            {
+                fprintf(mechout, "%f,%f,", ytop_MULTIRING[i], ybottom_MULTIRING[i]);
+            }
+            fprintf(mechout, "%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f\n", a, odontophoreangle, lengthofI2, topphiangleofi2, bottomphiangleofi2, i1i3contacttopy, i1i3contactbottomy, ocontacttopx, ocontacttopy, ocontactbottomx, ocontactbottomy);
 
             //resets printtimer
             printtimer = 0.0;
@@ -865,7 +865,7 @@ BLARF COMMENT REMOVING READING INPUT END */
 
 
         if (time > 0) //fitness function ignores the initial jiggle into the equilibrium position
-						   // because of the delay in the activation function, no muscle moves before time = 0.4
+                           // because of the delay in the activation function, no muscle moves before time = 0.4
         {
             //updates the fitness / surface area / fitcheck
             fitcalc(x, a, oldx, olda, fitness); //commenting out the old fitness
@@ -879,19 +879,19 @@ BLARF COMMENT REMOVING READING INPUT END */
         }
     }
 
-	debug_print("\n=== EXITING MAIN LOOP ===\n");
-    printf("that's another simulation completed at %f	%f\n", frequencyiterationtime, frequencyiterationtime2);
+    debug_print("\n=== EXITING MAIN LOOP ===\n");
+    printf("that's another simulation completed at %f\t%f\n", frequencyiterationtime, frequencyiterationtime2);
 
-		/* While loop Removal
-    fprintf(valout, "%f	%f	%f \n", frequencyiterationtime, frequencyiterationtime2, fitness);
-	printf("that's another simulation completed at %f	%f\n", frequencyiterationtime, frequencyiterationtime2);
+        /* While loop Removal
+    fprintf(valout, "%f\t%f\t%f \n", frequencyiterationtime, frequencyiterationtime2, fitness);
+    printf("that's another simulation completed at %f\t%f\n", frequencyiterationtime, frequencyiterationtime2);
     frequencyiterationtime = frequencyiterationtime + frequencystep;
-	}
+    }
 
-	frequencyiterationtime = startloop1;
+    frequencyiterationtime = startloop1;
     frequencyiterationtime2 = frequencyiterationtime2 + frequencystep2;
 
-	} While loop Removal end */
+    } While loop Removal end */
     }
     else{
         printf("\nERROR: Unreadable File... Too Many or Too Few Columns in File... \nKINETIC MODEL INPUT: \n If you want to use an input file to the Kinetic model, include a tab delimited text file with 6 columns \n Alternatively, you can rename a previous SlugOutput2.txt file as SlugInput2.txt (should have 15 columns), and run that as input. \nNEUROMECHANICAL MODEL INPUT: \n If you want to use an input file to the Neuromechanical model, include a tab delimited text file with 5 columns \n \n \n");
@@ -900,16 +900,16 @@ BLARF COMMENT REMOVING READING INPUT END */
 
 
 
-	/* The absent minded code that just runs after everything else works */
+    /* The absent minded code that just runs after everything else works */
 
 
 
 /* Putting in my function definitions */
 double updateforces (double x, double ytop, double ybottom, double a, double ydot, double xdot, double oldx, double oldytop, double oldybottom, double olda,
-					 double freqI2, double freqI1I3, double *aprimeI2, double *aprimeI1I3, double *force1, double *force2,
-					 double *F1, double *HingeAct, double hingefrequency, double Oangle, double *hinge, double *externalforce)
+                     double freqI2, double freqI1I3, double *aprimeI2, double *aprimeI1I3, double *force1, double *force2,
+                     double *F1, double *HingeAct, double hingefrequency, double Oangle, double *hinge, double *externalforce)
 
-	/*updateforces takes the new and old position of the odontophore (x, oldx), the new and old radius of the I1/I3 torus
+    /*updateforces takes the new and old position of the odontophore (x, oldx), the new and old radius of the I1/I3 torus
 (y, oldy), the new and old major axes (a, olda), the velocity of the odontophore (xdot) velocity of the radius of the torus
 (ydot), and the frequency of muscle stimulation for I2 and I1/I3 (freqI2, freqI1I3).  The function uses these to calculate
 the new horizontal force on the odontophore (f1 in the model, force1 in function) and the new vertical force on the I1/I3
@@ -926,68 +926,68 @@ done on 5/14/02 in Val's first notebook.  They are also in the Guidebook pg. 12-
 calculated using the function calchingeforce.  Since the hinge force was characterized from the horizontal direction it could
 be added directly to the horizontal force acting on the odontophore.*/
 
-	{
-		double lengthI2, lengthI1I3, velocityI2, velocityI1I3, actI2, actI1I3, tensionI2, tensionI1I3;
-		double passiveI2, passiveI1I3;
-		double acthinge;
-		//double legx, legy, hyp; BLARF
+    {
+        double lengthI2, lengthI1I3, velocityI2, velocityI1I3, actI2, actI1I3, tensionI2, tensionI1I3;
+        double passiveI2, passiveI1I3;
+        double acthinge;
+        //double legx, legy, hyp; BLARF
 
 
-		//double Tphi, Bphi, A, B; BLARF
-		//double vertI2force, horI2force; BLARF
+        //double Tphi, Bphi, A, B; BLARF
+        //double vertI2force, horI2force; BLARF
 
-		double Tphi, Bphi;
+        double Tphi, Bphi;
 
-		double effectivePhi;
+        double effectivePhi;
 
-		//calculate the muscle lengths, are normalized
-		lengthI2 = musclelengthI2(a, x, ytop, ybottom, Oangle);   //this will update phi
-		lengthI2 = fixI2length (lengthI2);   //rescaling of I2 length to stay on lengthtension curve
-
-
-
-		lengthI1I3 = musclelengthI1I3 (ytop, ybottom);
-
-		// cancelling output for now *output = lengthI2;
-
-		//calculating muscle velocities, are normalized
-		velocityI2 = musclevelocityI2 (oldx, oldytop, oldybottom, olda, x, ytop, ybottom, a, Oangle);
-		velocityI1I3 = musclevelocityI1I3 (ytop, ybottom, oldytop, oldybottom);
-
-		//calculating activations
-		actI2 = activationI2 (freqI2, aprimeI2);
-		actI1I3 = activationI1I3 (freqI1I3, aprimeI1I3);
-		acthinge = activationI2 (hingefrequency, HingeAct);
-
-		//calculating the passive muscle forces
-		passiveI2 = FnotI2 * passive(lengthI2);
-		passiveI1I3 = 0.0; //taking out passive I1I3 forces FnotI1I3 * passive(lengthI1I3);
-
-		//calculating the muscle tensions
-		tensionI2 = FnotI2 * lengthtens (lengthI2) * forcevelocity (velocityI2) * actI2 + 1.0*passiveI2; //BLARF 1.8 for stable bites
-		tensionI1I3 = FnotI1I3 * lengthtens (lengthI1I3) * forcevelocity (velocityI1I3) * actI1I3 + passiveI1I3/2;
-
-		//update phi
-		calcphi (x, ytop, ybottom, a, &Tphi, &Bphi, Oangle);
-		effectivePhi = (Tphi - Bphi)/2;
-
-		//if(cos(effectivePhi) < 0)
-		//effectivePhi = pi/2;
-
-		//based on tensions, calculating force one and force two
-		//geometry done 5/14/02  --  pg 11 and 12 in Val's first lab notebook
-		//pg. 12-13 in Guidebook
-
-		//only including the elastic component visco = calchingeforce (x, xdot, F1);
-		*hinge = calchingeforce2(x,xdot) + activehingeforce(acthinge, xdot, x);
-		//ActiveHingeForce Here
+        //calculate the muscle lengths, are normalized
+        lengthI2 = musclelengthI2(a, x, ytop, ybottom, Oangle);   //this will update phi
+        lengthI2 = fixI2length (lengthI2);   //rescaling of I2 length to stay on lengthtension curve
 
 
-		//Putting in an active hinge with a basic Zajac McLT curve
 
-		*force1 = 2 * pi * tensionI2 * cos(effectivePhi) + *hinge + *externalforce;   ///JEFF THIS IS WHERE THE EXTERNAL FORCE GOES!!!!
+        lengthI1I3 = musclelengthI1I3 (ytop, ybottom);
 
-		*force2 =  2 * tensionI1I3 * pi; //+ 2*pi*tensionI2*sin(effectivePhi) taking out I2component on I3 simplemodel;
+        // cancelling output for now *output = lengthI2;
+
+        //calculating muscle velocities, are normalized
+        velocityI2 = musclevelocityI2 (oldx, oldytop, oldybottom, olda, x, ytop, ybottom, a, Oangle);
+        velocityI1I3 = musclevelocityI1I3 (ytop, ybottom, oldytop, oldybottom);
+
+        //calculating activations
+        actI2 = activationI2 (freqI2, aprimeI2);
+        actI1I3 = activationI1I3 (freqI1I3, aprimeI1I3);
+        acthinge = activationI2 (hingefrequency, HingeAct);
+
+        //calculating the passive muscle forces
+        passiveI2 = FnotI2 * passive(lengthI2);
+        passiveI1I3 = 0.0; //taking out passive I1I3 forces FnotI1I3 * passive(lengthI1I3);
+
+        //calculating the muscle tensions
+        tensionI2 = FnotI2 * lengthtens (lengthI2) * forcevelocity (velocityI2) * actI2 + 1.0*passiveI2; //BLARF 1.8 for stable bites
+        tensionI1I3 = FnotI1I3 * lengthtens (lengthI1I3) * forcevelocity (velocityI1I3) * actI1I3 + passiveI1I3/2;
+
+        //update phi
+        calcphi (x, ytop, ybottom, a, &Tphi, &Bphi, Oangle);
+        effectivePhi = (Tphi - Bphi)/2;
+
+        //if(cos(effectivePhi) < 0)
+        //effectivePhi = pi/2;
+
+        //based on tensions, calculating force one and force two
+        //geometry done 5/14/02  --  pg 11 and 12 in Val's first lab notebook
+        //pg. 12-13 in Guidebook
+
+        //only including the elastic component visco = calchingeforce (x, xdot, F1);
+        *hinge = calchingeforce2(x,xdot) + activehingeforce(acthinge, xdot, x);
+        //ActiveHingeForce Here
+
+
+        //Putting in an active hinge with a basic Zajac McLT curve
+
+        *force1 = 2 * pi * tensionI2 * cos(effectivePhi) + *hinge + *externalforce;   ///JEFF THIS IS WHERE THE EXTERNAL FORCE GOES!!!!
+
+        *force2 =  2 * tensionI1I3 * pi; //+ 2*pi*tensionI2*sin(effectivePhi) taking out I2component on I3 simplemodel;
 
         //valueTBD = aprimeI2; //TATE
 
@@ -998,88 +998,88 @@ be added directly to the horizontal force acting on the odontophore.*/
 
 
 
-		return (lengthI2);
-	}
+        return (lengthI2);
+    }
 
 
 double calcphi (double x, double ytop, double ybottom, double a, double *Tphi, double *Bphi, double Oangle)
 
-	/*The function calcphi takes the position and shape of the odontophore (x, y, a) and calculates the angle of the straight
+    /*The function calcphi takes the position and shape of the odontophore (x, y, a) and calculates the angle of the straight
 section of I2 with respect to the horizontal.  The output is in the form of the length of the legs of the right triangle that
 contains phi.  The function updateforces can then used these lengths to convert muscle tension to muscle force in the desired
 direction.*/
 
-	{
-		double x1, Ty1, By1; //point of I2 contact at back of I1/I3
-		double Tx2, Bx2, Ty2, By2; //point of contact of straight section of I2 on odontophore
-		double Tx1prime, Bx1prime, Ty1prime, By1prime, Tx2prime, Bx2prime, Ty2prime, By2prime;
-		double b = (0.005 * sqrt(0.005)/sqrt(a)); //minor axis of the odontophore
+    {
+        double x1, Ty1, By1; //point of I2 contact at back of I1/I3
+        double Tx2, Bx2, Ty2, By2; //point of contact of straight section of I2 on odontophore
+        double Tx1prime, Bx1prime, Ty1prime, By1prime, Tx2prime, Bx2prime, Ty2prime, By2prime;
+        double b = (0.005 * sqrt(0.005)/sqrt(a)); //minor axis of the odontophore
 
-		//double rotation = OdonAngle(x);
-		double rotation = Oangle;
-		double backslope = tan((90-rotation)*pi/180);
-		double backxpoint = -1 * a * a * backslope/(sqrt(b*b + a*a*backslope*backslope));
-		double backypoint = b * sqrt(1 - backxpoint * backxpoint/(a * a));
-		double furthestx = backxpoint*cos((-1*rotation)*pi/180) + backypoint*sin((-1*rotation)*pi/180);
+        //double rotation = OdonAngle(x);
+        double rotation = Oangle;
+        double backslope = tan((90-rotation)*pi/180);
+        double backxpoint = -1 * a * a * backslope/(sqrt(b*b + a*a*backslope*backslope));
+        double backypoint = b * sqrt(1 - backxpoint * backxpoint/(a * a));
+        double furthestx = backxpoint*cos((-1*rotation)*pi/180) + backypoint*sin((-1*rotation)*pi/180);
 
-		double angle = rotation*pi/180;
+        double angle = rotation*pi/180;
 
-		if (x < -1*furthestx - r)  //if I2 is attached to the odontophore
-		{
+        if (x < -1*furthestx - r)  //if I2 is attached to the odontophore
+        {
 
 
-			//calculate the point where I2 connects to I1/I3
-			x1 = -x - r;
+            //calculate the point where I2 connects to I1/I3
+            x1 = -x - r;
             //x1 = 0 - r; //TATE - This breaks the model
-			Ty1 = ytop;
-			By1 = ybottom;
+            Ty1 = ytop;
+            By1 = ybottom;
 
-			//rotate the two points
-			Tx1prime = x1*cos(angle)+Ty1*sin(angle);
-			Ty1prime = Ty1*cos(angle)-x1*sin(angle);
+            //rotate the two points
+            Tx1prime = x1*cos(angle)+Ty1*sin(angle);
+            Ty1prime = Ty1*cos(angle)-x1*sin(angle);
 
-			Bx1prime = x1*cos(angle)+By1*sin(angle);
-			By1prime = By1*cos(angle)-x1*sin(angle);
+            Bx1prime = x1*cos(angle)+By1*sin(angle);
+            By1prime = By1*cos(angle)-x1*sin(angle);
 
-			//find the (x2, y2) points in the rotated case
-			if(Ty1prime < 0 && Tx1prime > 0)
-				Tx2prime = (a * a * b * b * Tx1prime + sqrt(a * a * a * a * Ty1prime * Ty1prime * (a * a * Ty1prime * Ty1prime - a * a * b * b + b * b * Tx1prime * Tx1prime)))/(b * b * Tx1prime * Tx1prime + a * a * Ty1prime * Ty1prime);
-			else
-				Tx2prime = (a * a * b * b * Tx1prime - sqrt(a * a * a * a * Ty1prime * Ty1prime * (a * a * Ty1prime * Ty1prime - a * a * b * b + b * b * Tx1prime * Tx1prime)))/(b * b * Tx1prime * Tx1prime + a * a * Ty1prime * Ty1prime);
+            //find the (x2, y2) points in the rotated case
+            if(Ty1prime < 0 && Tx1prime > 0)
+                Tx2prime = (a * a * b * b * Tx1prime + sqrt(a * a * a * a * Ty1prime * Ty1prime * (a * a * Ty1prime * Ty1prime - a * a * b * b + b * b * Tx1prime * Tx1prime)))/(b * b * Tx1prime * Tx1prime + a * a * Ty1prime * Ty1prime);
+            else
+                Tx2prime = (a * a * b * b * Tx1prime - sqrt(a * a * a * a * Ty1prime * Ty1prime * (a * a * Ty1prime * Ty1prime - a * a * b * b + b * b * Tx1prime * Tx1prime)))/(b * b * Tx1prime * Tx1prime + a * a * Ty1prime * Ty1prime);
 
-			if(Ty1prime > 0 || Tx1prime > a || Tx1prime < -1*a)
-				Ty2prime = b*sqrt(1-Tx2prime*Tx2prime/(a*a));
-			else
-				Ty2prime = -1*b*sqrt(1-Tx2prime*Tx2prime/(a*a));
+            if(Ty1prime > 0 || Tx1prime > a || Tx1prime < -1*a)
+                Ty2prime = b*sqrt(1-Tx2prime*Tx2prime/(a*a));
+            else
+                Ty2prime = -1*b*sqrt(1-Tx2prime*Tx2prime/(a*a));
 
 
-			if(By1prime < 0 && Bx1prime > 0)
-				Bx2prime = (a * a * b * b * Bx1prime + sqrt(a * a * a * a * By1prime * By1prime * (a * a * By1prime * By1prime - a * a * b * b + b * b * Bx1prime * Bx1prime)))/(b * b * Bx1prime * Bx1prime + a * a * By1prime * By1prime);
-			else
-				Bx2prime = (a * a * b * b * Bx1prime - sqrt(a * a * a * a * By1prime * By1prime * (a * a * By1prime * By1prime - a * a * b * b + b * b * Bx1prime * Bx1prime)))/(b * b * Bx1prime * Bx1prime + a * a * By1prime * By1prime);
+            if(By1prime < 0 && Bx1prime > 0)
+                Bx2prime = (a * a * b * b * Bx1prime + sqrt(a * a * a * a * By1prime * By1prime * (a * a * By1prime * By1prime - a * a * b * b + b * b * Bx1prime * Bx1prime)))/(b * b * Bx1prime * Bx1prime + a * a * By1prime * By1prime);
+            else
+                Bx2prime = (a * a * b * b * Bx1prime - sqrt(a * a * a * a * By1prime * By1prime * (a * a * By1prime * By1prime - a * a * b * b + b * b * Bx1prime * Bx1prime)))/(b * b * Bx1prime * Bx1prime + a * a * By1prime * By1prime);
 
-			if(By1prime > 0 || Bx1prime > a || Bx1prime < -1*a)
-				By2prime = b*sqrt(1-Bx2prime*Bx2prime/(a*a));
-			else
-				By2prime = -1*b*sqrt(1-Bx2prime*Bx2prime/(a*a));
+            if(By1prime > 0 || Bx1prime > a || Bx1prime < -1*a)
+                By2prime = b*sqrt(1-Bx2prime*Bx2prime/(a*a));
+            else
+                By2prime = -1*b*sqrt(1-Bx2prime*Bx2prime/(a*a));
 
-			//rotate points back
-			Tx2 = Tx2prime*cos(-1*angle) + Ty2prime*sin(-1*angle);
-			Ty2 = Ty2prime*cos(-1*angle) - Tx2prime*sin(-1*angle);
+            //rotate points back
+            Tx2 = Tx2prime*cos(-1*angle) + Ty2prime*sin(-1*angle);
+            Ty2 = Ty2prime*cos(-1*angle) - Tx2prime*sin(-1*angle);
 
-			Bx2 = Bx2prime*cos(-1*angle) + By2prime*sin(-1*angle);
-			By2 = By2prime*cos(-1*angle) - Bx2prime*sin(-1*angle);
+            Bx2 = Bx2prime*cos(-1*angle) + By2prime*sin(-1*angle);
+            By2 = By2prime*cos(-1*angle) - Bx2prime*sin(-1*angle);
 
-			//calculate phi's
-			*Tphi = atan2(Ty1 - Ty2, x1 - Tx2);
-			*Bphi = atan2(By1 - By2, x1 - Bx2);
+            //calculate phi's
+            *Tphi = atan2(Ty1 - Ty2, x1 - Tx2);
+            *Bphi = atan2(By1 - By2, x1 - Bx2);
 
-		}
-		else //if I2 is not attached to the odontophore, phi is 90 degrees
-		{
-			*Tphi = pi/2;
-			*Bphi = -pi/2;
-		}
+        }
+        else //if I2 is not attached to the odontophore, phi is 90 degrees
+        {
+            *Tphi = pi/2;
+            *Bphi = -pi/2;
+        }
         //Tate
         /*double abc;
         if(((Bx2+x) > 0) && ((Bx2+x) <=0)){
@@ -1090,7 +1090,7 @@ direction.*/
         }*/
 
 
-		//Tate: returns
+        //Tate: returns
         furthestbackxpoint = backxpoint;
         furthestbackypoint = backypoint;
 
@@ -1106,13 +1106,13 @@ direction.*/
 
         i1i3contactx = x1 + x;
 
-		return 0;
-	}
+        return 0;
+    }
 
 
 double musclelengthI2 (double a, double x, double ytop, double ybottom, double Oangle)
 
-	/* musclelengthI2 uses the shape of the odontophore (a), the positions of the odontophore (x) and the major radius of
+    /* musclelengthI2 uses the shape of the odontophore (a), the positions of the odontophore (x) and the major radius of
 I1/I3 (y) to calculate the length of I2.  The function first determines if I2 has disengaged from the odontophore.  If I2 is
 still attached to the odontophore, the length of I2 is calculated using a weighted average between the spherical equation
 and a fit to the elliptical equation.  For the spherical approximation, the length of I2 is broken into two segments: a
@@ -1124,341 +1124,341 @@ two approximations are combined in a weighted average.  For major axis values la
 alone.  If I2 has disengaged from the odontophore its length is equal to twice the major radius of the I1/I3 torus (y).  The
 function returns the normalized length of I2 (divided by the optimum length of I2) */
 
-	{
-		double lengthI2;
-		double b = 0.005*sqrt(0.005)/sqrt(a);
+    {
+        double lengthI2;
+        double b = 0.005*sqrt(0.005)/sqrt(a);
 
-		double rotation =  Oangle; //OdonAngle(x);
-		double backslope = tan((90-rotation)*pi/180);
-		double backxpoint = -1 * a * a * backslope/(sqrt(b*b + a*a*backslope*backslope));
-		double backypoint = b * sqrt(1 - backxpoint * backxpoint/(a * a));
-		double furthestx = backxpoint*cos((-1*rotation)*pi/180) + backypoint*sin((-1*rotation)*pi/180);
+        double rotation =  Oangle; //OdonAngle(x);
+        double backslope = tan((90-rotation)*pi/180);
+        double backxpoint = -1 * a * a * backslope/(sqrt(b*b + a*a*backslope*backslope));
+        double backypoint = b * sqrt(1 - backxpoint * backxpoint/(a * a));
+        double furthestx = backxpoint*cos((-1*rotation)*pi/180) + backypoint*sin((-1*rotation)*pi/180);
 
 
-		if (x < -1*furthestx - r)  //if I2 is attached to the odontophore
-		{
-			//lengthI2 = (0.037768 - 2.15703 * x - 13.311 * a + 407.588 * x * a + 278.757 * x * x + 2595.27 * a * a + 116443* power(x, 3) - 133018. * x * x * a - 80848.4 * x * a * a -
-  			//			194671 * power(a, 3) + 8.47687*power(10,6) * power(x, 4) - 2.22748*power(10,7) * power(x,3)*a + 1.02207*power(10,7)*x*x*a*a + 6.0973*power(10,6)*x*power(a, 3) + 5.73107*power(10,6)*power(a, 4))/LI2opt;
+        if (x < -1*furthestx - r)  //if I2 is attached to the odontophore
+        {
+            //lengthI2 = (0.037768 - 2.15703 * x - 13.311 * a + 407.588 * x * a + 278.757 * x * x + 2595.27 * a * a + 116443* power(x, 3) - 133018. * x * x * a - 80848.4 * x * a * a -
+            //            194671 * power(a, 3) + 8.47687*power(10,6) * power(x, 4) - 2.22748*power(10,7) * power(x,3)*a + 1.02207*power(10,7)*x*x*a*a + 6.0973*power(10,6)*x*power(a, 3) + 5.73107*power(10,6)*power(a, 4))/LI2opt;
 
-			lengthI2 = (0.0402964 - 1.47509 * x - 15.4796 * a + 119.129 * x * a + 347.797 * x * x + 3193.83 * a * a + 114949 * x * x * x - 153302 * x * x * a - 41919.9 * x * a * a -
-  							260505 * a * a * a + 8.69996 * power(10, 6) * power(x, 4) - 2.17551 * power(10,7) * x * x * x * a + 1.13701 * power(10,7) * x * x * a * a + 4.29927 * power(10, 6) * x * a * a * a + 8.27669 * power(10,6) * power(a, 4))/LI2opt;
+            lengthI2 = (0.0402964 - 1.47509 * x - 15.4796 * a + 119.129 * x * a + 347.797 * x * x + 3193.83 * a * a + 114949 * x * x * x - 153302 * x * x * a - 41919.9 * x * a * a -
+                            260505 * a * a * a + 8.69996 * power(10, 6) * power(x, 4) - 2.17551 * power(10,7) * x * x * x * a + 1.13701 * power(10,7) * x * x * a * a + 4.29927 * power(10, 6) * x * a * a * a + 8.27669 * power(10,6) * power(a, 4))/LI2opt;
 
-		}
-		else  //if I2 has pulled away from the odontophore (peak protraction)
-		{
-			lengthI2 = (ytop - ybottom)/LI2opt;
-		}
-		//Tate returns
+        }
+        else  //if I2 has pulled away from the odontophore (peak protraction)
+        {
+            lengthI2 = (ytop - ybottom)/LI2opt;
+        }
+        //Tate returns
         furthestbackxpoint = backxpoint;
         furthestbackypoint = backypoint;
         bigxval = furthestx;
 
-		return (lengthI2); //returns normalized lengths
-	}
+        return (lengthI2); //returns normalized lengths
+    }
 
 
 double fixI2length (double lengthI2)
 
-	/*The function fixI2length renormalizes the length of I2.  The length of I2 had to be adjusted since the range of
+    /*The function fixI2length renormalizes the length of I2.  The length of I2 had to be adjusted since the range of
 I2's normalized lengths fell outside the length tension curve.  This means that I2 would lose its ability to contract
 with appreciable force when it became very short or very long (peak protraction / retraction).  I2 was thus unable to
 protract the odontophore far enough or fast enough.  Full derivation on pg. 9-10 of the Guidebook.*/
 
-	{
-		double fixedlength;
+    {
+        double fixedlength;
 
-		fixedlength = 0.5875 * lengthI2 + 0.35;
+        fixedlength = 0.5875 * lengthI2 + 0.35;
 
-		if (fixedlength < 0.3)
-		{
-			fixedlength = 0.3;
-		}
+        if (fixedlength < 0.3)
+        {
+            fixedlength = 0.3;
+        }
 
-		return (fixedlength);
-	}
+        return (fixedlength);
+    }
 
 
 double musclelengthI1I3 (double ytop, double ybottom)
 
-	/*musclelengthI1I3 uses the major radius of the I1/I3 torus (y) to calculate the length of the I1/I3 muscle.  It does this
+    /*musclelengthI1I3 uses the major radius of the I1/I3 torus (y) to calculate the length of the I1/I3 muscle.  It does this
 using the equation for the circumference of a circle with y as the radius.  The length is then divided by the optimum I1/I3
 length and the function returns the normalized length.*/
 
-	{
+    {
 
-		double radius = (ybottom + ytop)/2;
+        double radius = (ybottom + ytop)/2;
 
-		if(ybottom < 0)
-			radius = (-1*ybottom + ytop)/2;
+        if(ybottom < 0)
+            radius = (-1*ybottom + ytop)/2;
 
-		return ((2 * radius * pi)/LI1I3opt); //returns normalized lengths
-	}
+        return ((2 * radius * pi)/LI1I3opt); //returns normalized lengths
+    }
 
 
 double musclevelocityI2 (double oldx, double oldytop, double oldybottom, double olda, double x, double ytop, double ybottom, double a, double Oangle)
 
-	/*musclevelocityI2 - we were unable to derive a direct equation for calculating the velocity of the I2 muscle.  Instead
+    /*musclevelocityI2 - we were unable to derive a direct equation for calculating the velocity of the I2 muscle.  Instead
 the function musclevelocityI2 takes the old x, y, a and the new x, y, and a and calculates the old length of I2 and the
 new length of I2.  The function subtracts these two to get the muscle velocity.  Since both the old and new lengths of I2
 are normalized, the function returns a normalized velocity.*/
 
-	{
-		double oldlength, currentlength;
+    {
+        double oldlength, currentlength;
 
-		oldlength = musclelengthI2 (olda, oldx, oldytop, oldybottom, Oangle);
-		currentlength = musclelengthI2 (a, x, ytop, ybottom, Oangle);
+        oldlength = musclelengthI2 (olda, oldx, oldytop, oldybottom, Oangle);
+        currentlength = musclelengthI2 (a, x, ytop, ybottom, Oangle);
 
-		return ((currentlength - oldlength) / StepSize);//returns normalized velocity
-	}
+        return ((currentlength - oldlength) / StepSize);//returns normalized velocity
+    }
 
 
 double musclevelocityI1I3 (double ytop, double ybottom, double oldytop, double oldybottom)
 
-	/*musclevelocityI1I3 uses the velocity of y to calculate the velocity of I1/I3.  Since the length of I1/I3 equals
+    /*musclevelocityI1I3 uses the velocity of y to calculate the velocity of I1/I3.  Since the length of I1/I3 equals
 2 * pi * y, the velocity of I1/I3 is the derivative of this function (2 * pi * ydot).  Since the result is divided by
 the optimal length of I1/I3, the function returns a normalized velocity.*/
 
-	{
-		double ybot, oldybot;
+    {
+        double ybot, oldybot;
 
-		if(ybottom > 0)
-			ybot = ybottom;
-		else
-			ybot = -1*ybottom;
+        if(ybottom > 0)
+            ybot = ybottom;
+        else
+            ybot = -1*ybottom;
 
-		if(oldybottom > 0)
-			oldybot = oldybottom;
-		else
-			oldybot = -1*oldybottom;
+        if(oldybottom > 0)
+            oldybot = oldybottom;
+        else
+            oldybot = -1*oldybottom;
 
 
-		double radius = (ybot + ytop)/2;
-		double oldradius = (oldybot + oldytop)/2;
-		double radiusdot = (radius - oldradius)/StepSize;
+        double radius = (ybot + ytop)/2;
+        double oldradius = (oldybot + oldytop)/2;
+        double radiusdot = (radius - oldradius)/StepSize;
 
-		return (2 * pi * radiusdot / LI1I3opt);//returns normalized velocity
-	}
+        return (2 * pi * radiusdot / LI1I3opt);//returns normalized velocity
+    }
 
 
 double activationI2 (double frequency, double *aprime)
 
-	/*activationI2 uses the Hill type activation function from Yu et al 1999.  The function takes the frequency of
+    /*activationI2 uses the Hill type activation function from Yu et al 1999.  The function takes the frequency of
 stimulation and calculates the amount of activation.  Some changes had to be made with the original function.
 These are explained in the Guidebook, pg. 11.*/
 
-	{
-		double uprime, activation, daprime;
+    {
+        double uprime, activation, daprime;
 
-		uprime = 1.03 - 4.31 * exp(-0.198 * frequency);
+        uprime = 1.03 - 4.31 * exp(-0.198 * frequency);
 
-		if (uprime < uprimebound)
-		{
-			uprime = uprimebound;
-		}
+        if (uprime < uprimebound)
+        {
+            uprime = uprimebound;
+        }
 
-		if (uprime > 1)
-		{
-			uprime = 1;
-		}
+        if (uprime > 1)
+        {
+            uprime = 1;
+        }
 
 
-		daprime = 1/tauact * (uprime - (beta + (1-beta)*uprime)* *aprime);
-		*aprime = *aprime + daprime * StepSize;
+        daprime = 1/tauact * (uprime - (beta + (1-beta)*uprime)* *aprime);
+        *aprime = *aprime + daprime * StepSize;
 
-		if (*aprime < 0)
-		{
-			*aprime = 0;
-		}
+        if (*aprime < 0)
+        {
+            *aprime = 0;
+        }
 
-		activation = g * (*aprime - Ao);
-		if (activation <0)
-		{
-			activation = 0;
-		}
-		if (activation >1)
-		{
-			activation = 1;
-		}
+        activation = g * (*aprime - Ao);
+        if (activation <0)
+        {
+            activation = 0;
+        }
+        if (activation >1)
+        {
+            activation = 1;
+        }
 
-		return activation;
-	}
+        return activation;
+    }
 
 
 double activationI1I3 (double frequency, double *aprime)
 
-	/*activationI1I3 is a modified version of activationI2 created to match Hui's data (6/5/02).  The function is the
+    /*activationI1I3 is a modified version of activationI2 created to match Hui's data (6/5/02).  The function is the
 same as activationI2 except where indicated.  Changes are explained in the Guidebook pg. 11.*/
 
-	{
-		double uprime, activation, daprime;
+    {
+        double uprime, activation, daprime;
 
-					//the 4.31 was replaced with 1.0 to reflect Hui's data
-		uprime = 1.03 - 1.0 * exp(-0.198 * frequency);
+                    //the 4.31 was replaced with 1.0 to reflect Hui's data
+        uprime = 1.03 - 1.0 * exp(-0.198 * frequency);
 
-		//Changing uprime in order to reflect a faster relaxation time of I1I3
-		if (frequency<5.0)
-			{							//the 6.31 was 3.31
-				uprime = 1.03 - (1.0 - (6.31 * (frequency - 5)/5)) * exp(-0.198 * frequency);
-			}
+        //Changing uprime in order to reflect a faster relaxation time of I1I3
+        if (frequency<5.0)
+            {                           //the 6.31 was 3.31
+                uprime = 1.03 - (1.0 - (6.31 * (frequency - 5)/5)) * exp(-0.198 * frequency);
+            }
 
-		if (uprime < uprimebound)
-		{
-			uprime = uprimebound;
-		}
+        if (uprime < uprimebound)
+        {
+            uprime = uprimebound;
+        }
 
-		if (uprime > 1)
-		{
-			uprime = 1;
-		}
+        if (uprime > 1)
+        {
+            uprime = 1;
+        }
 
-		if (frequency < 5.0)  //added to give better results from the neural recordings
-		{
-			uprime = -1.0;
-		}
+        if (frequency < 5.0)  //added to give better results from the neural recordings
+        {
+            uprime = -1.0;
+        }
 
 
-		daprime = 1/tauact * (uprime - (beta + (1-beta)*uprime)* *aprime);
-		*aprime = *aprime + daprime * StepSize;
+        daprime = 1/tauact * (uprime - (beta + (1-beta)*uprime)* *aprime);
+        *aprime = *aprime + daprime * StepSize;
 
-		if (*aprime < 0)
-		{
-			*aprime = 0;
-		}
+        if (*aprime < 0)
+        {
+            *aprime = 0;
+        }
 
-		activation = g * (*aprime - Ao);
+        activation = g * (*aprime - Ao);
 
-		if (activation <0)
-		{
-			activation = 0;
-		}
-		if (activation >1)
-		{
-			activation = 1;
-		}
+        if (activation <0)
+        {
+            activation = 0;
+        }
+        if (activation >1)
+        {
+            activation = 1;
+        }
 
-		return activation;
-	}
+        return activation;
+    }
 
 
 double activationN3(double frequency, double *act, double time)
-	{
-		double A, B, actprime = 0;
+    {
+        double A, B, actprime = 0;
 
-		A = frequency * 0.386779 - 2.93698;
+        A = frequency * 0.386779 - 2.93698;
 
-		B = (A * time + log(1/ *act - 1))/A;
+        B = (A * time + log(1/ *act - 1))/A;
 
-		actprime = (A * exp(-1*A*(time - B)))/pow((1 + exp(-1*A*(time - B))),2);
+        actprime = (A * exp(-1*A*(time - B)))/pow((1 + exp(-1*A*(time - B))),2);
 
-		*act = *act + actprime*StepSize;
+        *act = *act + actprime*StepSize;
 
-		if(*act > 0.9789)
-			*act = 0.9789;
-		if(*act < 0.01)
-			*act = 0.01;
+        if(*act > 0.9789)
+            *act = 0.9789;
+        if(*act < 0.01)
+            *act = 0.01;
 
-		return (*act*1.0321-0.010321);
+        return (*act*1.0321-0.010321);
 
-	}
+    }
 double secondactivationN3(double frequency, double *act, double time)
-	{
-		double A, B, actprime = 0;
+    {
+        double A, B, actprime = 0;
 
-		//A = frequency * 0.386779 - 2.93698;
-		A = 0.6 * frequency - 7.0;  //for october 2008 simulations
-		//A = 4.8 * frequency - 56.0;
-		A = 0.9 * frequency - 14.0;
+        //A = frequency * 0.386779 - 2.93698;
+        A = 0.6 * frequency - 7.0;  //for october 2008 simulations
+        //A = 4.8 * frequency - 56.0;
+        A = 0.9 * frequency - 14.0;
 
-		//B = (A * time + log(1/ *act - 1))/A;
+        //B = (A * time + log(1/ *act - 1))/A;
 
-		//actprime = (A * exp(-1*A*(time - B)))/pow((1 + exp(-1*A*(time - B))),2);
+        //actprime = (A * exp(-1*A*(time - B)))/pow((1 + exp(-1*A*(time - B))),2);
 
-		B = (log(1/ *act - 1))/A;
+        B = (log(1/ *act - 1))/A;
 
-		actprime = (A * exp(-1*A*( - B)))/pow((1 + exp(-1*A*(- B))),2);
+        actprime = (A * exp(-1*A*( - B)))/pow((1 + exp(-1*A*(- B))),2);
 
-		*act = *act + actprime*StepSize;
+        *act = *act + actprime*StepSize;
 
-		if(*act > 0.9789)
-			*act = 0.9789;
-
-
-		if(*act < 0.01)
-			*act = 0.01;
+        if(*act > 0.9789)
+            *act = 0.9789;
 
 
-		return (*act*1.0321-0.010321);
+        if(*act < 0.01)
+            *act = 0.01;
 
-	}
+
+        return (*act*1.0321-0.010321);
+
+    }
 
 double passive (double musclength)
 
-	/*passive uses the equation for the amount of passive tension given in Yu et al 1999.  The function takes muscle length
+    /*passive uses the equation for the amount of passive tension given in Yu et al 1999.  The function takes muscle length
 and calculates the passive tension.  Since the passive tension cannot be negative, the function returns zero if the passive
 tension is less that zero.*/
 
-	{
-		double passtension;
-		passtension = -0.41 + 1.04 * exp((musclength - 1.18) / 0.28);
+    {
+        double passtension;
+        passtension = -0.41 + 1.04 * exp((musclength - 1.18) / 0.28);
 
-		if (passtension < 0)
-		{
-			return 0;
-		}
-		else
-		{
-			return passtension;
-		}
-	}
+        if (passtension < 0)
+        {
+            return 0;
+        }
+        else
+        {
+            return passtension;
+        }
+    }
 
 
 double lengthtens (double length)
 
-	/*lengthtens uses the Hill type length tension function from Yu et al 1999.  The function uses the length of a muscle
+    /*lengthtens uses the Hill type length tension function from Yu et al 1999.  The function uses the length of a muscle
 to calculate the amount of length tension.  This can be calculated as though a tendon was present or without a tendon.*/
 
-	{
-		double output;
+    {
+        double output;
 
-		//output = 1.81 - 10.8 * length + 19.2 * length * length - 9.2 * length * length * length; complexmod//length tension without a tendon
-		output = (-5.27*length*length + 10.54*length-4.27); //length tension with a tendon simpmodel
+        //output = 1.81 - 10.8 * length + 19.2 * length * length - 9.2 * length * length * length; complexmod//length tension without a tendon
+        output = (-5.27*length*length + 10.54*length-4.27); //length tension with a tendon simpmodel
 
-		if (output > 0.0) //lengthtension property cannot be < 0 (function returns 0 if it is)
-		{
-			return (output);
-		}
-		else
-		{
-			return (0.0);
-		}
-	}
+        if (output > 0.0) //lengthtension property cannot be < 0 (function returns 0 if it is)
+        {
+            return (output);
+        }
+        else
+        {
+            return (0.0);
+        }
+    }
 
 
 double forcevelocity (double musclevelocity)
 
-	/*forcevelocity uses the Hill type force velocity function from Yu et al 1999.  The function uses the velocity of a
+    /*forcevelocity uses the Hill type force velocity function from Yu et al 1999.  The function uses the velocity of a
 muscle to calculate the force velocity term.  The velocity that is handed to the function must have its sign reversed
 because in the function from the paper assumes that lengthening is negative and shortening is positive.*/
 
-	{
-		double musclevel;
-		musclevel = -1 * musclevelocity; //changing the sign because the forcevelocity
-										//function assumes that lengthening is negative
-		/*if (musclevel < 0) //lengthening
-		{
-			return (1.0 + 0.61 / (1.0 - 0.038 / musclevel));
-		}
-		else //shortening
-		{
-			return (1.0 / (1.0 + 10.8 * musclevel));
-		}*/
-		return 0.33;  //Simplemodel
-	}
+    {
+        double musclevel;
+        musclevel = -1 * musclevelocity; //changing the sign because the forcevelocity
+                                        //function assumes that lengthening is negative
+        /*if (musclevel < 0) //lengthening
+        {
+            return (1.0 + 0.61 / (1.0 - 0.038 / musclevel));
+        }
+        else //shortening
+        {
+            return (1.0 / (1.0 + 10.8 * musclevel));
+        }*/
+        return 0.33;  //Simplemodel
+    }
 
 
-double calchingeforce (double xdisplacement, double	xvelocity, double *F1)
+double calchingeforce (double xdisplacement, double xvelocity, double *F1)
 
-	/*calchingforce uses the function for the hinge force from Sutton et al 2002.  Explanation of passiveoffset: without
+    /*calchingforce uses the function for the hinge force from Sutton et al 2002.  Explanation of passiveoffset: without
 an offset the hinge forces on the odontophore were too weak to retract the odontophore back to a point where x became
 negative again.  The biology tells us that the slug is able to retract its odontophore.  To model this, the passiveoffset
 parameter was added to the calchingeforce function so that the passive force curve was shifted to allow the hinge forces
@@ -1466,664 +1466,664 @@ to be stronger.  The hinge function is not completely contained within calchinge
 track of the velocity of the odontophore (xdot).  If the odontophore changes direction (xdot switches signs) then the value
 of F1 has to be reset to zero so that the visco-elastic force does not overwhelm the elastic hinge force over large amounts
 of time.  This operation is performed in the model code rather than in calchingeforce.
-	This model accepts displacements in M, and velocities in M/s, and then does
-	the conversion to mm and mm/s internally, and returns all the forces in mN
-	this is what we'll work with until we get it all working, and then will fix
-	it so the conversions are external*/
+    This model accepts displacements in M, and velocities in M/s, and then does
+    the conversion to mm and mm/s internally, and returns all the forces in mN
+    this is what we'll work with until we get it all working, and then will fix
+    it so the conversions are external*/
 
-	{
-		double Fo, So, S1, Damp1, F1dot, x, xdot;
+    {
+        double Fo, So, S1, Damp1, F1dot, x, xdot;
 
-		x = (xdisplacement) * 1000; //convert to mm
-		xdot = xvelocity * 1000; //convert to mm
+        x = (xdisplacement) * 1000; //convert to mm
+        xdot = xvelocity * 1000; //convert to mm
 
-		//check whether we are using the protraction or retraction curve
-	if (xdot >= 0.0)	//protraction curve
-		{
-			if ((x + passiveoffset) < xp) //if odontophore is not protracted past xp
-			{
-				So = 0;  //So is the spring stiffness of the Kelvin element
-			}
-			else  //if the odontophore has protracted past xp
-			{
-				So = A2 + (A1-A2)/(1+exp(((x + passiveoffset)-Xo)/DX));
-			}
-		}
+        //check whether we are using the protraction or retraction curve
+    if (xdot >= 0.0)    //protraction curve
+        {
+            if ((x + passiveoffset) < xp) //if odontophore is not protracted past xp
+            {
+                So = 0;  //So is the spring stiffness of the Kelvin element
+            }
+            else  //if the odontophore has protracted past xp
+            {
+                So = A2 + (A1-A2)/(1+exp(((x + passiveoffset)-Xo)/DX));
+            }
+        }
 
-		else //retraction curve
-		{
-			if ((x + passiveoffset) < xr)
-			{
-				So = 0;
-			}
-			else
-			{
-				So = B1 + B2 * (x + passiveoffset) + B3 * (x + passiveoffset) * (x + passiveoffset) + B4 * (x + passiveoffset) * (x + passiveoffset) * (x + passiveoffset); ;
-			}
-		}
+        else //retraction curve
+        {
+            if ((x + passiveoffset) < xr)
+            {
+                So = 0;
+            }
+            else
+            {
+                So = B1 + B2 * (x + passiveoffset) + B3 * (x + passiveoffset) * (x + passiveoffset) + B4 * (x + passiveoffset) * (x + passiveoffset) * (x + passiveoffset); ;
+            }
+        }
 
-		Fo = So * (x + passiveoffset); //force from the spring in the Kelvin element
+        Fo = So * (x + passiveoffset); //force from the spring in the Kelvin element
 
-		if (Fo < 0)
-		{
-			Fo = 0;
-		}
-		if (xdot >= 0.0)  //protraction curve
-			{
-				S1 = C1 * (x + passiveoffset)*(x + passiveoffset) + C2*(x + passiveoffset) + C3; //spring stiffness of the Maxwell element
+        if (Fo < 0)
+        {
+            Fo = 0;
+        }
+        if (xdot >= 0.0)  //protraction curve
+            {
+                S1 = C1 * (x + passiveoffset)*(x + passiveoffset) + C2*(x + passiveoffset) + C3; //spring stiffness of the Maxwell element
 
-				Damp1 = E1*(x + passiveoffset)*(x + passiveoffset) + E2 * (x + passiveoffset) + E3; //dashpot viscocity of the Maxwell element
+                Damp1 = E1*(x + passiveoffset)*(x + passiveoffset) + E2 * (x + passiveoffset) + E3; //dashpot viscocity of the Maxwell element
 
-			if (S1 < 0)
-				{
-					S1 = 0;
-				}
-			}
-		else  //retraction curve
-			{
-				 S1 = -1.5*(D1 * (x + passiveoffset) + D2);
+            if (S1 < 0)
+                {
+                    S1 = 0;
+                }
+            }
+        else  //retraction curve
+            {
+                 S1 = -1.5*(D1 * (x + passiveoffset) + D2);
 
-				 Damp1 = 3.0 * (AF1 * (x + passiveoffset) + AF2);
+                 Damp1 = 3.0 * (AF1 * (x + passiveoffset) + AF2);
 
-				/*if(S1>0)
-				{
-					S1 = 0;
-				}*/
-			}
+                /*if(S1>0)
+                {
+                    S1 = 0;
+                }*/
+            }
 
-			//equation of motion for Maxwell element
-			F1dot = xdot * S1 - (S1 / Damp1) * *F1;
-			*F1 = *F1 + F1dot * StepSize;
+            //equation of motion for Maxwell element
+            F1dot = xdot * S1 - (S1 / Damp1) * *F1;
+            *F1 = *F1 + F1dot * StepSize;
 
-			if (xdot < 0) //prevents the negative spring constant from causing trouble
-			{
-				if (*F1 < (-6.5594 - 857.325 * xdisplacement))
-				{
-					*F1 = -6.5594 - 857.325 * xdisplacement;
-				}
-			}
+            if (xdot < 0) //prevents the negative spring constant from causing trouble
+            {
+                if (*F1 < (-6.5594 - 857.325 * xdisplacement))
+                {
+                    *F1 = -6.5594 - 857.325 * xdisplacement;
+                }
+            }
 
-			//Last minute checks of what the force is to prevent
-			//odontophores from flinging to infinity and BEYOND!
-			if (Fo < 0)
-			{
-				Fo = 0;
-			}
-			if ((Fo + *F1) < 0)
-			{
-				*F1 =  -Fo;
-			}
+            //Last minute checks of what the force is to prevent
+            //odontophores from flinging to infinity and BEYOND!
+            if (Fo < 0)
+            {
+                Fo = 0;
+            }
+            if ((Fo + *F1) < 0)
+            {
+                *F1 =  -Fo;
+            }
 
-		/* Making viscoelastic force = 0  Simpmodel */
-		*F1 = 0;
+        /* Making viscoelastic force = 0  Simpmodel */
+        *F1 = 0;
 
-		return (-1 * Fo - *F1 - viscdamp * xdot);
+        return (-1 * Fo - *F1 - viscdamp * xdot);
 
-	}
+    }
 
 double updateposition (double *x, double *ytop, double *ybottom, double *a, double *xdot, double *ydot, double *adot, double f1, double f2, double actN3, double *Txc, double *Bxc, double *output, double *Oangle, double hingeforce)
 
-	/*updateposition takes the previous positions of the odontophore (x), the major radius of I1/I3 (y), the major axis of the
+    /*updateposition takes the previous positions of the odontophore (x), the major radius of I1/I3 (y), the major axis of the
 odontophore (a), the velocity of the odontophore (xdot), the velocity of I1/I3 (ydot), the horizontal force on the odontophore
 (force1 in model, f1 in updateposition), and the vertical force on the I1/I3 (force2 in model, f2 in updateposition).  Three
 different equations can be used (different equations are selected by changing the value of eom at the beginning of the code.
 The code first updates the value of the major axis using the frequency of N3 and a linear transform.  It then calculates adot
 and addot using a numerical approximation.  Then the value of the contact point between the odontophore and I1/I3 (xc, yc) and
 the slope at that contact point (slope) is updated.  xddot is then calculated using one of the equations of motion.
-	The first equation is the complex equation of motion for a shape changing odontophore.  The full derivation is shown in
+    The first equation is the complex equation of motion for a shape changing odontophore.  The full derivation is shown in
 the Guidebook pg. 21-33.  The equation used is a fit of the full analytic equation which was too complex to use in the model
 code.  In this equation, all lengths are converted to mm and forces are converted to microN.  The equation takes the shape and
 position of the odontophore (a, x) and calculates the coefficients of the xdot^2, adot^2, addot, f1, f2, and adot*xdot terms
 in the equation of motion.  Then using the velocity of the odontophore (xdot), the velocity and acceleration of the major axis
 (adot, addot) and the horizontal and vertical forces on the odontophore (f1, f2) the equation calculates the acceleration of
 the odontophore.
-	The second equation is the simple equation of motion (SEOM).  The simple equation of motion is based on the assumption
+    The second equation is the simple equation of motion (SEOM).  The simple equation of motion is based on the assumption
 that the model is quasi-static and therefore, the contact constraint, velocity terms, and mass of the I1/I3 ring do not
 contribute a significant amount to the acceleration of the odontophore.
-	The third equation is for an almost quasi-static model.  The derivation of this equation is given in the Guidebook
+    The third equation is for an almost quasi-static model.  The derivation of this equation is given in the Guidebook
 pg. 33-34.  Once xddot is calculated, the function then integrates xddot using an Euler integrator to find the new velocity
 of the odontophore (xdot).  xdot is integrated using an Euler integrator to get the new position of the odontophore (x). The
 major radius of I1/I3 (y) is calculated using the contact point between I1/I3 and the odontophore (derivation in Guidebook
 pg. 33).  All of the updated variables are given to the function as pointers and are thus updated in the model function as
 they are changed in updateposition.  The function does not need to return anything.*/
 
-	{
-		//eom variables - explained where initialized
-		//double xc, yc, slope; blarf
-		double xddot, oldy;
-		double Tyc, Byc, topslope, bottomslope;
-		double effectiveslope;
+    {
+        //eom variables - explained where initialized
+        //double xc, yc, slope; blarf
+        double xddot, oldy;
+        double Tyc, Byc, topslope, bottomslope;
+        double effectiveslope;
 
-		*Oangle = OdonAngle2(*x, hingeforce, *a, *Oangle);
+        *Oangle = OdonAngle2(*x, hingeforce, *a, *Oangle);
 
-		oldy = *ytop; //oldy is updated before y is changed (used to find ydot numerically)
+        oldy = *ytop; //oldy is updated before y is changed (used to find ydot numerically)
 
-		//xcCalc(*a, -1* *x, OdonAngle(*x), *Txc, *Bxc, Tyc, Byc, topslope, bottomslope);
+        //xcCalc(*a, -1* *x, OdonAngle(*x), *Txc, *Bxc, Tyc, Byc, topslope, bottomslope);
         xcCalc(*a, -1* *x, *Oangle, *Txc, *Bxc, Tyc, Byc, topslope, bottomslope);
-		//contactslope (a, x, &yc, &xc, &slope); //initializing contact point and slope at that point
+        //contactslope (a, x, &yc, &xc, &slope); //initializing contact point and slope at that point
 
-		effectiveslope = (topslope - bottomslope)/2;
-		*output = effectiveslope; // output back in removed output simplemodel
+        effectiveslope = (topslope - bottomslope)/2;
+        *output = effectiveslope; // output back in removed output simplemodel
 
-		//slightly more complex simple eom (NSEOM)
-		xddot =(f1 + f2*effectiveslope)/(Odonmass+I1I3mass*effectiveslope*effectiveslope);
+        //slightly more complex simple eom (NSEOM)
+        xddot =(f1 + f2*effectiveslope)/(Odonmass+I1I3mass*effectiveslope*effectiveslope);
 
-		//*a = freqN3 * 0.00015 + 0.005; //major axis length is updated from freqN3
-		*a = 0.003*actN3+0.005; //removing ability to change a, simplemodel this was original function above was commented out
+        //*a = freqN3 * 0.00015 + 0.005; //major axis length is updated from freqN3
+        *a = 0.003*actN3+0.005; //removing ability to change a, simplemodel this was original function above was commented out
 
-		//BLARF  making aspect ratio maximum at 0.007
-		/*if (*a > 0.006)
-		{
-			*a = .006;
-		} */
+        //BLARF  making aspect ratio maximum at 0.007
+        /*if (*a > 0.006)
+        {
+            *a = .006;
+        } */
 
-		//now we integrate to get x
-		*xdot = *xdot + xddot * StepSize; //get xdot using integration of xddot
+        //now we integrate to get x
+        *xdot = *xdot + xddot * StepSize; //get xdot using integration of xddot
 
-		//BLARF putting in a maximum retraction velocity to try to get stability
-		if (*xdot < -.1)
-		{
-			*xdot = -0.1;
-		}
-		*x = *x + *xdot * StepSize; //get x with integration
+        //BLARF putting in a maximum retraction velocity to try to get stability
+        if (*xdot < -.1)
+        {
+            *xdot = -0.1;
+        }
+        *x = *x + *xdot * StepSize; //get x with integration
 
 
 
-		//use geometry to find y and a numerical approximation for ydot
-		*ytop = Tyc + sqrt(r * r - (-1 * *x - *Txc) * (-1 * *x - *Txc));
-		*ybottom = Byc - sqrt(r*r - (-1* *x - *Bxc)*(-1* *x - *Bxc));
+        //use geometry to find y and a numerical approximation for ydot
+        *ytop = Tyc + sqrt(r * r - (-1 * *x - *Txc) * (-1 * *x - *Txc));
+        *ybottom = Byc - sqrt(r*r - (-1* *x - *Bxc)*(-1* *x - *Bxc));
 
-		*ydot = (*ytop - oldy)/StepSize;
+        *ydot = (*ytop - oldy)/StepSize;
 
-		return 0;
-	}
+        return 0;
+    }
 
 
 double contactslope (double *a, double *x, double *yc, double *xc, double *slope, double Oangle)
 
-	/*Updates the contact point between the odontophore and the ellipse (xc, yc) and calculates the slope of the tangent
+    /*Updates the contact point between the odontophore and the ellipse (xc, yc) and calculates the slope of the tangent
 to that point.*/
 
-	{
-		double b;
-		double amm,xmm;
+    {
+        double b;
+        double amm,xmm;
 
-		amm = *a * 1000;  //converts a to mm
-		xmm = *x * -1000; //converts x to mm
-
-
-		b = (5.0 * sqrt(5.0)/ sqrt(*a * 1000.0))/1000.0; //calculates the minor axis of the odontophore
-
-		//calculates xc using the polynomial fit (xc derivation.nb and Guidebook pg. 22-23)
-		*xc = (0.0350629 - 0.0198081* amm + 0.00438099* amm*amm -
-  				0.00045905* power(amm,3) + 0.0000191278 *power(amm,4) + 0.74469*xmm -
- 			 	0.030564 *amm* xmm + 0.0102451* power(amm,2)* xmm - 0.00036768 *power(amm,3)*xmm +
- 			 	0.000153275* xmm*xmm - 0.0000534595 *amm *xmm*xmm + 0.0000045673*power(amm,2)*power(xmm,2) +
- 			 	0.002039379 *power(xmm,3) - 0.00041629 *amm*power(xmm,3) - 0.0000000139376555* power(xmm,4))/1000;
-
-		*yc = b * sqrt(1 - *xc * *xc/(*a * *a)); //yc found using the equation for an ellipse
-
-		if (*yc < 0)  //check to make sure yc doesn't go negative
-		{
-			*yc = -1 * *yc;
-		}
-
-		//slope at the contact point found using the derivative of the ellipse equation
-		*slope = (-1 * b * *xc)/(*a * *a * sqrt(1 - (*xc * *xc)/(*a * *a)));
+        amm = *a * 1000;  //converts a to mm
+        xmm = *x * -1000; //converts x to mm
 
 
-		return 0;
-	}
-	// putting in fitcalc for the simulations for the model model sweeps
+        b = (5.0 * sqrt(5.0)/ sqrt(*a * 1000.0))/1000.0; //calculates the minor axis of the odontophore
+
+        //calculates xc using the polynomial fit (xc derivation.nb and Guidebook pg. 22-23)
+        *xc = (0.0350629 - 0.0198081* amm + 0.00438099* amm*amm -
+                0.00045905* power(amm,3) + 0.0000191278 *power(amm,4) + 0.74469*xmm -
+                0.030564 *amm* xmm + 0.0102451* power(amm,2)* xmm - 0.00036768 *power(amm,3)*xmm +
+                0.000153275* xmm*xmm - 0.0000534595 *amm *xmm*xmm + 0.0000045673*power(amm,2)*power(xmm,2) +
+                0.002039379 *power(xmm,3) - 0.00041629 *amm*power(xmm,3) - 0.0000000139376555* power(xmm,4))/1000;
+
+        *yc = b * sqrt(1 - *xc * *xc/(*a * *a)); //yc found using the equation for an ellipse
+
+        if (*yc < 0)  //check to make sure yc doesn't go negative
+        {
+            *yc = -1 * *yc;
+        }
+
+        //slope at the contact point found using the derivative of the ellipse equation
+        *slope = (-1 * b * *xc)/(*a * *a * sqrt(1 - (*xc * *xc)/(*a * *a)));
+
+
+        return 0;
+    }
+    // putting in fitcalc for the simulations for the model model sweeps
 
 void fitcalc (double x, double a, double oldx, double olda, double & fitness)
 {
-	double xdist, ydist;
-	if (a>.007)  //I've put in a threshhold on the fitness and seeing what it does to rejection.
-	{
-	// old function no Y fitness += (a*cos(OdonAngle(x)*pi/180)+x - olda*cos(OdonAngle(oldx)*pi/180)-oldx)*((a-0.005)/.003);
+    double xdist, ydist;
+    if (a>.007)  //I've put in a threshhold on the fitness and seeing what it does to rejection.
+    {
+    // old function no Y fitness += (a*cos(OdonAngle(x)*pi/180)+x - olda*cos(OdonAngle(oldx)*pi/180)-oldx)*((a-0.005)/.003);
 
-		xdist =  (a*cos(OdonAngle(x)*pi/180)+x - olda*cos(OdonAngle(oldx)*pi/180)-oldx)*((a-0.005)/.003);
-	    ydist =  (a*sin(OdonAngle(x)*pi/180) - olda*sin(OdonAngle(oldx)*pi/180))*((a-0.005)/.003);
+        xdist =  (a*cos(OdonAngle(x)*pi/180)+x - olda*cos(OdonAngle(oldx)*pi/180)-oldx)*((a-0.005)/.003);
+        ydist =  (a*sin(OdonAngle(x)*pi/180) - olda*sin(OdonAngle(oldx)*pi/180))*((a-0.005)/.003);
 
-		fitness += -ydist + xdist;
-	}
+        fitness += -ydist + xdist;
+    }
 
-	//fitness += (x - oldx)*(a/0.003 - 5.0/3.0);
+    //fitness += (x - oldx)*(a/0.003 - 5.0/3.0);
 }
 
 void fitcalcbite (double x, double a, double oldx, double olda, double & fitness)
-	//updates an individual's fitness
+    //updates an individual's fitness
 {
-	if (x>fitness)
-	{
-		fitness = x;
-	}
+    if (x>fitness)
+    {
+        fitness = x;
+    }
 }
 
 void fitcalcswallow (double x, double a, double oldx, double olda, double & fitness)
 {
 
 }
-	//updates an individual's fitness
+    //updates an individual's fitness
 
 void fitcalcreject (double x, double a, double oldx, double olda, double & fitness)
 {
 
 }
-	//updates an individual's fitness
+    //updates an individual's fitness
 
 
 
 double power(double num, double ex)
 
-	/* the function power takes the value of num and raises it to the "ex" power.  This is used to shorten the polynomial fit
+    /* the function power takes the value of num and raises it to the "ex" power.  This is used to shorten the polynomial fit
 equations.*/
 
-	{
-		int counter;
-		double output;
+    {
+        int counter;
+        double output;
 
-		counter = 1;
-		output = num;
+        counter = 1;
+        output = num;
 
 
-		while(counter < ex)
-		{
-			output = output*num;
+        while(counter < ex)
+        {
+            output = output*num;
 
-			counter = counter+1;
-		}
+            counter = counter+1;
+        }
 
-		return output;
-	}
+        return output;
+    }
 
 
 double topEllipseSlope(double a, double xc, double rotation, double & yc)
 {
-	double theta = rotation*pi/180;
-	double b = 0.005*sqrt(0.005)/sqrt(a);
-	double part1 = a*a*cos(theta)*xc;
-	double part2 = power(a,4)*b*b*cos(theta)*cos(theta)*sin(theta)*sin(theta) - a*a*b*b*xc*xc*sin(theta)*sin(theta)+a*a*power(b,4)*power(sin(theta),4);
-	double part3 = a*a*cos(theta)*cos(theta)+b*b*sin(theta)*sin(theta);
-	double xcHoriz = (part1+sqrt(part2))/part3;
-	double horizslope = -b*xcHoriz/(a*a*sqrt(1-xcHoriz*xcHoriz/(a*a)));
+    double theta = rotation*pi/180;
+    double b = 0.005*sqrt(0.005)/sqrt(a);
+    double part1 = a*a*cos(theta)*xc;
+    double part2 = power(a,4)*b*b*cos(theta)*cos(theta)*sin(theta)*sin(theta) - a*a*b*b*xc*xc*sin(theta)*sin(theta)+a*a*power(b,4)*power(sin(theta),4);
+    double part3 = a*a*cos(theta)*cos(theta)+b*b*sin(theta)*sin(theta);
+    double xcHoriz = (part1+sqrt(part2))/part3;
+    double horizslope = -b*xcHoriz/(a*a*sqrt(1-xcHoriz*xcHoriz/(a*a)));
 
-	yc = -1*sin(-1*theta)*xcHoriz + cos(-1*theta)*b*sqrt(1-xcHoriz*xcHoriz/(a*a));
+    yc = -1*sin(-1*theta)*xcHoriz + cos(-1*theta)*b*sqrt(1-xcHoriz*xcHoriz/(a*a));
 
-	return ((-sin(-1*theta) + horizslope * cos(-1*theta))/(cos(-1*theta) + horizslope*sin(-1*theta)));
+    return ((-sin(-1*theta) + horizslope * cos(-1*theta))/(cos(-1*theta) + horizslope*sin(-1*theta)));
 }
 
 double topEllipseSlope2(double a, double xc, double rotation, double & yc)
 {
-	double theta = rotation*pi/180;
-	double b = 0.005*sqrt(0.005)/sqrt(a);
-	double part1 = a*a*cos(theta)*xc;
-	double part2 = power(a,4)*b*b*cos(theta)*cos(theta)*sin(theta)*sin(theta) - a*a*b*b*xc*xc*sin(theta)*sin(theta)+a*a*power(b,4)*power(sin(theta),4);
-	double part3 = a*a*cos(theta)*cos(theta)+b*b*sin(theta)*sin(theta);
-	double xcHoriz = (part1+sqrt(part2))/part3;
-	double horizslope = b*xcHoriz/(a*a*sqrt(1-xcHoriz*xcHoriz/(a*a)));
+    double theta = rotation*pi/180;
+    double b = 0.005*sqrt(0.005)/sqrt(a);
+    double part1 = a*a*cos(theta)*xc;
+    double part2 = power(a,4)*b*b*cos(theta)*cos(theta)*sin(theta)*sin(theta) - a*a*b*b*xc*xc*sin(theta)*sin(theta)+a*a*power(b,4)*power(sin(theta),4);
+    double part3 = a*a*cos(theta)*cos(theta)+b*b*sin(theta)*sin(theta);
+    double xcHoriz = (part1+sqrt(part2))/part3;
+    double horizslope = b*xcHoriz/(a*a*sqrt(1-xcHoriz*xcHoriz/(a*a)));
 
-	yc = -1*sin(-1*theta)*xcHoriz + cos(-1*theta)*-1*b*sqrt(1-xcHoriz*xcHoriz/(a*a));
+    yc = -1*sin(-1*theta)*xcHoriz + cos(-1*theta)*-1*b*sqrt(1-xcHoriz*xcHoriz/(a*a));
 
-	return ((-sin(-1*theta) + horizslope * cos(-1*theta))/(cos(-1*theta) + horizslope*sin(-1*theta)));
+    return ((-sin(-1*theta) + horizslope * cos(-1*theta))/(cos(-1*theta) + horizslope*sin(-1*theta)));
 }
 
 double bottomEllipseSlope(double a, double xc, double rotation, double & yc)
 {
-	double theta = rotation*pi/180;
-	double b = 0.005*sqrt(0.005)/sqrt(a);
-	double part1 = a*a*cos(theta)*xc;
-	double part2 = power(a,4)*b*b*cos(theta)*cos(theta)*sin(theta)*sin(theta) - a*a*b*b*xc*xc*sin(theta)*sin(theta)+a*a*power(b,4)*power(sin(theta),4);
-	double part3 = a*a*cos(theta)*cos(theta)+b*b*sin(theta)*sin(theta);
-	double xcHoriz = (part1 - sqrt(part2))/part3;
-	double horizslope = b*xcHoriz/(a*a*sqrt(1-xcHoriz*xcHoriz/(a*a)));
+    double theta = rotation*pi/180;
+    double b = 0.005*sqrt(0.005)/sqrt(a);
+    double part1 = a*a*cos(theta)*xc;
+    double part2 = power(a,4)*b*b*cos(theta)*cos(theta)*sin(theta)*sin(theta) - a*a*b*b*xc*xc*sin(theta)*sin(theta)+a*a*power(b,4)*power(sin(theta),4);
+    double part3 = a*a*cos(theta)*cos(theta)+b*b*sin(theta)*sin(theta);
+    double xcHoriz = (part1 - sqrt(part2))/part3;
+    double horizslope = b*xcHoriz/(a*a*sqrt(1-xcHoriz*xcHoriz/(a*a)));
 
-	yc = -1*sin(-1*theta)*xcHoriz + cos(-1*theta)*-1*b*sqrt(1-xcHoriz*xcHoriz/(a*a));
+    yc = -1*sin(-1*theta)*xcHoriz + cos(-1*theta)*-1*b*sqrt(1-xcHoriz*xcHoriz/(a*a));
 
-	return ((-sin(-1*theta) + horizslope * cos(-1*theta))/(cos(-1*theta) + horizslope*sin(-1*theta)));
+    return ((-sin(-1*theta) + horizslope * cos(-1*theta))/(cos(-1*theta) + horizslope*sin(-1*theta)));
 }
 
 double topI1I3slope(double x, double xc)
 /*slope of top I1I3 ring (bottom circle curve*/
 {
-	return ((xc - x)/sqrt(r*r - (xc - x)*(xc - x)));
+    return ((xc - x)/sqrt(r*r - (xc - x)*(xc - x)));
 }
 
 double bottomI1I3slope(double x, double xc)
 /*slope of bottom I1I3 ring (top circle curve)*/
 
 {
-	return (-1*(xc - x)/sqrt(r*r - (xc - x)*(xc - x)));
+    return (-1*(xc - x)/sqrt(r*r - (xc - x)*(xc - x)));
 }
 
 
 void xcCalc(double a, double x, double rotation, double & Txc, double & Bxc, double & Tyc, double & Byc, double & topslope, double & bottomslope)
 {
-	double TES, BES, TI1I3S, BI1I3S, n, ndelta, Tslope;
-	double b, odonslope, frontxpoint, frontypoint, furthestx;
-	double oldTxc = Txc, oldBxc = Bxc;
-	int counter = 0;
-	bool isContactingOdontophore;
+    double TES, BES, TI1I3S, BI1I3S, n, ndelta, Tslope;
+    double b, odonslope, frontxpoint, frontypoint, furthestx;
+    double oldTxc = Txc, oldBxc = Bxc;
+    int counter = 0;
+    bool isContactingOdontophore;
 
-	b = 0.005*sqrt(0.005)/sqrt(a);
-	odonslope = tan((90 - rotation)*pi/180);
-	frontxpoint = a*a*odonslope/sqrt(b*b+a*a*odonslope*odonslope);                              // front end of major axis
-	frontypoint = -1*b*sqrt(1-frontxpoint*frontxpoint/(a*a));                                   // front end of major axis
-	furthestx = frontxpoint*cos((-1*rotation)*pi/180) + frontypoint*sin((-1*rotation)*pi/180);  // most protracted point
+    b = 0.005*sqrt(0.005)/sqrt(a);
+    odonslope = tan((90 - rotation)*pi/180);
+    frontxpoint = a*a*odonslope/sqrt(b*b+a*a*odonslope*odonslope);                              // front end of major axis
+    frontypoint = -1*b*sqrt(1-frontxpoint*frontxpoint/(a*a));                                   // front end of major axis
+    furthestx = frontxpoint*cos((-1*rotation)*pi/180) + frontypoint*sin((-1*rotation)*pi/180);  // most protracted point
 
-	// x   is the       center x-position       of the ring relative to the odontophore
-	// x-r is the   most posterior x-position   of the ring relative to the odontophore
-	if (x-r > furthestx)
-		isContactingOdontophore = false;
-	else
-		isContactingOdontophore = true;
+    // x   is the       center x-position       of the ring relative to the odontophore
+    // x-r is the   most posterior x-position   of the ring relative to the odontophore
+    if (x-r > furthestx)
+        isContactingOdontophore = false;
+    else
+        isContactingOdontophore = true;
 
 
-	if(Bxc < (-r + x))
-		Bxc = x - 0.00125 + 0.0000101;
-	if(Bxc > (r + x))
-		Bxc = x + r - 0.0000101;
-	if(Txc < (x - r))
-		Txc = x - r + 0.0000101;
-	if(Txc > (r + x))
-		Txc = x + r - 0.0000101;
+    if(Bxc < (-r + x))
+        Bxc = x - 0.00125 + 0.0000101;
+    if(Bxc > (r + x))
+        Bxc = x + r - 0.0000101;
+    if(Txc < (x - r))
+        Txc = x - r + 0.0000101;
+    if(Txc > (r + x))
+        Txc = x + r - 0.0000101;
 
-	if(Txc > furthestx)
-		Txc = (furthestx + x - r)/2;
-	if(Txc < -1*furthestx)
-		Txc = (-1*furthestx + x + r)/2;
-	if(Bxc > furthestx)
-		Bxc = (furthestx + x - r)/2;
-	if(Bxc < -1*furthestx)
-		Bxc = (-1*furthestx + x + r)/2;
+    if(Txc > furthestx)
+        Txc = (furthestx + x - r)/2;
+    if(Txc < -1*furthestx)
+        Txc = (-1*furthestx + x + r)/2;
+    if(Bxc > furthestx)
+        Bxc = (furthestx + x - r)/2;
+    if(Bxc < -1*furthestx)
+        Bxc = (-1*furthestx + x + r)/2;
 
-	if (isContactingOdontophore)
-	{
-		for(;;)
-		{
-			if(rotation > 45 && (Txc > (a * cos(rotation*pi/180))))
-				TES = topEllipseSlope2(a, Txc, rotation, Tyc);
-			else
-				TES = topEllipseSlope(a, Txc, rotation, Tyc);
+    if (isContactingOdontophore)
+    {
+        for(;;)
+        {
+            if(rotation > 45 && (Txc > (a * cos(rotation*pi/180))))
+                TES = topEllipseSlope2(a, Txc, rotation, Tyc);
+            else
+                TES = topEllipseSlope(a, Txc, rotation, Tyc);
 
-			TI1I3S = topI1I3slope(x, Txc);
+            TI1I3S = topI1I3slope(x, Txc);
 
-			n = TES - TI1I3S;
+            n = TES - TI1I3S;
 
-			topslope = TES;
+            topslope = TES;
 
-			if((n < 0 && -1*n < Error) || (n > 0 && n < Error))
-				break;
+            if((n < 0 && -1*n < Error) || (n > 0 && n < Error))
+                break;
 
-			counter = counter + 1;
+            counter = counter + 1;
 
-			if(counter > 10)
-			{
-				Txc = oldTxc;
+            if(counter > 10)
+            {
+                Txc = oldTxc;
 
-				if(rotation > 45 && (Txc > (a * cos(rotation*pi/180))))
-					topslope = topEllipseSlope2(a, Txc, rotation, Tyc);
-				else
-					topslope = topEllipseSlope(a, Txc, rotation, Tyc);
+                if(rotation > 45 && (Txc > (a * cos(rotation*pi/180))))
+                    topslope = topEllipseSlope2(a, Txc, rotation, Tyc);
+                else
+                    topslope = topEllipseSlope(a, Txc, rotation, Tyc);
 
-				break;
-			}
+                break;
+            }
 
-			if(rotation > 45 && ((Txc+delta) > (a * cos(rotation*pi/180))))
-				Tslope = topEllipseSlope2(a, Txc+delta, rotation, Tyc);
-			else
-				Tslope = topEllipseSlope(a, Txc+delta, rotation, Tyc);
+            if(rotation > 45 && ((Txc+delta) > (a * cos(rotation*pi/180))))
+                Tslope = topEllipseSlope2(a, Txc+delta, rotation, Tyc);
+            else
+                Tslope = topEllipseSlope(a, Txc+delta, rotation, Tyc);
 
-			ndelta = Tslope - topI1I3slope(x, Txc + delta);
+            ndelta = Tslope - topI1I3slope(x, Txc + delta);
 
-			if((Txc - n*delta/(ndelta - n)) > x - 0.00125)
-				Txc -= n*delta/(ndelta - n);
-			else
-				Txc = x - r + 0.0000001;
-		}
+            if((Txc - n*delta/(ndelta - n)) > x - 0.00125)
+                Txc -= n*delta/(ndelta - n);
+            else
+                Txc = x - r + 0.0000001;
+        }
 
-		counter = 0;
+        counter = 0;
 
-		for(;;)
-		{
-			BES = bottomEllipseSlope(a, Bxc, rotation, Byc);
-			BI1I3S = bottomI1I3slope(x, Bxc);
+        for(;;)
+        {
+            BES = bottomEllipseSlope(a, Bxc, rotation, Byc);
+            BI1I3S = bottomI1I3slope(x, Bxc);
 
-			n = BES - BI1I3S;
+            n = BES - BI1I3S;
 
-			bottomslope = BES;
+            bottomslope = BES;
 
-			if((n < 0 && -1*n < Error) || (n > 0 && n < Error))
-				break;
+            if((n < 0 && -1*n < Error) || (n > 0 && n < Error))
+                break;
 
-			counter=counter+1;
+            counter=counter+1;
 
-			if(counter > 10)
-			{
-				Bxc = oldBxc;
-				bottomslope = bottomEllipseSlope(a, Bxc, rotation, Byc);
-				break;
-			}
+            if(counter > 10)
+            {
+                Bxc = oldBxc;
+                bottomslope = bottomEllipseSlope(a, Bxc, rotation, Byc);
+                break;
+            }
 
-			ndelta = bottomEllipseSlope(a, Bxc + delta, rotation, Byc) - bottomI1I3slope(x, Bxc + delta);
+            ndelta = bottomEllipseSlope(a, Bxc + delta, rotation, Byc) - bottomI1I3slope(x, Bxc + delta);
 
-			if((Bxc - (n*delta)/(ndelta - n)) > (-0.00125 + x))
-				Bxc -= n*delta/(ndelta - n);
-			else
-				Bxc = x - r + 0.0000001;
-		}
-	}
-	else // not touching
-	{
-		Txc = nan("");
-		Bxc = nan("");
-		Tyc = nan("");
-		Byc = nan("");
+            if((Bxc - (n*delta)/(ndelta - n)) > (-0.00125 + x))
+                Bxc -= n*delta/(ndelta - n);
+            else
+                Bxc = x - r + 0.0000001;
+        }
+    }
+    else // not touching
+    {
+        Txc = nan("");
+        Bxc = nan("");
+        Tyc = nan("");
+        Byc = nan("");
 
-		// zero slope ensures that the rings which are not in contact with the
-		// odontophore exert no force on it
-		topslope = 0;
-		bottomslope = 0;
-	}
+        // zero slope ensures that the rings which are not in contact with the
+        // odontophore exert no force on it
+        topslope = 0;
+        bottomslope = 0;
+    }
 
 }
 
 /*double OdonAngle(double x)
 {
-	if(x < -0.00518916)
-		return 90;
-	else
-	{
-		if(x < -0.000349894)
-			return -11905*x+28.223;
-		else
-		{
-			if(x < -0.000146141)
-				return -99083*x-2.2801;
-			else
-				return 12.2;
-		} Val's old function
-	}*/
+    if(x < -0.00518916)
+        return 90;
+    else
+    {
+        if(x < -0.000349894)
+            return -11905*x+28.223;
+        else
+        {
+            if(x < -0.000146141)
+                return -99083*x-2.2801;
+            else
+                return 12.2;
+        } Val's old function
+    }*/
 
 double OdonAngle(double x)  //my new function for rejection, based on Hui's paper, Figure 5E,F
 {
-	if(x < -0.0011)
-		return 90;
-	else
-	{
-		if ( x>= .0051)
-			return 0;
+    if(x < -0.0011)
+        return 90;
+    else
+    {
+        if ( x>= .0051)
+            return 0;
 
-		else
-		{
-			if ((90 - 18000*(x+.0011)) > 0)
-			{
-				return (90 - 18000*(x+.0011));
-			}
+        else
+        {
+            if ((90 - 18000*(x+.0011)) > 0)
+            {
+                return (90 - 18000*(x+.0011));
+            }
 
-			 else
-			{
-				return 0;
-			}
-			;  //new rot function
-			//return -14516*x + 74.03;  //old rot function
-		}
-	}
+             else
+            {
+                return 0;
+            }
+            ;  //new rot function
+            //return -14516*x + 74.03;  //old rot function
+        }
+    }
 
 
 
-	/*if(x < -0.00517083)
-		return 90;
-	else
-	{
-		if(x < 0.000345961)
-			return -10443*x+36.001;
-		else
-		{
-			if(x < 0.00057778)
-				return -86914*x+62.457;
-			else
-				return 12.2;
-		}
-	}*/
+    /*if(x < -0.00517083)
+        return 90;
+    else
+    {
+        if(x < 0.000345961)
+            return -10443*x+36.001;
+        else
+        {
+            if(x < 0.00057778)
+                return -86914*x+62.457;
+            else
+                return 12.2;
+        }
+    }*/
 }
 double calchingeforce2 (double xdisplacement, double xvelocity)
 /* calchingeforce2 only includes the elastic anti-protraction component of the hinge force */
 
-	{
-		double Fo, So, x, xdot;
+    {
+        double Fo, So, x, xdot;
 
-		x = (xdisplacement) * 1000; //convert to mm
-		xdot = xvelocity*1000;
+        x = (xdisplacement) * 1000; //convert to mm
+        xdot = xvelocity*1000;
 
-		/* Klugy way of only doing the protraction curve */
-		/*if(xvelocity>0)
-		{
-		xdot = xvelocity * 1000;
-		}
-		else
-		{
-			xdot = -xvelocity*1000;
-		}*/
-		//convert to mm
+        /* Klugy way of only doing the protraction curve */
+        /*if(xvelocity>0)
+        {
+        xdot = xvelocity * 1000;
+        }
+        else
+        {
+            xdot = -xvelocity*1000;
+        }*/
+        //convert to mm
 
-		//check whether we are using the protraction or retraction curve
-	if (xdot >= 0.0)	//protraction curve
-		{
-			if ((x + passiveoffset) < xp) //if odontophore is not protracted past xp
-			{
-				So = 0;  //So is the spring stiffness of the Kelvin element
-			}
-			else  //if the odontophore has protracted past xp
-			{
-				So = A2 + (A1-A2)/(1+exp(((x + passiveoffset)-Xo)/DX));
-			}
-		}
+        //check whether we are using the protraction or retraction curve
+    if (xdot >= 0.0)    //protraction curve
+        {
+            if ((x + passiveoffset) < xp) //if odontophore is not protracted past xp
+            {
+                So = 0;  //So is the spring stiffness of the Kelvin element
+            }
+            else  //if the odontophore has protracted past xp
+            {
+                So = A2 + (A1-A2)/(1+exp(((x + passiveoffset)-Xo)/DX));
+            }
+        }
 
-		else //retraction curve
-		{
-			if ((x + passiveoffset) < xp) //if odontophore is not protracted past xp
-			{
-				So = 0;  //So is the spring stiffness of the Kelvin element
-			}
-			else  //if the odontophore has protracted past xp
-			{
-				So = .95*(A2 + (A1-A2)/(1+exp(((x + passiveoffset)-Xo)/DX)));
-			}
-
-
-			/*if ((x + passiveoffset) < xr)
-			{
-				So = 0;
-			}
-			else
-			{
-				So = B1 + B2 * (x + passiveoffset) + B3 * (x + passiveoffset) * (x + passiveoffset) + B4 * (x + passiveoffset) * (x + passiveoffset) * (x + passiveoffset); ;
-			}*/
-		}
-
-		Fo = So * (x + passiveoffset) + viscdamp * xdot; //force from the spring in the Kelvin element putting in some damping
-
-		if (Fo < 0)
-		{
-			Fo = 0;
-		}
+        else //retraction curve
+        {
+            if ((x + passiveoffset) < xp) //if odontophore is not protracted past xp
+            {
+                So = 0;  //So is the spring stiffness of the Kelvin element
+            }
+            else  //if the odontophore has protracted past xp
+            {
+                So = .95*(A2 + (A1-A2)/(1+exp(((x + passiveoffset)-Xo)/DX)));
+            }
 
 
+            /*if ((x + passiveoffset) < xr)
+            {
+                So = 0;
+            }
+            else
+            {
+                So = B1 + B2 * (x + passiveoffset) + B3 * (x + passiveoffset) * (x + passiveoffset) + B4 * (x + passiveoffset) * (x + passiveoffset) * (x + passiveoffset); ;
+            }*/
+        }
 
-		return (-1 * Fo  - viscdamp * xdot);
-	}
+        Fo = So * (x + passiveoffset) + viscdamp * xdot; //force from the spring in the Kelvin element putting in some damping
+
+        if (Fo < 0)
+        {
+            Fo = 0;
+        }
+
+
+
+        return (-1 * Fo  - viscdamp * xdot);
+    }
 
 double activehingeforce (double activation, double velocity, double length)
 {
 
-	double HingeLT;
-	double FoHinge =  -600;  // -800;
+    double HingeLT;
+    double FoHinge =  -600;  // -800;
 
-	HingeLT = -.024*((length+lengthshift)*1000)*((length+lengthshift)*1000) - .04*((length+lengthshift)*1000) +1;
+    HingeLT = -.024*((length+lengthshift)*1000)*((length+lengthshift)*1000) - .04*((length+lengthshift)*1000) +1;
 
-	if ((HingeLT > 0) && (activation > Ao))
-		return FoHinge*HingeLT*(activation-Ao);
-	else
+    if ((HingeLT > 0) && (activation > Ao))
+        return FoHinge*HingeLT*(activation-Ao);
+    else
         return 0;
 }
 
 double OdonAngle2(double x, double hingeforce, double radius, double oldodonangle)
 {
-	double output;
-	double forceadjustment, rotationadjustment, totaladjustment, maxangleoffset;
-	double equilibriumangle;
+    double output;
+    double forceadjustment, rotationadjustment, totaladjustment, maxangleoffset;
+    double equilibriumangle;
 
-	if(x < -0.0011)
-		output = 90;
-	else
-	{
-		if ( x>= .0051)
-			output = 0;
+    if(x < -0.0011)
+        output = 90;
+    else
+    {
+        if ( x>= .0051)
+            output = 0;
 
-		else
-		{
-			if ((90 - 18000*(x+.0011)) > 0)
-			{
-				output = (90 - 18000*(x+.0011));
-			}
-			else
-			{
-				output = 0;
-			}
-			;  //new rot function
-			//return -14516*x + 74.03;  //old rot function
-		}
-	}
+        else
+        {
+            if ((90 - 18000*(x+.0011)) > 0)
+            {
+                output = (90 - 18000*(x+.0011));
+            }
+            else
+            {
+                output = 0;
+            }
+            ;  //new rot function
+            //return -14516*x + 74.03;  //old rot function
+        }
+    }
 
-	equilibriumangle = output;
+    equilibriumangle = output;
 
-	//maxangleoffset = output;
+    //maxangleoffset = output;
     maxangleoffset = 90 - output;
 
-	//putting in the dynamic offset as a function of hinge force (which is negative) and radius
+    //putting in the dynamic offset as a function of hinge force (which is negative) and radius
     if (hingeforce < -75)
-	{
-		rotationadjustment = (radius-.005)/ .003;
-		forceadjustment = (-1*hingeforce - 75)/75;
-		if (forceadjustment > 1.0)
-		{
-			forceadjustment = 1.0;
-		}
-		totaladjustment = 2*(maxangleoffset * rotationadjustment*forceadjustment);
+    {
+        rotationadjustment = (radius-.005)/ .003;
+        forceadjustment = (-1*hingeforce - 75)/75;
+        if (forceadjustment > 1.0)
+        {
+            forceadjustment = 1.0;
+        }
+        totaladjustment = 2*(maxangleoffset * rotationadjustment*forceadjustment);
 
-		// putting in a maximum rotation speed to prevent massive rotation. Max speed,
-		equilibriumangle = output - totaladjustment;
-		if(equilibriumangle <0)
-		{
-			equilibriumangle=0;
-		}
-	}
+        // putting in a maximum rotation speed to prevent massive rotation. Max speed,
+        equilibriumangle = output - totaladjustment;
+        if(equilibriumangle <0)
+        {
+            equilibriumangle=0;
+        }
+    }
 
-	output = oldodonangle + anglestiffness*(equilibriumangle - oldodonangle);
+    output = oldodonangle + anglestiffness*(equilibriumangle - oldodonangle);
 
-	return output;
+    return output;
 }
 
 
