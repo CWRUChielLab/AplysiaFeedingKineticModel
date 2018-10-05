@@ -24,7 +24,7 @@ class Animator:
 
     def saveMovie(self):
         self.createMovie()
-        
+
 ######################################################
 ##                 Video Parameters                 ##
 ######################################################
@@ -45,7 +45,7 @@ class Animator:
 ##                    Read File                     ##
 ######################################################
     def readFile(self):
-        self.data = pd.read_csv('output-mechanics.csv') 
+        self.data = pd.read_csv('output-mechanics.csv')
 
 ######################################################
 ##                Plot 2D Simulation                ##
@@ -136,7 +136,7 @@ class Animator:
         self.i2graph.text(-0.5140,30, '30', color='black', fontsize=4)
         self.i2graph.text(-0.5140,00, '0', color='black', fontsize=4)
         #i2graph.grid(True)
-            
+
         #The following code subplots the Odontophore input vs time graph
         self.n3ticks = np.arange(-5,40, 5)
         self.n3graph.plot(time[1:850],freqN3array[1:850])
@@ -191,13 +191,13 @@ class Animator:
 
     def makevertlinei2(self, i2graph, discretemoment):
         return self.i2graph.vlines([float(time[discretemoment])],[0],80, colors = 'r')
-        
+
     def makevertlinen3(self, n3graph, discretemoment):
         return self.n3graph.vlines([float(time[discretemoment])],[0],80, colors = 'r')
-        
+
     def makevertlinei1i3(self, i1i3graph, discretemoment):
         return self.i1i3graph.vlines([float(time[discretemoment])],[0],80, colors = 'r')
-        
+
     def makevertlinehinge(self, hingegraph, discretemoment):
         return self.hingegraph.vlines([float(time[discretemoment])],[0],80, colors = 'r')
 
@@ -371,23 +371,23 @@ class Animator:
 
     def createi2top(self, discretemoment, i2top):
         #Top line
-        
+
         #self.i1i3radius = float(i1i3radiusarray[discretemoment])
         self.i2length = float(self.data['lengthofI2'][discretemoment])
         self.topangle = float(self.data['topphiangleofi2'][discretemoment]) #Tphi
         self.bottomangle = float(self.data['bottomphiangleofi2'][discretemoment]) #Bphi
         self.xtopval = -(np.cos(np.deg2rad(self.topangle))*self.i2length)/2
         self.xbottomval = -(np.cos(np.deg2rad(self.bottomangle))*self.i2length)/2
-        
+
         #self.furthestbackxpoint = float(furthestbackxpointarray[discretemoment])
         #self.furthestbackypoint = float(furthestbackypointarray[discretemoment])
         self.i1i3contacttopy = float(self.data['i1i3contacttopy'][discretemoment])
         self.i1i3contacttopx = -0.00125
         self.i1i3contactbottomy = float(self.data['i1i3contactbottomy'][discretemoment])
         self.i1i3contactbottomx = -.00125
-        
+
         #x1val = float(x1array[discretemoment])
-        
+
         self.ocontacttopx = float(self.data['ocontacttopx'][discretemoment])
         self.ocontacttopy = float(self.data['ocontacttopy'][discretemoment])
         self.ocontactbottomx = float(self.data['ocontactbottomx'][discretemoment])
@@ -407,23 +407,23 @@ class Animator:
 
     def createi2bottom(self, discretemoment, i2bottom):
         #Bottom line
-        
+
         #self.i1i3radius = float(i1i3radiusarray[discretemoment])
         self.i2length = float(self.data['lengthofI2'][discretemoment])
         self.topangle = float(self.data['topphiangleofi2'][discretemoment]) #Tphi
         self.bottomangle = float(self.data['bottomphiangleofi2'][discretemoment]) #Bphi
         self.xtopval = -(np.cos(np.deg2rad(self.topangle))*self.i2length)/2
         self.xbottomval = -(np.cos(np.deg2rad(self.bottomangle))*self.i2length)/2
-        
+
         #self.furthestbackxpoint = float(furthestbackxpointarray[discretemoment])
         #self.furthestbackypoint = float(furthestbackypointarray[discretemoment])
         self.i1i3contacttopy = float(self.data['i1i3contacttopy'][discretemoment])
         self.i1i3contacttopx = -0.00125
         self.i1i3contactbottomy = float(self.data['i1i3contactbottomy'][discretemoment])
         self.i1i3contactbottomx = -.00125
-        
+
         #x1val = float(x1array[discretemoment])
-        
+
         self.ocontacttopx = float(self.data['ocontacttopx'][discretemoment])
         self.ocontacttopy = float(self.data['ocontacttopy'][discretemoment])
         self.ocontactbottomx = float(self.data['ocontactbottomx'][discretemoment])

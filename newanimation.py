@@ -412,7 +412,7 @@ i1i3top = Circle((0,0),0.00125)
 i1i3bottom = Circle((0,0),0.00125)
 i2top = mlines.Line2D([0,1],[0,1])
 i2bottom= mlines.Line2D([0,1],[0,1])
-    
+
 a.add_artist(odontophore)
 a.add_artist(i1i3top)
 a.add_artist(i1i3bottom)
@@ -454,7 +454,7 @@ i2graph.text(9.0140,10, '- I 2 -', color='black', fontsize=4)
 i2graph.text(-0.5140,30, '30', color='black', fontsize=4)
 i2graph.text(-0.5140,00, '0', color='black', fontsize=4)
 #i2graph.grid(True)
-    
+
 #The following code subplots the Odontophore input vs time graph
 n3ticks = np.arange(-5,40, 5)
 n3graph.plot(time[1:850],freqN3array[1:850])
@@ -509,13 +509,13 @@ vertlinehinge = hingegraph.vlines([float(time[1])],[0],80, colors = 'r')
 
 def makevertlinei2(i2graph, discretemoment):
     return i2graph.vlines([float(time[discretemoment])],[0],80, colors = 'r')
-    
+
 def makevertlinen3(n3graph, discretemoment):
     return n3graph.vlines([float(time[discretemoment])],[0],80, colors = 'r')
-    
+
 def makevertlinei1i3(i1i3graph, discretemoment):
     return i1i3graph.vlines([float(time[discretemoment])],[0],80, colors = 'r')
-    
+
 def makevertlinehinge(hingegraph, discretemoment):
     return hingegraph.vlines([float(time[discretemoment])],[0],80, colors = 'r')
 
@@ -568,23 +568,23 @@ def createi1i3bottom(discretemoment, i1i3bottom):
 
 def createi2top(discretemoment, i2top):
     #Top line
-    
+
     i1i3radius = float(i1i3radiusarray[discretemoment])
     i2length = float(i2lengtharray[discretemoment])
     topangle = float(topanglearray[discretemoment]) #Tphi
     bottomangle = float(bottomanglearray[discretemoment]) #Bphi
     xtopval = -(np.cos(np.deg2rad(topangle))*i2length)/2
     xbottomval = -(np.cos(np.deg2rad(bottomangle))*i2length)/2
-    
+
     furthestbackxpoint = float(furthestbackxpointarray[discretemoment])
     furthestbackypoint = float(furthestbackypointarray[discretemoment])
     i1i3contacttopy = float(i1i3contacttopyarray[discretemoment])
     i1i3contacttopx = -0.00125
     i1i3contactbottomy = float(i1i3contactbottomyarray[discretemoment])
     i1i3contactbottomx = -.00125
-    
+
     #x1val = float(x1array[discretemoment])
-    
+
     ocontacttopx = float(ocontacttopxarray[discretemoment])
     ocontacttopy = float(ocontacttopyarray[discretemoment])
     ocontactbottomx = float(ocontactbottomxarray[discretemoment])
@@ -603,23 +603,23 @@ def createi2top(discretemoment, i2top):
 
 def createi2bottom(discretemoment, i2bottom):
     #Bottom line
-    
+
     i1i3radius = float(i1i3radiusarray[discretemoment])
     i2length = float(i2lengtharray[discretemoment])
     topangle = float(topanglearray[discretemoment]) #Tphi
     bottomangle = float(bottomanglearray[discretemoment]) #Bphi
     xtopval = -(np.cos(np.deg2rad(topangle))*i2length)/2
     xbottomval = -(np.cos(np.deg2rad(bottomangle))*i2length)/2
-    
+
     furthestbackxpoint = float(furthestbackxpointarray[discretemoment])
     furthestbackypoint = float(furthestbackypointarray[discretemoment])
     i1i3contacttopy = float(i1i3contacttopyarray[discretemoment])
     i1i3contacttopx = -0.00125
     i1i3contactbottomy = float(i1i3contactbottomyarray[discretemoment])
     i1i3contactbottomx = -.00125
-    
+
     #x1val = float(x1array[discretemoment])
-    
+
     ocontacttopx = float(ocontacttopxarray[discretemoment])
     ocontacttopy = float(ocontacttopyarray[discretemoment])
     ocontactbottomx = float(ocontactbottomxarray[discretemoment])
