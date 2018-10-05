@@ -14,8 +14,6 @@ import matplotlib.lines as mlines
 from matplotlib.patches import Circle
 from matplotlib import animation
 
-#xCoordPerN = i * 2r
-
 class Animator:
     def __init__(self):
         self.setVideoParameters()
@@ -256,7 +254,7 @@ class Animator:
 
     def createi1i3top1(self, discretemoment, i1i3top1):
         self.topcontactpointy1 = float(self.data['ytop1'][discretemoment])
-        self.i1i3top1 = Circle((0,self.topcontactpointy1),0.00125)
+        self.i1i3top1 = Circle((1*2*0.00125,self.topcontactpointy1),0.00125)
         self.i1i3top1.set_facecolor('none')
         self.i1i3top1.set_linewidth(.5)
         self.i1i3top1.set_edgecolor('black')
@@ -271,7 +269,7 @@ class Animator:
 
     def createi1i3bottom1(self, discretemoment, i1i3bottom1):
         self.bottomcontactpointy1 = float(self.data['ybottom1'][discretemoment])
-        self.i1i3bottom1 = Circle((0,self.bottomcontactpointy1),0.00125)
+        self.i1i3bottom1 = Circle((1*2*0.00125,self.bottomcontactpointy1),0.00125)
         self.i1i3bottom1.set_facecolor('none')
         self.i1i3bottom1.set_linewidth(.5)
         self.i1i3bottom1.set_edgecolor('black')
@@ -285,7 +283,7 @@ class Animator:
 
     def createi1i3top2(self, discretemoment, i1i3top2):
         self.topcontactpointy2 = float(self.data['ytop2'][discretemoment])
-        self.i1i3top2 = Circle((0,self.topcontactpointy2),0.00125)
+        self.i1i3top2 = Circle((2*2*0.00125,self.topcontactpointy2),0.00125)
         self.i1i3top2.set_facecolor('none')
         self.i1i3top2.set_linewidth(.5)
         self.i1i3top2.set_edgecolor('black')
@@ -296,11 +294,11 @@ class Animator:
     ##        self.i1i3top.set_edgecolor('black')
     ##    else:
     ##        self.i1i3top.set_edgecolor('red')
-        return self.i1i3top1
+        return self.i1i3top2
 
     def createi1i3bottom2(self, discretemoment, i1i3bottom2):
         self.bottomcontactpointy2 = float(self.data['ybottom1'][discretemoment])
-        self.i1i3bottom2 = Circle((0,self.bottomcontactpointy2),0.00125)
+        self.i1i3bottom2 = Circle((2*2*0.00125,self.bottomcontactpointy2),0.00125)
         self.i1i3bottom2.set_facecolor('none')
         self.i1i3bottom2.set_linewidth(.5)
         self.i1i3bottom2.set_edgecolor('black')
@@ -314,7 +312,7 @@ class Animator:
 
     def createi1i3top3(self, discretemoment, i1i3top3):
         self.topcontactpointy3 = float(self.data['ytop3'][discretemoment])
-        self.i1i3top3 = Circle((0,self.topcontactpointy3),0.00125)
+        self.i1i3top3 = Circle((3*2*0.00125,self.topcontactpointy3),0.00125)
         self.i1i3top3.set_facecolor('none')
         self.i1i3top3.set_linewidth(.5)
         self.i1i3top3.set_edgecolor('black')
@@ -325,11 +323,11 @@ class Animator:
     ##        self.i1i3top.set_edgecolor('black')
     ##    else:
     ##        self.i1i3top.set_edgecolor('red')
-        return self.i1i3top1
+        return self.i1i3top3
 
     def createi1i3bottom3(self, discretemoment, i1i3bottom3):
         self.bottomcontactpointy3 = float(self.data['ybottom3'][discretemoment])
-        self.i1i3bottom3 = Circle((0,self.bottomcontactpointy3),0.00125)
+        self.i1i3bottom3 = Circle((3*2*0.00125,self.bottomcontactpointy3),0.00125)
         self.i1i3bottom3.set_facecolor('none')
         self.i1i3bottom3.set_linewidth(.5)
         self.i1i3bottom3.set_edgecolor('black')
@@ -343,7 +341,7 @@ class Animator:
 
     def createi1i3top4(self, discretemoment, i1i3top4):
         self.topcontactpointy4 = float(self.data['ytop4'][discretemoment])
-        self.i1i3top4 = Circle((0,self.topcontactpointy4),0.00125)
+        self.i1i3top4 = Circle((4*2*0.00125,self.topcontactpointy4),0.00125)
         self.i1i3top4.set_facecolor('none')
         self.i1i3top4.set_linewidth(.5)
         self.i1i3top4.set_edgecolor('black')
@@ -354,11 +352,11 @@ class Animator:
     ##        self.i1i3top.set_edgecolor('black')
     ##    else:
     ##        self.i1i3top.set_edgecolor('red')
-        return self.i1i3top1
+        return self.i1i3top4
 
     def createi1i3bottom4(self, discretemoment, i1i3bottom4):
         self.bottomcontactpointy4 = float(self.data['ybottom4'][discretemoment])
-        self.i1i3bottom4 = Circle((0,self.bottomcontactpointy4),0.00125)
+        self.i1i3bottom4 = Circle((4*2*0.00125,self.bottomcontactpointy4),0.00125)
         self.i1i3bottom4.set_facecolor('none')
         self.i1i3bottom4.set_linewidth(.5)
         self.i1i3bottom4.set_edgecolor('black')
@@ -610,12 +608,12 @@ class Animator:
                 self.i1i3bottom = self.createi1i3bottom(i, self.i1i3bottom)
                 self.i1i3top1 = self.createi1i3top1(i, self.i1i3top1)
                 self.i1i3bottom1 = self.createi1i3bottom1(i, self.i1i3bottom1)
-                self.i1i3top2 = self.createi1i3top1(i, self.i1i3top2)
-                self.i1i3bottom2 = self.createi1i3bottom1(i, self.i1i3bottom2)
-                self.i1i3top3 = self.createi1i3top1(i, self.i1i3top3)
-                self.i1i3bottom3 = self.createi1i3bottom1(i, self.i1i3bottom3)
-                self.i1i3top4 = self.createi1i3top1(i, self.i1i3top4)
-                self.i1i3bottom4 = self.createi1i3bottom1(i, self.i1i3bottom4)
+                self.i1i3top2 = self.createi1i3top2(i, self.i1i3top2)
+                self.i1i3bottom2 = self.createi1i3bottom2(i, self.i1i3bottom2)
+                self.i1i3top3 = self.createi1i3top3(i, self.i1i3top3)
+                self.i1i3bottom3 = self.createi1i3bottom3(i, self.i1i3bottom3)
+                self.i1i3top4 = self.createi1i3top4(i, self.i1i3top4)
+                self.i1i3bottom4 = self.createi1i3bottom4(i, self.i1i3bottom4)
                 self.i2top = self.createi2top(i, self.i2top)
                 self.i2bottom = self.createi2bottom(i, self.i2bottom)
                 self.a.add_artist(self.odontophore)
