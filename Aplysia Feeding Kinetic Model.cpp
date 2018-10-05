@@ -41,6 +41,15 @@ FILE *rasterplot;
 #define protractfit -1 /*if this equals 1 fitcalc will give fitness for protraction
 						if this does not equal one, fitness will be given at retraction only*/
 
+// #define debug /* comment to hide debug print statements, uncomment to show */
+#ifdef debug
+#define debug_print(...) fprintf (stderr, __VA_ARGS__)
+#else
+#define debug_print(...) 0
+#endif
+
+const double RunDuration = 8.5; //seconds, length of time each individual is run
+
 // TATE
 double valueTBD;
 
@@ -107,7 +116,6 @@ const double lengthshift = 0.0;  // 0.0; //-.0062;  the shift on the hinge LT in
 const double MAXSEAWEEDFORCE = 100;  // the maximum force on the seaweed in mN.
 
 const int seednum = 42;
-const double RunDuration = 8.5; // 8.5; //seconds, length of time each individual is run
 
 const int inputrows = 740;
 const int NeuronNum = 4; //number of neurons in the network
@@ -489,6 +497,7 @@ int main(int argc, char* argv[])
     xctop = -0.0037;
     xcbottom = -0.0037;
 		
+	debug_print("=== INITIALIZATION ===\n");
     xcCalc(a, -1*x, odontophoreangle, xctop, xcbottom, yctop, ycbottom, topslope, bottomslope);
 	
     ytop = yctop + sqrt(r*r - (-1*x - xctop)*(-1*x - xctop));
@@ -646,7 +655,6 @@ BLARF COMMENT REMOVING READING INPUT END */
 			//********ENDING INITIALIZATION********
 
         /* Running the model here */
-    printf("Dreaming the impossible dream \n" );
         /*printf("%f	%f \n", neuralvariables[1][I2inputcounter], neuralvariables[2][I2inputcounter]);
          printf("%f	%f \n", neuralvariables[1][1], neuralvariables[2][1]);
 
@@ -727,6 +735,8 @@ BLARF COMMENT REMOVING READING INPUT END */
     //fitness = x; //fitness for the maximum protraction trials of biting.
     time = 0;
         
+	debug_print("\n=== ENTERING MAIN LOOP ===\n");
+	printf("Dreaming the impossible dream \n" );
 	while(time < RunDuration) //runs the individual until time is greater than RunDuration
 		{
         //NeuronOutput is from 0 to 1, multip ly be 20 to get freq from 0 to 20
@@ -851,6 +861,7 @@ BLARF COMMENT REMOVING READING INPUT END */
         }
     }
 
+	debug_print("\n=== EXITING MAIN LOOP ===\n");
     printf("that's another simulation completed at %f	%f\n", frequencyiterationtime, frequencyiterationtime2);
 
 		/* While loop Removal
