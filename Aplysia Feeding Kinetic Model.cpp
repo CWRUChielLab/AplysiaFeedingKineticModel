@@ -42,7 +42,7 @@ FILE *mechout;
 #define protractfit -1 /*if this equals 1 fitcalc will give fitness for protraction
                         if this does not equal one, fitness will be given at retraction only*/
 
-// #define debug /* comment to hide debug print statements, uncomment to show */
+// #define debug /* to print debug info, uncomment this line or compile with "-D debug" */
 #ifdef debug
 #define debug_print(...) fprintf (stderr, __VA_ARGS__)
 #else

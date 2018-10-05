@@ -3,6 +3,10 @@ EXEC=model
 $(EXEC): Aplysia\ Feeding\ Kinetic\ Model.cpp
 	g++ -o $@ "$<"
 
+.PHONY: debug
+debug: Aplysia\ Feeding\ Kinetic\ Model.cpp
+	g++ -D debug -o $(EXEC) "$<"
+
 
 .PHONY: clean
 clean:
