@@ -60,6 +60,9 @@ const double r = 0.00125; //inner radius of the I1/I3 torus in m, remains consta
 const double Odonmass = 1.7; //mass of sphere in grams (labeled M in Guidebook)
 const double I1I3mass = 1.3; //mass of torus in grams (labeled m in Guidebook)
 
+// multi-ring I1/I3
+const int N_RINGS = 5;
+
 //Free parameters
 const double LI2opt = 0.0225; //.0825; //optimal length of I2
 const double LI1I3opt = 0.0417;//0.04; //optimal length of I1/I3
@@ -391,7 +394,19 @@ int main(int argc, char* argv[])
     double F1; //visco-elastic hinge force, F1 from Sutton et al 2002
     double hingeF = 0;
     double xctop, xcbottom, yctop, ycbottom, ytop, ybottom, topslope, bottomslope, rotation;
-	
+ 
+	// variables for multi-ring I1/I3
+	double aprimeI1I3_MULTIRING[N_RINGS];
+	double freqI1I3_MULTIRING[N_RINGS];
+	double xctop_MULTIRING[N_RINGS];
+	double xcbottom_MULTIRING[N_RINGS];
+	double yctop_MULTIRING[N_RINGS];
+	double ycbottom_MULTIRING[N_RINGS];
+	double ytop_MULTIRING[N_RINGS];
+	double ybottom_MULTIRING[N_RINGS];
+	double topslope_MULTIRING[N_RINGS];
+	double bottomslope_MULTIRING[N_RINGS];
+
     //fitness calculation variables - explained when initialized
     double fitness;
     double SArea;
@@ -479,6 +494,30 @@ int main(int argc, char* argv[])
     ytop = yctop + sqrt(r*r - (-1*x - xctop)*(-1*x - xctop));
     ybottom = ycbottom - sqrt(r*r - (-1*x - xcbottom)*(-1*x - xcbottom)); //initializing contact point
 		
+	// initialize multi-ring I1/I3
+	for (i=0; i<N_RINGS; i++)
+	{
+		xctop_MULTIRING[i] = -0.0037;
+		xcbottom_MULTIRING[i] = -0.0037;
+		xcCalc(a, -1*x+(i*2*r), odontophoreangle, xctop_MULTIRING[i], xcbottom_MULTIRING[i], yctop_MULTIRING[i], ycbottom_MULTIRING[i], topslope_MULTIRING[i], bottomslope_MULTIRING[i]);
+
+		if (isnan(xctop_MULTIRING[i])) // ring not contacting odontophore
+		{
+			// These constants are where a ring will stay if it is not in
+			// contact with the odontophore. They were chosen somewhat
+			// arbitrarily: they are the positions of the original one-torus
+			// I1/I3 model (always in contact with the odontophore) when fully
+			// contracted at 20 Hz with simultaneous 20 Hz hinge stimulation.
+			ytop_MULTIRING[i] = 0.00341734;
+			ybottom_MULTIRING[i] = -0.00341734;
+		}
+		else // ring contacting odontophore
+		{
+			ytop_MULTIRING[i]    = yctop_MULTIRING[i]    + sqrt(r*r - power((-1*x+(i*2*r) - xctop_MULTIRING[i]),2));
+			ybottom_MULTIRING[i] = ycbottom_MULTIRING[i] - sqrt(r*r - power((-1*x+(i*2*r) - xcbottom_MULTIRING[i]),2)); //initializing contact point
+		}
+	}
+
     force1 = 0.000; //horizontal force acting on odontophore
     force2 = 0.000; //vertical force acting on the I1/I3 torus
 	
@@ -1736,14 +1775,22 @@ void xcCalc(double a, double x, double rotation, double & Txc, double & Bxc, dou
 	double b, odonslope, frontxpoint, frontypoint, furthestx;
 	double oldTxc = Txc, oldBxc = Bxc;
 	int counter = 0;
+	bool isContactingOdontophore;
 	
 	b = 0.005*sqrt(0.005)/sqrt(a);
 	odonslope = tan((90 - rotation)*pi/180);
-	frontxpoint = a*a*odonslope/sqrt(b*b+a*a*odonslope*odonslope);
-	frontypoint = -1*b*sqrt(1-frontxpoint*frontxpoint/(a*a));
-	furthestx = frontxpoint*cos((-1*rotation)*pi/180) + frontypoint*sin((-1*rotation)*pi/180);	
+	frontxpoint = a*a*odonslope/sqrt(b*b+a*a*odonslope*odonslope);                              // front end of major axis
+	frontypoint = -1*b*sqrt(1-frontxpoint*frontxpoint/(a*a));                                   // front end of major axis
+	furthestx = frontxpoint*cos((-1*rotation)*pi/180) + frontypoint*sin((-1*rotation)*pi/180);  // most protracted point
 
+	// x   is the       center x-position       of the ring relative to the odontophore
+	// x-r is the   most posterior x-position   of the ring relative to the odontophore
+	if (x-r > furthestx)
+		isContactingOdontophore = false;
+	else
+		isContactingOdontophore = true;
 	
+
 	if(Bxc < (-r + x))
 		Bxc = x - 0.00125 + 0.0000101;
 	if(Bxc > (r + x))
@@ -1762,78 +1809,93 @@ void xcCalc(double a, double x, double rotation, double & Txc, double & Bxc, dou
 	if(Bxc < -1*furthestx)
 		Bxc = (-1*furthestx + x + r)/2; 
 	
-	for(;;)
+	if (isContactingOdontophore)
 	{
-		if(rotation > 45 && (Txc > (a * cos(rotation*pi/180))))
-			TES = topEllipseSlope2(a, Txc, rotation, Tyc);
-		else
-			TES = topEllipseSlope(a, Txc, rotation, Tyc);
-			
-		TI1I3S = topI1I3slope(x, Txc);
-		
-		n = TES - TI1I3S;
-		
-		topslope = TES;
-		
-		if((n < 0 && -1*n < Error) || (n > 0 && n < Error))
-			break;
-		
-		counter = counter + 1;
-
-		if(counter > 10)
+		for(;;)
 		{
-			Txc = oldTxc;
-			
 			if(rotation > 45 && (Txc > (a * cos(rotation*pi/180))))
-				topslope = topEllipseSlope2(a, Txc, rotation, Tyc);
+				TES = topEllipseSlope2(a, Txc, rotation, Tyc);
 			else
-				topslope = topEllipseSlope(a, Txc, rotation, Tyc);
-			
-			break;
+				TES = topEllipseSlope(a, Txc, rotation, Tyc);
+	   
+			TI1I3S = topI1I3slope(x, Txc);
+	  
+			n = TES - TI1I3S;
+	  
+			topslope = TES;
+	  
+			if((n < 0 && -1*n < Error) || (n > 0 && n < Error))
+				break;
+	  
+			counter = counter + 1;
+
+			if(counter > 10)
+			{
+				Txc = oldTxc;
+	   
+				if(rotation > 45 && (Txc > (a * cos(rotation*pi/180))))
+					topslope = topEllipseSlope2(a, Txc, rotation, Tyc);
+				else
+					topslope = topEllipseSlope(a, Txc, rotation, Tyc);
+	   
+				break;
+			}
+	   
+			if(rotation > 45 && ((Txc+delta) > (a * cos(rotation*pi/180))))
+				Tslope = topEllipseSlope2(a, Txc+delta, rotation, Tyc);
+			else
+				Tslope = topEllipseSlope(a, Txc+delta, rotation, Tyc);
+	  
+			ndelta = Tslope - topI1I3slope(x, Txc + delta);
+	  
+			if((Txc - n*delta/(ndelta - n)) > x - 0.00125)
+				Txc -= n*delta/(ndelta - n);
+			else
+				Txc = x - r + 0.0000001;
 		}
-			
-		if(rotation > 45 && ((Txc+delta) > (a * cos(rotation*pi/180))))
-			Tslope = topEllipseSlope2(a, Txc+delta, rotation, Tyc);
-		else
-			Tslope = topEllipseSlope(a, Txc+delta, rotation, Tyc);
-		
-		ndelta = Tslope - topI1I3slope(x, Txc + delta);
-		
-		if((Txc - n*delta/(ndelta - n)) > x - 0.00125)
-			Txc -= n*delta/(ndelta - n);
-		else
-			Txc = x - r + 0.0000001;
+	 
+		counter = 0;
+
+		for(;;)
+		{
+			BES = bottomEllipseSlope(a, Bxc, rotation, Byc);
+			BI1I3S = bottomI1I3slope(x, Bxc);
+		 
+			n = BES - BI1I3S;
+	  
+			bottomslope = BES;
+	  
+			if((n < 0 && -1*n < Error) || (n > 0 && n < Error))
+				break;
+	  
+			counter=counter+1;
+
+			if(counter > 10)
+			{ 
+				Bxc = oldBxc;
+				bottomslope = bottomEllipseSlope(a, Bxc, rotation, Byc);
+				break;  
+			}
+	  
+			ndelta = bottomEllipseSlope(a, Bxc + delta, rotation, Byc) - bottomI1I3slope(x, Bxc + delta);
+	  
+			if((Bxc - (n*delta)/(ndelta - n)) > (-0.00125 + x))
+				Bxc -= n*delta/(ndelta - n);
+			else
+				Bxc = x - r + 0.0000001;
+		}
 	}
-	
-	counter = 0;
-
-	for(;;)
+	else // not touching
 	{
-		BES = bottomEllipseSlope(a, Bxc, rotation, Byc);
-		BI1I3S = bottomI1I3slope(x, Bxc);
-		
-		n = BES - BI1I3S;
-		
-		bottomslope = BES;
-		
-		if((n < 0 && -1*n < Error) || (n > 0 && n < Error))
-			break;
-		
-		counter=counter+1;
+		Txc = nan("");
+		Bxc = nan("");
+		Tyc = nan("");
+		Byc = nan("");
 
-		if(counter > 10)
-		{	
-			Bxc = oldBxc;
-			bottomslope = bottomEllipseSlope(a, Bxc, rotation, Byc);
-			break;		
-		}
-		
-		ndelta = bottomEllipseSlope(a, Bxc + delta, rotation, Byc) - bottomI1I3slope(x, Bxc + delta);
-		
-		if((Bxc - (n*delta)/(ndelta - n)) > (-0.00125 + x))
-			Bxc -= n*delta/(ndelta - n);
-		else
-			Bxc = x - r + 0.0000001;
+		// zero slope ensures that the rings which are not in contact with the
+		// odontophore exert no force on it
+		topslope = 0;
+		bottomslope = 0;
 	}
 	
 }
