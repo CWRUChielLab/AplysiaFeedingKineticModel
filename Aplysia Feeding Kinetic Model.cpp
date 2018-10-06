@@ -747,7 +747,7 @@ BLARF COMMENT REMOVING READING INPUT END */
     time = 0;
 
     debug_print("\n=== ENTERING MAIN LOOP ===\n");
-    printf("Dreaming the impossible dream \n" );
+    debug_print("Dreaming the impossible dream \n");
     while(time < RunDuration) //runs the individual until time is greater than RunDuration
         {
         //NeuronOutput is from 0 to 1, multip ly be 20 to get freq from 0 to 20
@@ -880,7 +880,7 @@ BLARF COMMENT REMOVING READING INPUT END */
     }
 
     debug_print("\n=== EXITING MAIN LOOP ===\n");
-    printf("that's another simulation completed at %f\t%f\n", frequencyiterationtime, frequencyiterationtime2);
+    debug_print("that's another simulation completed at %f\t%f\n", frequencyiterationtime, frequencyiterationtime2);
 
         /* While loop Removal
     fprintf(valout, "%f\t%f\t%f \n", frequencyiterationtime, frequencyiterationtime2, fitness);
