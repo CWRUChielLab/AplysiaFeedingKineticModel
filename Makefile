@@ -1,5 +1,6 @@
 EXEC = model
 FIGDIR = Figures
+ANIDIR = Animations
 OUTPUTS = \
 	animation.mp4 \
 	animationinfo.txt \
@@ -29,7 +30,7 @@ $(EXEC) debug: Aplysia\ Feeding\ Kinetic\ Model.cpp
 
 .PHONY: clean
 clean:
-	rm -rf $(EXEC) $(FIGDIR) $(OUTPUTS) *~ .*~
+	rm -rf $(EXEC) $(FIGDIR) $(ANIDIR) $(OUTPUTS) *~ .*~
 
 
 BEHAVIORS = \
@@ -43,6 +44,7 @@ BEHAVIORS = \
 CHECKBEHAVIORS = $(addprefix CHECK-, $(BEHAVIORS))
 BLESSBEHAVIORS = $(addprefix BLESS-, $(BEHAVIORS))
 FIGBEHAVIORS   = $(addprefix $(FIGDIR)/Plot-, $(addsuffix .pdf, $(BEHAVIORS)))
+ANIBEHAVIORS   = $(addprefix $(ANIDIR)/Animation-, $(addsuffix .mp4, $(BEHAVIORS)))
 
 
 .PHONY: check
@@ -76,3 +78,14 @@ $(FIGBEHAVIORS): $(FIGDIR)/Plot-%.pdf: $(EXEC)
 	@mkdir -p $(FIGDIR)
 	@mv plot.pdf $@
 	@echo "done"
+
+
+.PHONY: animations
+animations: $(ANIBEHAVIORS)
+
+$(ANIBEHAVIORS): $(ANIDIR)/Animation-%.mp4: $(EXEC)
+	@echo "Animating $*...\t"
+	@./$< $* # run the model for this behavior
+	@python newanimation.py
+	@mkdir -p $(ANIDIR)
+	@mv animation.mp4 $@
