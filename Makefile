@@ -15,53 +15,53 @@ clean:
 
 .PHONY: check
 check: $(EXEC)
-	./$(EXEC) SwallowPerturbed
+	./$< SwallowPerturbed
 	@echo "SwallowPerturbed:" `diff SlugOutput2.txt Check/Output-SwallowPerturbed.txt | wc -l` "deviations"
 	@echo
-	./$(EXEC) Bite
+	./$< Bite
 	@echo "Bite:            " `diff SlugOutput2.txt Check/Output-Bite.txt             | wc -l` "deviations"
 	@echo
-	./$(EXEC) RejectionA
+	./$< RejectionA
 	@echo "RejectionA:      " `diff SlugOutput2.txt Check/Output-RejectionA.txt       | wc -l` "deviations"
 	@echo
-	./$(EXEC) RejectionB
+	./$< RejectionB
 	@echo "RejectionB:      " `diff SlugOutput2.txt Check/Output-RejectionB.txt       | wc -l` "deviations"
 	@echo
-	./$(EXEC) SwallowA
+	./$< SwallowA
 	@echo "SwallowA:        " `diff SlugOutput2.txt Check/Output-SwallowA.txt         | wc -l` "deviations"
 	@echo
-	./$(EXEC) SwallowB
+	./$< SwallowB
 	@echo "SwallowB:        " `diff SlugOutput2.txt Check/Output-SwallowB.txt         | wc -l` "deviations"
 
 
 .PHONY: blessBite
 blessBite: $(EXEC)
-	./$(EXEC) Bite
+	./$< Bite
 	mv SlugOutput2.txt Check/Output-Bite.txt
 
 .PHONY: blessRejectionA
 blessRejectionA: $(EXEC)
-	./$(EXEC) RejectionA
+	./$< RejectionA
 	mv SlugOutput2.txt Check/Output-RejectionA.txt
 
 .PHONY: blessRejectionB
 blessRejectionB: $(EXEC)
-	./$(EXEC) RejectionB
+	./$< RejectionB
 	mv SlugOutput2.txt Check/Output-RejectionB.txt
 
 .PHONY: blessSwallowA
 blessSwallowA: $(EXEC)
-	./$(EXEC) SwallowA
+	./$< SwallowA
 	mv SlugOutput2.txt Check/Output-SwallowA.txt
 
 .PHONY: blessSwallowB
 blessSwallowB: $(EXEC)
-	./$(EXEC) SwallowB
+	./$< SwallowB
 	mv SlugOutput2.txt Check/Output-SwallowB.txt
 
 .PHONY: blessSwallowPerturbed
 blessSwallowPerturbed: $(EXEC)
-	./$(EXEC) SwallowPerturbed
+	./$< SwallowPerturbed
 	mv SlugOutput2.txt Check/Output-SwallowPerturbed.txt
 
 
@@ -77,37 +77,37 @@ figures:
 	make $(FIGDIR)/Plot-SwallowPerturbed.pdf
 
 $(FIGDIR)/Plot-Bite.pdf: $(EXEC)
-	./$(EXEC) Bite
+	./$< Bite
 	python PlotVariablesSlugOutput.py
 	mkdir -p $(FIGDIR)
 	mv plot.pdf $@
 
 $(FIGDIR)/Plot-RejectionA.pdf: $(EXEC)
-	./$(EXEC) RejectionA
+	./$< RejectionA
 	python PlotVariablesSlugOutput.py
 	mkdir -p $(FIGDIR)
 	mv plot.pdf $@
 
 $(FIGDIR)/Plot-RejectionB.pdf: $(EXEC)
-	./$(EXEC) RejectionB
+	./$< RejectionB
 	python PlotVariablesSlugOutput.py
 	mkdir -p $(FIGDIR)
 	mv plot.pdf $@
 
 $(FIGDIR)/Plot-SwallowA.pdf: $(EXEC)
-	./$(EXEC) SwallowA
+	./$< SwallowA
 	python PlotVariablesSlugOutput.py
 	mkdir -p $(FIGDIR)
 	mv plot.pdf $@
 
 $(FIGDIR)/Plot-SwallowB.pdf: $(EXEC)
-	./$(EXEC) SwallowB
+	./$< SwallowB
 	python PlotVariablesSlugOutput.py
 	mkdir -p $(FIGDIR)
 	mv plot.pdf $@
 
 $(FIGDIR)/Plot-SwallowPerturbed.pdf: $(EXEC)
-	./$(EXEC) SwallowPerturbed
+	./$< SwallowPerturbed
 	python PlotVariablesSlugOutput.py
 	mkdir -p $(FIGDIR)
 	mv plot.pdf $@
