@@ -16,25 +16,23 @@ clean:
 	rm -rf $(EXEC) SlugOutput2.txt SlugOutput2-csvTranslated.csv Figures plot.pdf Izhikevich.txt Izhikevich-csvTranslated.csv animationinfo.txt animationinfo-csvTranslated.csv animation.mp4 rasterplotinfo.txt rasterplotinfo-csvTranslated.csv RasterPlot.pdf output-mechanics.csv *~ .*~
 
 
+BEHAVIORS = \
+	Bite \
+	RejectionA \
+	RejectionB \
+	SwallowA \
+	SwallowB \
+	SwallowPerturbed
+CHECKBEHAVIORS = $(addprefix CHECK-, $(BEHAVIORS))
+
 .PHONY: check
-check: $(EXEC)
-	./$< SwallowPerturbed
-	@echo "SwallowPerturbed:" `diff SlugOutput2.txt Check/Output-SwallowPerturbed.txt | wc -l` "deviations"
-	@echo
-	./$< Bite
-	@echo "Bite:            " `diff SlugOutput2.txt Check/Output-Bite.txt             | wc -l` "deviations"
-	@echo
-	./$< RejectionA
-	@echo "RejectionA:      " `diff SlugOutput2.txt Check/Output-RejectionA.txt       | wc -l` "deviations"
-	@echo
-	./$< RejectionB
-	@echo "RejectionB:      " `diff SlugOutput2.txt Check/Output-RejectionB.txt       | wc -l` "deviations"
-	@echo
-	./$< SwallowA
-	@echo "SwallowA:        " `diff SlugOutput2.txt Check/Output-SwallowA.txt         | wc -l` "deviations"
-	@echo
-	./$< SwallowB
-	@echo "SwallowB:        " `diff SlugOutput2.txt Check/Output-SwallowB.txt         | wc -l` "deviations"
+check: $(CHECKBEHAVIORS)
+
+.PHONY: $(CHECKBEHAVIORS)
+$(CHECKBEHAVIORS): CHECK-%: $(EXEC)
+	@echo -n "Checking $*...\t"
+	@./$< $* # run the model for this behavior
+	@echo `diff SlugOutput2.txt Check/Output-$*.txt | wc -l` "deviations"
 
 
 .PHONY: blessBite
