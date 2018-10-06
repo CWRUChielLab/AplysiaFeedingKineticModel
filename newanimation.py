@@ -60,6 +60,7 @@ with open("animationinfo-csvTranslated.csv", "r") as file:
         for column in row:
             time.insert(i,column[0])
             i+=1
+time[1:] = list(map(float, time[1:]))
 
 #The following line prints the time array to confirm that it contains the correct values
 #print(time)
@@ -73,6 +74,7 @@ with open("animationinfo-csvTranslated.csv", "r") as file:
         for column in row:
             position.insert(i,column[1])
             i+=1
+position[1:] = list(map(float, position[1:]))
 
 #The following line prints the time array to confirm that it contains the correct values
 #print(position)
@@ -99,6 +101,7 @@ with open("animationinfo-csvTranslated.csv", "r") as file:
         for column in row:
             angle.insert(i,column[3])
             i+=1
+angle[1:] = list(map(float, angle[1:]))
 
 #The following line prints the time array to confirm that it contains the correct values
 #print(angle)
@@ -113,6 +116,7 @@ with open("animationinfo-csvTranslated.csv", "r") as file:
         for column in row:
             xctop.insert(i,column[4])
             i+=1
+xctop[1:] = list(map(float, xctop[1:]))
 
 #The following line prints the xctop array to confirm that it contains the correct values
 #print(xctop)
@@ -127,6 +131,7 @@ with open("animationinfo-csvTranslated.csv", "r") as file:
         for column in row:
             xcbottom.insert(i,column[5])
             i+=1
+xcbottom[1:] = list(map(float, xcbottom[1:]))
 
 #The following line prints the xcbottom array to confirm that it contains the correct values
 #print(xcbottom)
@@ -153,6 +158,7 @@ with open("animationinfo-csvTranslated.csv", "r") as file:
         for column in row:
             ybottom.insert(i,column[7])
             i+=1
+ybottom[1:] = list(map(float, ybottom[1:]))
 
 #The following line prints the ybottom array to confirm that it contains the correct values
 #print(ybottom)
@@ -166,6 +172,7 @@ with open("animationinfo-csvTranslated.csv", "r") as file:
         for column in row:
             i1i3radiusarray.insert(i,column[8])
             i+=1
+i1i3radiusarray[1:] = list(map(float, i1i3radiusarray[1:]))
 
 #The following line prints the i1i3radiusarray array to confirm that it contains the correct values
 #print(i1i3radiusarray)
@@ -179,6 +186,7 @@ with open("animationinfo-csvTranslated.csv", "r") as file:
         for column in row:
             i2lengtharray.insert(i,column[9])
             i+=1
+i2lengtharray[1:] = list(map(float, i2lengtharray[1:]))
 
 #The following line prints the i2length array to confirm that it contains the correct values
 #print(i2lengtharray)
@@ -192,6 +200,7 @@ with open("animationinfo-csvTranslated.csv", "r") as file:
         for column in row:
             topanglearray.insert(i,column[10])
             i+=1
+topanglearray[1:] = list(map(float, topanglearray[1:]))
 
 #The following line prints the topangle array to confirm that it contains the correct values
 #print(topanglearray)
@@ -205,6 +214,7 @@ with open("animationinfo-csvTranslated.csv", "r") as file:
         for column in row:
             bottomanglearray.insert(i,column[11])
             i+=1
+bottomanglearray[1:] = list(map(float, bottomanglearray[1:]))
 
 #The following line prints the bottomangle array to confirm that it contains the correct values
 #print(bottomanglearray)
@@ -218,6 +228,7 @@ with open("animationinfo-csvTranslated.csv", "r") as file:
         for column in row:
             furthestbackxpointarray.insert(i,column[12])
             i+=1
+furthestbackxpointarray[1:] = list(map(float, furthestbackxpointarray[1:]))
 
 #The following line prints the furthestbackxpointarray to confirm that it contains the correct values
 #print(furthestbackxpointarray)
@@ -231,6 +242,7 @@ with open("animationinfo-csvTranslated.csv", "r") as file:
         for column in row:
             furthestbackypointarray.insert(i,column[13])
             i+=1
+furthestbackypointarray[1:] = list(map(float, furthestbackypointarray[1:]))
 
 #The following line prints the furthestbackypointarray to confirm that it contains the correct values
 #print(furthestbackypointarray)
@@ -244,6 +256,7 @@ with open("animationinfo-csvTranslated.csv", "r") as file:
         for column in row:
             i1i3contacttopyarray.insert(i,column[14])
             i+=1
+i1i3contacttopyarray[1:] = list(map(float, i1i3contacttopyarray[1:]))
 
 #The following line prints the i1i3contacttopyarray to confirm that it contains the correct values
 #print(i1i3contacttopyarray)
@@ -257,6 +270,7 @@ with open("animationinfo-csvTranslated.csv", "r") as file:
         for column in row:
             i1i3contactbottomyarray.insert(i,column[15])
             i+=1
+i1i3contactbottomyarray[1:] = list(map(float, i1i3contactbottomyarray[1:]))
 
 #The following line prints the i1i3contactbottomyarray to confirm that it contains the correct values
 #print(i1i3contactbottomyarray)
@@ -270,6 +284,7 @@ with open("animationinfo-csvTranslated.csv", "r") as file:
         for column in row:
             ocontacttopxarray.insert(i,column[16])
             i+=1
+ocontacttopxarray[1:] = list(map(float, ocontacttopxarray[1:]))
 
 #The following line prints the ocontacttopxarray to confirm that it contains the correct values
 #print(ocontacttopxarray)
@@ -283,6 +298,7 @@ with open("animationinfo-csvTranslated.csv", "r") as file:
         for column in row:
             ocontacttopyarray.insert(i,column[17])
             i+=1
+ocontacttopyarray[1:] = list(map(float, ocontacttopyarray[1:]))
 
 #The following line prints the ocontacttopyarray to confirm that it contains the correct values
 #print(ocontacttopyarray)
@@ -296,6 +312,7 @@ with open("animationinfo-csvTranslated.csv", "r") as file:
         for column in row:
             ocontactbottomxarray.insert(i,column[18])
             i+=1
+ocontactbottomxarray[1:] = list(map(float, ocontactbottomxarray[1:]))
 
 #The following line prints the ocontactbottomxarray to confirm that it contains the correct values
 #print(ocontactbottomxarray)
@@ -309,6 +326,7 @@ with open("animationinfo-csvTranslated.csv", "r") as file:
         for column in row:
             ocontactbottomyarray.insert(i,column[19])
             i+=1
+ocontactbottomyarray[1:] = list(map(float, ocontactbottomyarray[1:]))
 
 #The following line prints the ocontactbottomyarray to confirm that it contains the correct values
 #print(ocontactbottomyarray)
@@ -322,6 +340,7 @@ with open("animationinfo-csvTranslated.csv", "r") as file:
         for column in row:
             bigxvalarray.insert(i,column[20])
             i+=1
+bigxvalarray[1:] = list(map(float, bigxvalarray[1:]))
 
 #The following line prints the bigxvalarray to confirm that it contains the correct values
 #print(bigxvalarray)
@@ -335,6 +354,7 @@ with open("animationinfo-csvTranslated.csv", "r") as file:
         for column in row:
             x1array.insert(i,column[21])
             i+=1
+x1array[1:] = list(map(float, x1array[1:]))
 
 #The following line prints the x1array to confirm that it contains the correct values
 #print(x1array)
@@ -348,6 +368,7 @@ with open("animationinfo-csvTranslated.csv", "r") as file:
         for column in row:
             freqi2array.insert(i,column[22])
             i+=1
+freqi2array[1:] = list(map(float, freqi2array[1:]))
 
 #The following line prints the freqi2array to confirm that it contains the correct values
 #print(freqi2array)
@@ -361,6 +382,7 @@ with open("animationinfo-csvTranslated.csv", "r") as file:
         for column in row:
             freqi1i3array.insert(i,column[23])
             i+=1
+freqi1i3array[1:] = list(map(float, freqi1i3array[1:]))
 
 #The following line prints the freqi1i3array to confirm that it contains the correct values
 #print(freqi1i3array)
@@ -374,6 +396,7 @@ with open("animationinfo-csvTranslated.csv", "r") as file:
         for column in row:
             freqN3array.insert(i,column[24])
             i+=1
+freqN3array[1:] = list(map(float, freqN3array[1:]))
 
 #The following line prints the freqN3array to confirm that it contains the correct values
 #print(freqN3array)
@@ -387,6 +410,7 @@ with open("animationinfo-csvTranslated.csv", "r") as file:
         for column in row:
             freqHingearray.insert(i,column[25])
             i+=1
+freqHingearray[1:] = list(map(float, freqHingearray[1:]))
 
 #The following line prints the freqHingearray to confirm that it contains the correct values
 #print(freqHingearray)

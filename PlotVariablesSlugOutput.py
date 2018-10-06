@@ -34,6 +34,7 @@ with open("SlugOutput2-csvTranslated.csv", "r") as file:
         for column in row:
             time.insert(i,column[0])
             i+=1
+time[1:] = list(map(float, time[1:]))
 
 #The following line prints the time array to confirm that it contains the correct values
 #print(time)
@@ -47,6 +48,7 @@ with open("SlugOutput2-csvTranslated.csv", "r") as file:
         for column in row:
             position.insert(i,column[1])
             i+=1
+position[1:] = list(map(float, position[1:]))
 
 #The following line prints the time array to confirm that it contains the correct values
 #print(position)
@@ -60,6 +62,7 @@ with open("SlugOutput2-csvTranslated.csv", "r") as file:
         for column in row:
             radius.insert(i,column[2])
             i+=1
+radius[1:] = list(map(float, radius[1:]))
 
 #The following line prints the time array to confirm that it contains the correct values
 #print(radius)
@@ -73,6 +76,7 @@ with open("SlugOutput2-csvTranslated.csv", "r") as file:
         for column in row:
             angle.insert(i,column[3])
             i+=1
+angle[1:] = list(map(float, angle[1:]))
 
 #The following line prints the time array to confirm that it contains the correct values
 #print(angle)
@@ -86,6 +90,7 @@ with open("SlugOutput2-csvTranslated.csv", "r") as file:
         for column in row:
             seaweedforce.insert(i,column[14])
             i+=1
+seaweedforce[1:] = list(map(float, seaweedforce[1:]))
 
 #The following line prints the time array to confirm that it contains the correct values
 #print(seaweedforce)
@@ -99,6 +104,7 @@ with open("SlugOutput2-csvTranslated.csv", "r") as file:
         for column in row:
             freqN3.insert(i,column[8])
             i+=1
+freqN3[1:] = list(map(float, freqN3[1:]))
 
 #The following line prints the time array to confirm that it contains the correct values
 #print(freqN3)
@@ -112,6 +118,7 @@ with open("SlugOutput2-csvTranslated.csv", "r") as file:
         for column in row:
             freqHinge.insert(i,column[9])
             i+=1
+freqHinge[1:] = list(map(float, freqHinge[1:]))
 
 #The following line prints the time array to confirm that it contains the correct values
 #print(freqHinge)
@@ -125,6 +132,7 @@ with open("SlugOutput2-csvTranslated.csv", "r") as file:
         for column in row:
             freqI2.insert(i,column[6])
             i+=1
+freqI2[1:] = list(map(float, freqI2[1:]))
 
 #The following line prints the time array to confirm that it contains the correct values
 #print(freqI2)
@@ -138,6 +146,7 @@ with open("SlugOutput2-csvTranslated.csv", "r") as file:
         for column in row:
             freqI1I3.insert(i,column[7])
             i+=1
+freqI1I3[1:] = list(map(float, freqI1I3[1:]))
 
 #The following line prints the time array to confirm that it contains the correct values
 #print(freqI1I3)

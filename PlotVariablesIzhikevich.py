@@ -43,6 +43,7 @@ with open("Izhikevich-csvTranslated.csv", "r") as file:
         for column in row:
             time.insert(i,column[0])
             i+=1
+time[1:] = list(map(float, time[1:]))
 sys.stdout.write('Time Written \r')
 #The following line prints the time array to confirm that it contains the correct values
 #print(time)
@@ -56,6 +57,7 @@ with open("Izhikevich-csvTranslated.csv", "r") as file:
         for column in row:
             membranePotential.insert(i,column[1])
             i+=1
+membranePotential[1:] = list(map(float, membranePotential[1:]))
 sys.stdout.write('Membrane Potential Written \r')
 #The following line prints the time array to confirm that it contains the correct values
 #print(membranePotential)
@@ -69,6 +71,7 @@ with open("Izhikevich-csvTranslated.csv", "r") as file:
         for column in row:
             membraneRecovery.insert(i,column[2])
             i+=1
+membraneRecovery[1:] = list(map(float, membraneRecovery[1:]))
 sys.stdout.write('Membrane Recovery Written \r')
 #The following code plots the entire figure
 figure = plt.figure(figsize = (18,18))
