@@ -1,11 +1,14 @@
-EXEC=model
+EXEC = model
 
-$(EXEC): Aplysia\ Feeding\ Kinetic\ Model.cpp
-	g++ -o $@ "$<"
+# When a target is not specified, the default executable is built
+.PHONY: default
+default: $(EXEC)
 
-.PHONY: debug
-debug: Aplysia\ Feeding\ Kinetic\ Model.cpp
-	g++ -D debug -o $(EXEC) "$<"
+model: DEFINES =
+debug: DEFINES = -D debug
+
+$(EXEC) debug: Aplysia\ Feeding\ Kinetic\ Model.cpp
+	g++ $(DEFINES) -o $(EXEC) "$<"
 
 
 .PHONY: clean
