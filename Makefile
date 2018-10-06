@@ -1,21 +1,35 @@
 EXEC = model
 FIGDIR = Figures
+OUTPUTS = \
+	animation.mp4 \
+	animationinfo.txt \
+	animationinfo-csvTranslated.csv \
+	Izhikevich.txt \
+	Izhikevich-csvTranslated.csv \
+	output-mechanics.csv \
+	plot.pdf \
+	RasterPlot.pdf \
+	rasterplotinfo.txt \
+	rasterplotinfo-csvTranslated.csv \
+	SlugOutput2.txt \
+	SlugOutput2-csvTranslated.csv
 
 
 # When a target is not specified, the default executable is built
 .PHONY: default
 default: $(EXEC)
 
-model: DEFINES =
-debug: DEFINES = -D debug
+$(EXEC): DEFINES =
+debug:   DEFINES = -D debug
 
+.PHONY: debug
 $(EXEC) debug: Aplysia\ Feeding\ Kinetic\ Model.cpp
 	g++ $(DEFINES) -o $(EXEC) "$<"
 
 
 .PHONY: clean
 clean:
-	rm -rf $(EXEC) SlugOutput2.txt SlugOutput2-csvTranslated.csv Figures plot.pdf Izhikevich.txt Izhikevich-csvTranslated.csv animationinfo.txt animationinfo-csvTranslated.csv animation.mp4 rasterplotinfo.txt rasterplotinfo-csvTranslated.csv RasterPlot.pdf output-mechanics.csv *~ .*~
+	rm -rf $(EXEC) $(FIGDIR) $(OUTPUTS) *~ .*~
 
 
 BEHAVIORS = \
