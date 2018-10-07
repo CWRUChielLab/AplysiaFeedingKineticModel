@@ -2,6 +2,7 @@ import sys
 from math import sqrt
 import numpy as np
 import pandas as pd
+from tqdm import tqdm
 import matplotlib
 matplotlib.use('Agg') # force matplotlib to not use XWindows backend
 import matplotlib.pyplot as plt
@@ -398,10 +399,7 @@ else:
 moviewriter = movieWriterClass(fps = fps, bitrate = br)
 with moviewriter.saving(plt.gcf(), moviefile, dpi):
     newFrameEveryNLines = 5  # 5 * 0.01 sec = 0.05 sec sim time per frame = 1/fps = playback in realtime
-    for i in np.arange(0, data.shape[0], newFrameEveryNLines):
-        sys.stdout.flush()
-        progress = str(round((i*100)/data.shape[0]))
-        sys.stdout.write(progress + '% complete \r' )
+    for i in tqdm(np.arange(0, data.shape[0], newFrameEveryNLines)):
         #makefigures(i2graph, n3graph, i1i3graph, hingegraph, i)
         odontophore.remove()
         i1i3top.remove()
