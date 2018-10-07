@@ -67,7 +67,7 @@ $(BLESSBEHAVIORS): BLESS-%: $(EXEC)
 .PHONY: figures
 figures: $(FIGBEHAVIORS)
 
-$(FIGBEHAVIORS): $(FIGDIR)/Plot-%.pdf: $(EXEC)
+$(FIGBEHAVIORS): $(FIGDIR)/Plot-%.pdf: $(EXEC) PlotVariablesSlugOutput.py
 	@echo -n "Plotting $*...\t"
 	@./$< $* # run the model for this behavior
 	@python PlotVariablesSlugOutput.py
@@ -79,7 +79,7 @@ $(FIGBEHAVIORS): $(FIGDIR)/Plot-%.pdf: $(EXEC)
 .PHONY: animations
 animations: $(ANIBEHAVIORS)
 
-$(ANIBEHAVIORS): $(ANIDIR)/Animation-%.mp4: $(EXEC)
+$(ANIBEHAVIORS): $(ANIDIR)/Animation-%.mp4: $(EXEC) newanimation.py
 	@echo "Animating $*...\t"
 	@./$< $* # run the model for this behavior
 	@python newanimation.py
