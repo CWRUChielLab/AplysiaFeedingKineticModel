@@ -1,0 +1,2 @@
+# Always check-in and check-out files in the Check dir with Unix-style line endings
+/Check/* eol=lf
