@@ -30,6 +30,7 @@ FILE *mechout;
 #include "stdio.h"
 #include <vector>
 #include <sstream>
+#include <algorithm> // for std::replace
 
 /* The constants */
 #define eom 1 /*Equation of Motion, if this is one - using complex equation of motion (NEOM)
@@ -144,25 +145,6 @@ double i1i3contactx = 0;
 
 /* Variables used for opening input file*/
 ifstream inputFile;
-string times;
-string positions;
-string radiuss;
-string angles;
-string hingeFs;
-string fitnesss;
-string freqI2s;
-string freqI1I3s;
-string freqN3s;
-string freqHinges;
-string actI2s;
-string actI1I3s;
-string acthinges;
-string seaweedforces;
-
-string as;
-string bs;
-string cs;
-string ds;
 
 /*Arrays of stored values from input file*/
 double positionarray[1000];
@@ -383,7 +365,6 @@ int main(int argc, char* argv[])
 
     /* Opening and reading a file*/
     numberColumns = columnChecker();
-    openAndRead(first_argument);
     if(openAndRead(first_argument) == true){
 
     /* Absent minded code variable definitions */
@@ -894,7 +875,7 @@ BLARF COMMENT REMOVING READING INPUT END */
     } While loop Removal end */
     }
     else{
-        printf("\nERROR: Unreadable File... Too Many or Too Few Columns in File... \nKINETIC MODEL INPUT: \n If you want to use an input file to the Kinetic model, include a tab delimited text file with 6 columns \n Alternatively, you can rename a previous SlugOutput2.txt file as SlugInput2.txt (should have 15 columns), and run that as input. \nNEUROMECHANICAL MODEL INPUT: \n If you want to use an input file to the Neuromechanical model, include a tab delimited text file with 5 columns \n \n \n");
+        cout << "\nERROR: Unreadable File... Too Many or Too Few Columns in File (" << numberColumns << ")... \nKINETIC MODEL INPUT: \n If you want to use an input file to the Kinetic model, include a comma delimited text file with 6 columns \n Alternatively, you can rename a previous SlugOutput2.csv file as SlugInput2.csv (should have 15 columns), and run that as input. \nNEUROMECHANICAL MODEL INPUT: \n If you want to use an input file to the Neuromechanical model, include a comma delimited text file with 5 columns \n \n \n";
     }
 }
 
@@ -2528,85 +2509,111 @@ void updateinputsSwallowPerturbed(double time, double & freqI2, double & freqHin
 
 /*
  * If the argument is "Dynamic", then an input file specifying when neural channels turn on and off must be used as input.
- * The input file must be named "SlugInput2.txt" to be opened.
+ * The input file must be named "SlugInput2.csv" to be opened.
  * When the file is opened, each value is saved in an array at the specified time value.
  * If this all works correctly, then the values should have been saved accordingly to be used later when updating inputs, and true will be returned by the function. The rest of the program will proceed.
  * If the input file does not have 15, 6, or 5 columns, then the function will return false, because this kind of file cannot be read
  */
 bool openAndRead(string behaviorType)
 {
+    debug_print("=== OPEN AND READ INPUT FILE ===\n");
     if(behaviorType == "Dynamic" || behaviorType == "NeuromechanicalInput"){
-        //This reads a file of 15 columns. This would be useful when taking a SlugOutput2.txt file as input for example.
+        //This reads a file of 15 columns. This would be useful when taking a SlugOutput2.csv file as input for example.
         if(numberColumns == 15){
-            inputFile.open("SlugInput2.txt");
+            inputFile.open("SlugInput2.csv");
+
             //If the File isn't openable/found then it will fail
             if(inputFile.fail()){
                 //cout << "File Not Found  ";
             } //Talk to jeff... Not sure why but the file fails to open every time, but still is read and works as it should..?
-            int count = 0; //while loop counter
-            while ((inputFile >> times >> positions >> radiuss >> angles >> hingeFs >> fitnesss >> freqI2s >> freqI1I3s >> freqN3s >> freqHinges >>actI2s >> actI1I3s >> acthinges >> fitnesss >> seaweedforces))
+
+            int i = 0;
+            string inputLine;
+            getline(inputFile, inputLine); // discard file header
+            while (getline(inputFile, inputLine))
             {
-                if(count > 0){ //first (0th) line of file is text
-                    timearray[count-1] = atof(times.c_str());
-                    positionarray[count-1] = atof(positions.c_str());
-                    radiusarray[count-1] = atof(radiuss.c_str());
-                    anglearray[count-1] = atof(angles.c_str());
-                    hingeFarray[count-1] = atof(hingeFs.c_str());
-                    fitnessarray[count-1] = atof(fitnesss.c_str());
-                    freqI2array[count-1] = atof(freqI2s.c_str());
-                    freqI1I3array[count-1] = atof(freqI1I3s.c_str());
-                    freqN3array[count-1] = atof(freqN3s.c_str());
-                    freqHingearray[count-1] = atof(freqHinges.c_str());
-                    actI2array[count-1] = atof(actI2s.c_str());
-                    actI1I3array[count-1] = atof(actI1I3s.c_str());
-                    acthingearray[count-1] = atof(acthinges.c_str());
-                    seaweedforcearray[count-1] = atof(seaweedforces.c_str());
-                }
-                count++;
+                // convert commas to spaces so that ">>" parses properly
+                std::replace(inputLine.begin(), inputLine.end(), ',', ' ');
+
+                stringstream ss(inputLine);
+                ss >> timearray[i]
+                   >> positionarray[i]
+                   >> radiusarray[i]
+                   >> anglearray[i]
+                   >> hingeFarray[i]
+                   >> fitnessarray[i]
+                   >> freqI2array[i]
+                   >> freqI1I3array[i]
+                   >> freqN3array[i]
+                   >> freqHingearray[i]
+                   >> actI2array[i]
+                   >> actI1I3array[i]
+                   >> acthingearray[i]
+                   >> fitnessarray[i]
+                   >> seaweedforcearray[i];
+
+                i++;
             }
+            debug_print("\tParsed input file with 15 columns\n\n");
             return true;
         }
         else if (numberColumns == 6){ /* SIX COLUMNS WILL BE USED AS INPUT TO GREG's ORIGINAL KINETIC MODEL*/
             //An input file where the first column is time, the second through 5th are neural channels, and the 6th is seaweedforce on/off times
-            inputFile.open("SlugInput2.txt");
+            inputFile.open("SlugInput2.csv");
+
             //If the File isn't openable/found then it will fail
             if(inputFile.fail()){
                 //cout << "File Not Found  ";
             } //Talk to jeff... Not sure why but the file fails to open every time, but still is read and works as it should..?
-            int count = 0; //while loop counter
-            while ((inputFile >> times >> freqI2s >> freqI1I3s >> freqN3s >> freqHinges >> seaweedforces))
+
+            int i = 0;
+            string inputLine;
+            getline(inputFile, inputLine); // discard file header
+            while (getline(inputFile, inputLine))
             {
-                if(count > 0){ //first (0th) line of file is text
-                    timearray[count-1] = atof(times.c_str());
-                    freqI2array[count-1] = atof(freqI2s.c_str());
-                    freqI1I3array[count-1] = atof(freqI1I3s.c_str());
-                    freqN3array[count-1] = atof(freqN3s.c_str());
-                    freqHingearray[count-1] = atof(freqHinges.c_str());
-                    seaweedforcearray[count-1] = atof(seaweedforces.c_str());
-                }
-                count++;
+                // convert commas to spaces so that ">>" parses properly
+                std::replace(inputLine.begin(), inputLine.end(), ',', ' ');
+
+                stringstream ss(inputLine);
+                ss >> timearray[i]
+                   >> freqI2array[i]
+                   >> freqI1I3array[i]
+                   >> freqN3array[i]
+                   >> freqHingearray[i]
+                   >> seaweedforcearray[i];
+
+                i++;
             }
+            debug_print("\tParsed input file with 6 columns\n\n");
             return true;
         }
         else if (numberColumns == 5){/* FIVE COLUMNS WILL BE USED AS INPUT TO THE NEUROMECHANICAL MODEL -- THAT IS OUTPUT FROM SHANNON's NEURAL NETWORK WILL BE INPUT TO THE MOTOR NEURONS*/
             ////An input file where the first column is time, and the second through 5th are neural channels
-            inputFile.open("SlugInput2.txt");
+            inputFile.open("SlugInput2.csv");
+
             //If the File isn't openable/found then it will fail
             if(inputFile.fail()){
                 //cout << "File Not Found  ";
             } //Talk to jeff... Not sure why but the file fails to open every time, but still is read and works as it should..?
-            int count = 0; //while loop counter
-            while ((inputFile >> times >> as >> bs >> cs >> ds))
+
+            int i = 0;
+            string inputLine;
+            getline(inputFile, inputLine); // discard file header
+            while (getline(inputFile, inputLine))
             {
-                if(count > 0){ //first (0th) line of file is text
-                    timearray[count-1] = atof(times.c_str());
-                    i2poolarray[count-1] = atof(as.c_str());
-                    i1i3poolarray[count-1] = atof(bs.c_str());
-                    i4poolarray[count-1] = atof(cs.c_str());
-                    hingepoolarray[count-1] = atof(ds.c_str());
-                }
-                count++;
+                // convert commas to spaces so that ">>" parses properly
+                std::replace(inputLine.begin(), inputLine.end(), ',', ' ');
+
+                stringstream ss(inputLine);
+                ss >> timearray[i]
+                   >> i2poolarray[i]
+                   >> i1i3poolarray[i]
+                   >> i4poolarray[i]
+                   >> hingepoolarray[i];
+
+                i++;
             }
+            debug_print("\tParsed input file with 5 columns\n\n");
             return true;
         }
         else{
@@ -2668,14 +2675,19 @@ void updateDynamicInputs(double time, double & freqI2, double & freqHinge, doubl
             }
         }
     }
+    else if (numberColumns == 15){
+        if(time == 0){
+            cout << "\n Dynamic inputs from files with 15 columns not yet implemented. \n \n";
+        }
+    }
     else if (numberColumns == 5){
         if(time == 0){
-            cout << "\n Input file did not have 6 columns, it had 5 columns. \n Did you mean to run the input file to the neuromechanical model? \n \n";
+            cout << "\n Input file did not have 6 columns, it had 5 columns. \n Did you mean to run the input file to the neuromechanical model? Use \"NeuromechanicalInput\" instead. \n \n";
         }
     }
     else{ /* The "unreachable" error message...*/
         if(time == 0){
-            cout << "\n ERROR: Unreadable File... Too Many or Too Few Columns in File... \n If you want to use an input file to the Kinetic model, include a tab delimited text file with 6 columns \n If you want to use an input file to the Neuromechanical model, include a tab delimited text file with 5 columns \n \n";
+            cout << "\n ERROR: Unreadable File... Too Many or Too Few Columns in File (" << numberColumns << ")... \n If you want to use an input file to the Kinetic model, include a comma delimited text file with 6 columns \n If you want to use an input file to the Neuromechanical model, include a comma delimited text file with 5 columns \n \n";
         }
     }
 }
@@ -2698,7 +2710,7 @@ int counter(string str)
 {
     int count = 0;
     for (int i = 0; i < str.size(); i++){
-        if(str.at(i) == 9){
+        if(str.at(i) == 44){ // 44 is comma
             count++;
         }
     }
@@ -2708,7 +2720,7 @@ int counter(string str)
 int columnChecker()
 {
     ifstream inFile;
-    inFile.open("SlugInput2.txt");
+    inFile.open("SlugInput2.csv");
     stringstream strStream;
     strStream << inFile.rdbuf();
     string str = strStream.str();
@@ -3524,12 +3536,12 @@ void updateNeuromechanicalInputs(double time, double & freqI2, double & freqHing
     }
     else if (numberColumns == 6){
         if(time == 0){
-            cout << "\n Input file did not have 5 columns, it had 6 columns. \n Did you mean to run the input file to the kinetic model? \n \n";
+            cout << "\n Input file did not have 5 columns, it had 6 columns. \n Did you mean to run the input file to the kinetic model? Use \"Dynamic\" instead. \n \n";
         }
     }
     else{ /* The "unreachable" error message...*/
         if(time == 0){
-            cout << "\n ERROR: Unreadable File... Too Many or Too Few Columns in File... \n If you want to use an input file to the Kinetic model, include a tab delimited text file with 6 columns \n If you want to use an input file to the Neuromechanical model, include a tab delimited text file with 5 columns \n \n";
+            cout << "\n ERROR: Unreadable File... Too Many or Too Few Columns in File (" << numberColumns << ")... \n If you want to use an input file to the Kinetic model, include a comma delimited text file with 6 columns \n If you want to use an input file to the Neuromechanical model, include a comma delimited text file with 5 columns \n \n";
         }
     }
 }
