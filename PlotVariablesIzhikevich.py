@@ -1,59 +1,15 @@
-import os
-import csv
+import numpy as np
+import pandas as pd
 import matplotlib
-import sys
-sys.stdout.write('Starting... \r')
 matplotlib.use('Agg') # force matplotlib to not use XWindows backend
 import matplotlib.pyplot as plt
-import numpy as np
 import matplotlib.gridspec as gridspec
-#import plotly.plotly as py
-#import plotly.tools as tls
 
+
+# read in the data
 with open("Izhikevich.csv","r") as file:
-    reader = csv.reader(file)
-    data = list(reader)
-    row_count = len(data)
+    data = pd.read_csv(file)
 
-#The following code reads the Izhikevich.csv and saves the time in an array list "time"
-time = []
-i = 0
-with open("Izhikevich.csv", "r") as file:
-     row = csv.reader(file)
-     while i < row_count:
-        for column in row:
-            time.insert(i,column[0])
-            i+=1
-time[1:] = list(map(float, time[1:]))
-sys.stdout.write('Time Written \r')
-#The following line prints the time array to confirm that it contains the correct values
-#print(time)
-
-#The following code reads the Izhikevich.csv and saves v in an array list "membranePotential"
-membranePotential = []
-i = 0
-with open("Izhikevich.csv", "r") as file:
-    row = csv.reader(file)
-    while i < row_count:
-        for column in row:
-            membranePotential.insert(i,column[1])
-            i+=1
-membranePotential[1:] = list(map(float, membranePotential[1:]))
-sys.stdout.write('Membrane Potential Written \r')
-#The following line prints the time array to confirm that it contains the correct values
-#print(membranePotential)
-
-#The following code reads the Izhikevich.csv and saves u in an array list "membraneRecovery"
-membraneRecovery = []
-i = 0
-with open("Izhikevich.csv", "r") as file:
-    row = csv.reader(file)
-    while i < row_count:
-        for column in row:
-            membraneRecovery.insert(i,column[2])
-            i+=1
-membraneRecovery[1:] = list(map(float, membraneRecovery[1:]))
-sys.stdout.write('Membrane Recovery Written \r')
 #The following code plots the entire figure
 figure = plt.figure(figsize = (18,18))
 timeticks = np.arange(0,8.5,1)
@@ -64,10 +20,10 @@ gs = gridspec.GridSpec(2, 1)
 #The following code subplots the membrane Potential vs time graph
 potenialgraph = figure.add_subplot(gs[0,0])
 potentialticks = np.arange(-90, 40, 10)
-potenialgraph.plot(time[1:row_count],membranePotential[1:row_count])#first .008 seconds
+potenialgraph.plot(data['time'], data['MembranePotentialo'])
 potenialgraph.set_title('Membrane Potential')
-potenialgraph.set_xlabel(time[0] + ' (milliseconds)')
-potenialgraph.set_ylabel(membranePotential[0] + 'mV')
+potenialgraph.set_xlabel('Time (milliseconds)')
+potenialgraph.set_ylabel('Membrane Potential (mV)')
 potenialgraph.axis([0, 8.5, -90, 40])
 potenialgraph.set_xticks(timeticks)
 potenialgraph.set_yticks(potentialticks)
@@ -76,10 +32,10 @@ potenialgraph.grid(True)
 #The following code subplots the membrane recovery vs time graph
 recoverygraph = figure.add_subplot(gs[1,0])
 recoveryticks = np.arange(-20, 20, 2)
-recoverygraph.plot(time[1:row_count],membraneRecovery[1:row_count])
+recoverygraph.plot(data['time'], data['MembraneRecoveryo'])
 recoverygraph.set_title('Membrane Recovery')
-recoverygraph.set_xlabel(time[0] + ' (milliseconds)')
-recoverygraph.set_ylabel(membraneRecovery[0])
+recoverygraph.set_xlabel('Time (milliseconds)')
+recoverygraph.set_ylabel('Membrane Recovery')
 recoverygraph.axis([0, 8.5, -20, 20])
 recoverygraph.set_xticks(timeticks)
 recoverygraph.set_yticks(recoveryticks)
