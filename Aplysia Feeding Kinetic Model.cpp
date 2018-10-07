@@ -1020,6 +1020,19 @@ direction.*/
         double backslope = tan((90-rotation)*pi/180);
         double backxpoint = -1 * a * a * backslope/(sqrt(b*b + a*a*backslope*backslope));
         double backypoint = b * sqrt(1 - backxpoint * backxpoint/(a * a));
+        if (isnan(backypoint))
+        {
+            // Jeffrey Gill 2018-10-06: This if-statement is needed to catch
+            // cases where the terms under the radical evaluate to -0.0, which
+            // leads to backypoint = nan. This undesired effect of floating
+            // point arithmetic can occur on some systems when Oangle is very
+            // close to zero and the backslope is extremely large.
+
+            // In the rotated reference frame of the odontophore (Guidebook,
+            // p. 156), if Oangle is zero, the y value of the back-most point
+            // should be 0.
+            backypoint = 0;
+        }
         double furthestx = backxpoint*cos((-1*rotation)*pi/180) + backypoint*sin((-1*rotation)*pi/180);
 
         double angle = rotation*pi/180;
@@ -1132,6 +1145,19 @@ function returns the normalized length of I2 (divided by the optimum length of I
         double backslope = tan((90-rotation)*pi/180);
         double backxpoint = -1 * a * a * backslope/(sqrt(b*b + a*a*backslope*backslope));
         double backypoint = b * sqrt(1 - backxpoint * backxpoint/(a * a));
+        if (isnan(backypoint))
+        {
+            // Jeffrey Gill 2018-10-06: This if-statement is needed to catch
+            // cases where the terms under the radical evaluate to -0.0, which
+            // leads to backypoint = nan. This undesired effect of floating
+            // point arithmetic can occur on some systems when Oangle is very
+            // close to zero and the backslope is extremely large.
+
+            // In the rotated reference frame of the odontophore (Guidebook,
+            // p. 156), if Oangle is zero, the y value of the back-most point
+            // should be 0.
+            backypoint = 0;
+        }
         double furthestx = backxpoint*cos((-1*rotation)*pi/180) + backypoint*sin((-1*rotation)*pi/180);
 
 
