@@ -10,34 +10,15 @@ import matplotlib.gridspec as gridspec
 #import plotly.plotly as py
 #import plotly.tools as tls
 
-#os.chdir("/Users/tatekeller/Documents/Aplysia Feeding Kinetic Model/AplysiaFeedingKineticModel")
-#The following code reads the Izhikevich.txt file and converts it to a csv file
-tabDelimitedFile = open("Izhikevich.txt", "r")
-splitFileToList = "Izhikevich.txt".split(".")
-listInput = []
-for line in tabDelimitedFile:
-    listLine = line.replace("\n","").split("\t")
-    listInput.append(listLine)
-
-tabDelimitedFile.close()
-sys.stdout.write('File Read \r')
-newFile = open(splitFileToList[0] + "-csvTranslated.csv", "w")
-for line in listInput:
-    writeLineForNewFile = ",".join(line)
-    newFile.write(writeLineForNewFile + "\n")
-
-newFile.close()
-sys.stdout.write('New File Written \r')
-
-with open("Izhikevich-csvTranslated.csv","r") as file:
+with open("Izhikevich.csv","r") as file:
     reader = csv.reader(file)
     data = list(reader)
     row_count = len(data)
 
-#The following code reads the Izhikevich-csvTranslated.csv and saves the time in an array list "time"
+#The following code reads the Izhikevich.csv and saves the time in an array list "time"
 time = []
 i = 0
-with open("Izhikevich-csvTranslated.csv", "r") as file:
+with open("Izhikevich.csv", "r") as file:
      row = csv.reader(file)
      while i < row_count:
         for column in row:
@@ -48,10 +29,10 @@ sys.stdout.write('Time Written \r')
 #The following line prints the time array to confirm that it contains the correct values
 #print(time)
 
-#The following code reads the Izhikevich-csvTranslated.csv and saves v in an array list "membranePotential"
+#The following code reads the Izhikevich.csv and saves v in an array list "membranePotential"
 membranePotential = []
 i = 0
-with open("Izhikevich-csvTranslated.csv", "r") as file:
+with open("Izhikevich.csv", "r") as file:
     row = csv.reader(file)
     while i < row_count:
         for column in row:
@@ -62,10 +43,10 @@ sys.stdout.write('Membrane Potential Written \r')
 #The following line prints the time array to confirm that it contains the correct values
 #print(membranePotential)
 
-#The following code reads the Izhikevich-csvTranslated.csv and saves u in an array list "membraneRecovery"
+#The following code reads the Izhikevich.csv and saves u in an array list "membraneRecovery"
 membraneRecovery = []
 i = 0
-with open("Izhikevich-csvTranslated.csv", "r") as file:
+with open("Izhikevich.csv", "r") as file:
     row = csv.reader(file)
     while i < row_count:
         for column in row:

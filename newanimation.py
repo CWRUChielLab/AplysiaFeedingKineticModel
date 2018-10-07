@@ -35,26 +35,10 @@ dpi = 180
 ##                    Read File                     ##
 ######################################################
 
-#The following code reads the animationinfo.txt.txt file and converts it to a csv file
-tabDelimitedFile = open("animationinfo.txt", "r")
-splitFileToList = "animationinfo.txt".split(".")
-listInput = []
-for line in tabDelimitedFile:
-    listLine = line.replace("\n","").split("\t")
-    listInput.append(listLine)
-
-tabDelimitedFile.close()
-newFile = open(splitFileToList[0] + "-csvTranslated.csv", "w")
-for line in listInput:
-    writeLineForNewFile = ",".join(line)
-    newFile.write(writeLineForNewFile + "\n")
-
-newFile.close()
-
-#The following code reads the animationinfo-csvTranslated.csv and saves the time in an array list "time"
+#The following code reads the animationinfo.csv and saves the time in an array list "time"
 time = []
 i = 0
-with open("animationinfo-csvTranslated.csv", "r") as file:
+with open("animationinfo.csv", "r") as file:
     row = csv.reader(file)
     while i < 850:
         for column in row:
@@ -65,10 +49,10 @@ time[1:] = list(map(float, time[1:]))
 #The following line prints the time array to confirm that it contains the correct values
 #print(time)
 
-#The following code reads the animationinfo-csvTranslated.csv and saves the position in an array list "position"
+#The following code reads the animationinfo.csv and saves the position in an array list "position"
 position = []
 i = 0
-with open("animationinfo-csvTranslated.csv", "r") as file:
+with open("animationinfo.csv", "r") as file:
     row = csv.reader(file)
     while i < 850:
         for column in row:
@@ -79,10 +63,10 @@ position[1:] = list(map(float, position[1:]))
 #The following line prints the time array to confirm that it contains the correct values
 #print(position)
 
-#The following code reads the animationinfo-csvTranslated.csv and saves the radius in an array list "radius"
+#The following code reads the animationinfo.csv and saves the radius in an array list "radius"
 radius = []
 i = 0
-with open("animationinfo-csvTranslated.csv", "r") as file:
+with open("animationinfo.csv", "r") as file:
     row = csv.reader(file)
     while i < 850:
         for column in row:
@@ -92,10 +76,10 @@ with open("animationinfo-csvTranslated.csv", "r") as file:
 #The following line prints the time array to confirm that it contains the correct values
 #print(radius)
 
-#The following code reads the animationinfo-csvTranslated.csv and saves the angle in an array list "angle"
+#The following code reads the animationinfo.csv and saves the angle in an array list "angle"
 angle = []
 i = 0
-with open("animationinfo-csvTranslated.csv", "r") as file:
+with open("animationinfo.csv", "r") as file:
     row = csv.reader(file)
     while i < 850:
         for column in row:
@@ -107,10 +91,10 @@ angle[1:] = list(map(float, angle[1:]))
 #print(angle)
 
 
-#The following code reads the animationinfo-csvTranslated.csv and saves the xctop in an array list "xctop"
+#The following code reads the animationinfo.csv and saves the xctop in an array list "xctop"
 xctop = []
 i = 0
-with open("animationinfo-csvTranslated.csv", "r") as file:
+with open("animationinfo.csv", "r") as file:
     row = csv.reader(file)
     while i < 850:
         for column in row:
@@ -122,10 +106,10 @@ xctop[1:] = list(map(float, xctop[1:]))
 #print(xctop)
 
 
-#The following code reads the animationinfo-csvTranslated.csv and saves the xcbottom in an array list "xcbottom"
+#The following code reads the animationinfo.csv and saves the xcbottom in an array list "xcbottom"
 xcbottom = []
 i = 0
-with open("animationinfo-csvTranslated.csv", "r") as file:
+with open("animationinfo.csv", "r") as file:
     row = csv.reader(file)
     while i < 850:
         for column in row:
@@ -136,10 +120,10 @@ xcbottom[1:] = list(map(float, xcbottom[1:]))
 #The following line prints the xcbottom array to confirm that it contains the correct values
 #print(xcbottom)
 
-#The following code reads the animationinfo-csvTranslated.csv and saves the ytop in an array list "ytop"
+#The following code reads the animationinfo.csv and saves the ytop in an array list "ytop"
 ytop = []
 i = 0
-with open("animationinfo-csvTranslated.csv", "r") as file:
+with open("animationinfo.csv", "r") as file:
     row = csv.reader(file)
     while i < 850:
         for column in row:
@@ -149,10 +133,10 @@ with open("animationinfo-csvTranslated.csv", "r") as file:
 #The following line prints the ytop array to confirm that it contains the correct values
 #print(ytop)
 
-#The following code reads the animationinfo-csvTranslated.csv and saves the ybottom in an array list "ybottom"
+#The following code reads the animationinfo.csv and saves the ybottom in an array list "ybottom"
 ybottom = []
 i = 0
-with open("animationinfo-csvTranslated.csv", "r") as file:
+with open("animationinfo.csv", "r") as file:
     row = csv.reader(file)
     while i < 850:
         for column in row:
@@ -163,10 +147,10 @@ ybottom[1:] = list(map(float, ybottom[1:]))
 #The following line prints the ybottom array to confirm that it contains the correct values
 #print(ybottom)
 
-#The following code reads the animationinfo-csvTranslated.csv and saves the y in an array list "i1i3radiusarray"
+#The following code reads the animationinfo.csv and saves the y in an array list "i1i3radiusarray"
 i1i3radiusarray = []
 i = 0
-with open("animationinfo-csvTranslated.csv", "r") as file:
+with open("animationinfo.csv", "r") as file:
     row = csv.reader(file)
     while i < 850:
         for column in row:
@@ -177,10 +161,10 @@ i1i3radiusarray[1:] = list(map(float, i1i3radiusarray[1:]))
 #The following line prints the i1i3radiusarray array to confirm that it contains the correct values
 #print(i1i3radiusarray)
 
-#The following code reads the animationinfo-csvTranslated.csv and saves the i2length in an array list "i2lengtharray"
+#The following code reads the animationinfo.csv and saves the i2length in an array list "i2lengtharray"
 i2lengtharray = []
 i = 0
-with open("animationinfo-csvTranslated.csv", "r") as file:
+with open("animationinfo.csv", "r") as file:
     row = csv.reader(file)
     while i < 850:
         for column in row:
@@ -191,10 +175,10 @@ i2lengtharray[1:] = list(map(float, i2lengtharray[1:]))
 #The following line prints the i2length array to confirm that it contains the correct values
 #print(i2lengtharray)
 
-#The following code reads the animationinfo-csvTranslated.csv and saves the topangle in an array list "topanglearray"
+#The following code reads the animationinfo.csv and saves the topangle in an array list "topanglearray"
 topanglearray = []
 i = 0
-with open("animationinfo-csvTranslated.csv", "r") as file:
+with open("animationinfo.csv", "r") as file:
     row = csv.reader(file)
     while i < 850:
         for column in row:
@@ -205,10 +189,10 @@ topanglearray[1:] = list(map(float, topanglearray[1:]))
 #The following line prints the topangle array to confirm that it contains the correct values
 #print(topanglearray)
 
-#The following code reads the animationinfo-csvTranslated.csv and saves the bottomangle in an array list "bottomanglearray"
+#The following code reads the animationinfo.csv and saves the bottomangle in an array list "bottomanglearray"
 bottomanglearray = []
 i = 0
-with open("animationinfo-csvTranslated.csv", "r") as file:
+with open("animationinfo.csv", "r") as file:
     row = csv.reader(file)
     while i < 850:
         for column in row:
@@ -219,10 +203,10 @@ bottomanglearray[1:] = list(map(float, bottomanglearray[1:]))
 #The following line prints the bottomangle array to confirm that it contains the correct values
 #print(bottomanglearray)
 
-#The following code reads the animationinfo-csvTranslated.csv and saves the furthestbackxpoint in an array list "furthestbackxpointarray"
+#The following code reads the animationinfo.csv and saves the furthestbackxpoint in an array list "furthestbackxpointarray"
 furthestbackxpointarray = []
 i = 0
-with open("animationinfo-csvTranslated.csv", "r") as file:
+with open("animationinfo.csv", "r") as file:
     row = csv.reader(file)
     while i < 850:
         for column in row:
@@ -233,10 +217,10 @@ furthestbackxpointarray[1:] = list(map(float, furthestbackxpointarray[1:]))
 #The following line prints the furthestbackxpointarray to confirm that it contains the correct values
 #print(furthestbackxpointarray)
 
-#The following code reads the animationinfo-csvTranslated.csv and saves the furthestbackypoint in an array list "furthestbackypointarray"
+#The following code reads the animationinfo.csv and saves the furthestbackypoint in an array list "furthestbackypointarray"
 furthestbackypointarray = []
 i = 0
-with open("animationinfo-csvTranslated.csv", "r") as file:
+with open("animationinfo.csv", "r") as file:
     row = csv.reader(file)
     while i < 850:
         for column in row:
@@ -247,10 +231,10 @@ furthestbackypointarray[1:] = list(map(float, furthestbackypointarray[1:]))
 #The following line prints the furthestbackypointarray to confirm that it contains the correct values
 #print(furthestbackypointarray)
 
-#The following code reads the animationinfo-csvTranslated.csv and saves the i1i3contacttopy in an array list "i1i3contacttopyarray"
+#The following code reads the animationinfo.csv and saves the i1i3contacttopy in an array list "i1i3contacttopyarray"
 i1i3contacttopyarray = []
 i = 0
-with open("animationinfo-csvTranslated.csv", "r") as file:
+with open("animationinfo.csv", "r") as file:
     row = csv.reader(file)
     while i < 850:
         for column in row:
@@ -261,10 +245,10 @@ i1i3contacttopyarray[1:] = list(map(float, i1i3contacttopyarray[1:]))
 #The following line prints the i1i3contacttopyarray to confirm that it contains the correct values
 #print(i1i3contacttopyarray)
 
-#The following code reads the animationinfo-csvTranslated.csv and saves the i1i3contactbottomy in an array list "i1i3contactbottomyarray"
+#The following code reads the animationinfo.csv and saves the i1i3contactbottomy in an array list "i1i3contactbottomyarray"
 i1i3contactbottomyarray = []
 i = 0
-with open("animationinfo-csvTranslated.csv", "r") as file:
+with open("animationinfo.csv", "r") as file:
     row = csv.reader(file)
     while i < 850:
         for column in row:
@@ -275,10 +259,10 @@ i1i3contactbottomyarray[1:] = list(map(float, i1i3contactbottomyarray[1:]))
 #The following line prints the i1i3contactbottomyarray to confirm that it contains the correct values
 #print(i1i3contactbottomyarray)
 
-#The following code reads the animationinfo-csvTranslated.csv and saves the ocontacttopx in an array list "ocontacttopxarray"
+#The following code reads the animationinfo.csv and saves the ocontacttopx in an array list "ocontacttopxarray"
 ocontacttopxarray = []
 i = 0
-with open("animationinfo-csvTranslated.csv", "r") as file:
+with open("animationinfo.csv", "r") as file:
     row = csv.reader(file)
     while i < 850:
         for column in row:
@@ -289,10 +273,10 @@ ocontacttopxarray[1:] = list(map(float, ocontacttopxarray[1:]))
 #The following line prints the ocontacttopxarray to confirm that it contains the correct values
 #print(ocontacttopxarray)
 
-#The following code reads the animationinfo-csvTranslated.csv and saves the ocontacttopy in an array list "ocontacttopyarray"
+#The following code reads the animationinfo.csv and saves the ocontacttopy in an array list "ocontacttopyarray"
 ocontacttopyarray = []
 i = 0
-with open("animationinfo-csvTranslated.csv", "r") as file:
+with open("animationinfo.csv", "r") as file:
     row = csv.reader(file)
     while i < 850:
         for column in row:
@@ -303,10 +287,10 @@ ocontacttopyarray[1:] = list(map(float, ocontacttopyarray[1:]))
 #The following line prints the ocontacttopyarray to confirm that it contains the correct values
 #print(ocontacttopyarray)
 
-#The following code reads the animationinfo-csvTranslated.csv and saves the ocontactbottomx in an array list "ocontactbottomxarray"
+#The following code reads the animationinfo.csv and saves the ocontactbottomx in an array list "ocontactbottomxarray"
 ocontactbottomxarray = []
 i = 0
-with open("animationinfo-csvTranslated.csv", "r") as file:
+with open("animationinfo.csv", "r") as file:
     row = csv.reader(file)
     while i < 850:
         for column in row:
@@ -317,10 +301,10 @@ ocontactbottomxarray[1:] = list(map(float, ocontactbottomxarray[1:]))
 #The following line prints the ocontactbottomxarray to confirm that it contains the correct values
 #print(ocontactbottomxarray)
 
-#The following code reads the animationinfo-csvTranslated.csv and saves the ocontactbottomy in an array list "ocontactbottomyarray"
+#The following code reads the animationinfo.csv and saves the ocontactbottomy in an array list "ocontactbottomyarray"
 ocontactbottomyarray = []
 i = 0
-with open("animationinfo-csvTranslated.csv", "r") as file:
+with open("animationinfo.csv", "r") as file:
     row = csv.reader(file)
     while i < 850:
         for column in row:
@@ -331,10 +315,10 @@ ocontactbottomyarray[1:] = list(map(float, ocontactbottomyarray[1:]))
 #The following line prints the ocontactbottomyarray to confirm that it contains the correct values
 #print(ocontactbottomyarray)
 
-#The following code reads the animationinfo-csvTranslated.csv and saves the bigxval in an array list "bigxvalarray"
+#The following code reads the animationinfo.csv and saves the bigxval in an array list "bigxvalarray"
 bigxvalarray = []
 i = 0
-with open("animationinfo-csvTranslated.csv", "r") as file:
+with open("animationinfo.csv", "r") as file:
     row = csv.reader(file)
     while i < 850:
         for column in row:
@@ -345,10 +329,10 @@ bigxvalarray[1:] = list(map(float, bigxvalarray[1:]))
 #The following line prints the bigxvalarray to confirm that it contains the correct values
 #print(bigxvalarray)
 
-#The following code reads the animationinfo-csvTranslated.csv and saves the x1 in an array list "x1array"
+#The following code reads the animationinfo.csv and saves the x1 in an array list "x1array"
 x1array = []
 i = 0
-with open("animationinfo-csvTranslated.csv", "r") as file:
+with open("animationinfo.csv", "r") as file:
     row = csv.reader(file)
     while i < 850:
         for column in row:
@@ -359,10 +343,10 @@ x1array[1:] = list(map(float, x1array[1:]))
 #The following line prints the x1array to confirm that it contains the correct values
 #print(x1array)
 
-#The following code reads the animationinfo-csvTranslated.csv and saves the freqi2 in an array list "freqi2array"
+#The following code reads the animationinfo.csv and saves the freqi2 in an array list "freqi2array"
 freqi2array = []
 i = 0
-with open("animationinfo-csvTranslated.csv", "r") as file:
+with open("animationinfo.csv", "r") as file:
     row = csv.reader(file)
     while i < 850:
         for column in row:
@@ -373,10 +357,10 @@ freqi2array[1:] = list(map(float, freqi2array[1:]))
 #The following line prints the freqi2array to confirm that it contains the correct values
 #print(freqi2array)
 
-#The following code reads the animationinfo-csvTranslated.csv and saves the freqi1i3 in an array list "freqi1i3array"
+#The following code reads the animationinfo.csv and saves the freqi1i3 in an array list "freqi1i3array"
 freqi1i3array = []
 i = 0
-with open("animationinfo-csvTranslated.csv", "r") as file:
+with open("animationinfo.csv", "r") as file:
     row = csv.reader(file)
     while i < 850:
         for column in row:
@@ -387,10 +371,10 @@ freqi1i3array[1:] = list(map(float, freqi1i3array[1:]))
 #The following line prints the freqi1i3array to confirm that it contains the correct values
 #print(freqi1i3array)
 
-#The following code reads the animationinfo-csvTranslated.csv and saves the freqN3 in an array list "freqN3array"
+#The following code reads the animationinfo.csv and saves the freqN3 in an array list "freqN3array"
 freqN3array = []
 i = 0
-with open("animationinfo-csvTranslated.csv", "r") as file:
+with open("animationinfo.csv", "r") as file:
     row = csv.reader(file)
     while i < 850:
         for column in row:
@@ -401,10 +385,10 @@ freqN3array[1:] = list(map(float, freqN3array[1:]))
 #The following line prints the freqN3array to confirm that it contains the correct values
 #print(freqN3array)
 
-#The following code reads the animationinfo-csvTranslated.csv and saves the freqHinge in an array list "freqHingearray"
+#The following code reads the animationinfo.csv and saves the freqHinge in an array list "freqHingearray"
 freqHingearray = []
 i = 0
-with open("animationinfo-csvTranslated.csv", "r") as file:
+with open("animationinfo.csv", "r") as file:
     row = csv.reader(file)
     while i < 850:
         for column in row:

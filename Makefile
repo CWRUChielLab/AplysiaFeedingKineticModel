@@ -3,17 +3,13 @@ FIGDIR = Figures
 ANIDIR = Animations
 OUTPUTS = \
 	animation.mp4 \
-	animationinfo.txt \
-	animationinfo-csvTranslated.csv \
-	Izhikevich.txt \
-	Izhikevich-csvTranslated.csv \
+	animationinfo.csv \
+	Izhikevich.csv \
 	output-mechanics.csv \
 	plot.pdf \
 	RasterPlot.pdf \
-	rasterplotinfo.txt \
-	rasterplotinfo-csvTranslated.csv \
-	SlugOutput2.txt \
-	SlugOutput2-csvTranslated.csv
+	rasterplotinfo.csv \
+	SlugOutput2.csv
 
 
 # When a target is not specified, the default executable is built
@@ -54,7 +50,7 @@ check: $(CHECKBEHAVIORS)
 $(CHECKBEHAVIORS): CHECK-%: $(EXEC)
 	@echo -n "Checking $*...\t"
 	@./$< $* # run the model for this behavior
-	@echo `diff SlugOutput2.txt Check/Output-$*.txt | wc -l` "deviations"
+	@echo `diff SlugOutput2.csv Check/Output-$*.csv | wc -l` "deviations"
 
 
 .PHONY: bless
@@ -64,7 +60,7 @@ bless: $(BLESSBEHAVIORS)
 $(BLESSBEHAVIORS): BLESS-%: $(EXEC)
 	@echo -n "Blessing $*...\t"
 	@./$< $* # run the model for this behavior
-	@mv SlugOutput2.txt Check/Output-$*.txt
+	@mv SlugOutput2.csv Check/Output-$*.csv
 	@echo "done"
 
 

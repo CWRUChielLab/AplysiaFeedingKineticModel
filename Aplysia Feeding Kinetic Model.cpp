@@ -387,11 +387,11 @@ int main(int argc, char* argv[])
     if(openAndRead(first_argument) == true){
 
     /* Absent minded code variable definitions */
-    const char* filename = "SlugOutput2.txt";
-    const char* filenamei = "Izhikevich.txt";
+    const char* filename = "SlugOutput2.csv";
+    const char* filenamei = "Izhikevich.csv";
     const char* filename2 = "NeuralInputs.txt";
-    const char* filenamea = "animationinfo.txt";
-    const char* filenamer = "rasterplotinfo.txt";
+    const char* filenamea = "animationinfo.csv";
+    const char* filenamer = "rasterplotinfo.csv";
     const char* filenameMechanics = "output-mechanics.csv";
 
     //variables used to calculate the muscle forces and odontophore position - explained when initialized
@@ -457,7 +457,7 @@ int main(int argc, char* argv[])
     double period = 0;
     double dummyvariable = 0;  //just something to hand to functions for outputs that dont matter
     ifstream inFile;
-    valout = fopen(filename, "w"); //opens a text file, valout.txt
+    valout = fopen(filename, "w");
     izout = fopen(filenamei, "w");
     animation = fopen(filenamea, "w");
     rasterplot = fopen(filenamer, "w");
@@ -583,14 +583,14 @@ int main(int argc, char* argv[])
 
         //neuralinputs = fopen(filename2, "r"); //sets up the text file for reading the input.
     //Print titles for SlugOutput2
-    fprintf(valout, "time\tposition\tradius\tangle\thingeF\tfitness\tfreqI2\tfreqI1I3\tfreqN3\tfreqHinge\tactI2\tactI1I3\tacthinge\tfitness\tseaweedforce\n");
+    fprintf(valout, "time,position,radius,angle,hingeF,fitness,freqI2,freqI1I3,freqN3,freqHinge,actI2,actI1I3,acthinge,fitness,seaweedforce\n");
     //Titles for Izhikevich output
-    fprintf(izout, "time\tMembranePotentialo\tMembraneRecoveryo\tofreq\ti1i3freq\thfreq\ti2freq\tcurrent\n");
+    fprintf(izout, "time,MembranePotentialo,MembraneRecoveryo,ofreq,i1i3freq,hfreq,i2freq,current\n");
     //Titles for animation info
-    fprintf(animation, "time\tposition\tradius\tangle\txctop\txcbottom\tytop\tybottom\ti1i3radius\ti2length\ttopangle\tbottomangle\tfurthestbackx\tfurthestbacky\ti1i3contacttopy\ti1i3contactbottomy\tocontacttopx\tocontacttopy\tocontactbottomx\tocontactbottomy\tbigxval\ti1i3contactx\tfreqI2\tfreqI1I3\tfreqN3\tfreqHinge\n");
+    fprintf(animation, "time,position,radius,angle,xctop,xcbottom,ytop,ybottom,i1i3radius,i2length,topangle,bottomangle,furthestbackx,furthestbacky,i1i3contacttopy,i1i3contactbottomy,ocontacttopx,ocontacttopy,ocontactbottomx,ocontactbottomy,bigxval,i1i3contactx,freqI2,freqI1I3,freqN3,freqHinge\n");
     //Titles for rasterplot info
     // [0]- B31/32, [1] - B61/62, [2] - B8a, [3] - B3, [4] - B6, [5] - B9, [6] - B38, [7] - B10, [8] - B43, [9] - B7, [10] - B8b
-    fprintf(rasterplot, "time\tB31/32\tB61/62\tB8a\tB3\tB6\tB9\tB38\tB10\tB43\tB7\tB8b\n");
+    fprintf(rasterplot, "time,B31/32,B61/62,B8a,B3,B6,B9,B38,B10,B43,B7,B8b\n");
 
     fprintf(mechout, "time,x,ytop,ybottom,");
     for (int i = 0; i < N_RINGS; i++)
@@ -811,12 +811,12 @@ BLARF COMMENT REMOVING READING INPUT END */
 
         if(iztimer > izouttimer){
                 //Izhikevich Model Output
-            fprintf(izout , "%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t\n", time, membranePotential[3], membraneRecovery[3], odontophorefreq, i1i3freq, hingefreq, i2freq, ii[3]);
+            fprintf(izout, "%f,%f,%f,%f,%f,%f,%f,%f\n", time, membranePotential[3], membraneRecovery[3], odontophorefreq, i1i3freq, hingefreq, i2freq, ii[3]);
             iztimer = 0.0;
         }
 
         if(peak){
-            fprintf(rasterplot, "%f\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t\n", time, peakB3132, peakB6162, peakB8a, peakB3, peakB6, peakB9, peakB38, peakB10, peakB43, peakB7, peakB8b);
+            fprintf(rasterplot, "%f,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n", time, peakB3132, peakB6162, peakB8a, peakB3, peakB6, peakB9, peakB38, peakB10, peakB43, peakB7, peakB8b);
         }
 
         peak = false;
@@ -838,19 +838,19 @@ BLARF COMMENT REMOVING READING INPUT END */
         if (printtimer > timer) //function will only print every printtimer seconds - keeps file from being too big
         {
             //print statement
-            //fprintf(valout, "%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t\n",time, x, freqI2, freqI1I3, freqN3, actN3, a, fitness, aprimeI2 - Ao, aprimeI1I3 - Ao,  LI2opt*musclelengthI2 (a, x, y));
-            //fprintf(valout, "%f\t%f\t%f\t%f\t%f\t\n",x, printvar2, printvar, passive(printvar), passive(printvar)*2*pi*FnotI2);
+            //fprintf(valout, "%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,\n",time, x, freqI2, freqI1I3, freqN3, actN3, a, fitness, aprimeI2 - Ao, aprimeI1I3 - Ao,  LI2opt*musclelengthI2 (a, x, y));
+            //fprintf(valout, "%f,%f,%f,%f,%f,\n",x, printvar2, printvar, passive(printvar), passive(printvar)*2*pi*FnotI2);
 
-            //fprintf(valout, "%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n", x, a, OdonAngle(x), lengthtens(printvar), printvar2, force1 - calchingeforce(x, xdot, &F1), calchingeforce(x,xdot,&F1), lengthtens(musclelengthI1I3(ytop,ybottom)), printvar, force2 * printvar);
+            //fprintf(valout, "%f,%f,%f,%f,%f,%f,%f,%f,%f,%f\n", x, a, OdonAngle(x), lengthtens(printvar), printvar2, force1 - calchingeforce(x, xdot, &F1), calchingeforce(x,xdot,&F1), lengthtens(musclelengthI1I3(ytop,ybottom)), printvar, force2 * printvar);
 
-            //fprintf(valout, "%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t\n", time, x, ybottom, ytop, a, freqI2, freqI1I3, I1I3metafreq1, I1I3metafreq2, I1I3metafreq3, freqN3, freqHinge, -calchingeforce2(x, xdot),  -activehingeforce(acthinge, xdot, x), printvar2, dummyvariable, printvar, acthinge, aprimeI1I3, aprimeI2, OdonAngle(x), fitness);
+            //fprintf(valout, "%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,\n", time, x, ybottom, ytop, a, freqI2, freqI1I3, I1I3metafreq1, I1I3metafreq2, I1I3metafreq3, freqN3, freqHinge, -calchingeforce2(x, xdot),  -activehingeforce(acthinge, xdot, x), printvar2, dummyvariable, printvar, acthinge, aprimeI1I3, aprimeI2, OdonAngle(x), fitness);
 
             //This is the Fprint for the simulations in the example PDF's I sent Hillel.
-            fprintf(valout, "%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f \n", time, x, a, odontophoreangle, hingeF, fitness, freqI2, freqI1I3, freqN3, freqHinge, aprimeI2, aprimeI1I3, acthinge, fitness, seaweedforce);
+            fprintf(valout, "%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f\n", time, x, a, odontophoreangle, hingeF, fitness, freqI2, freqI1I3, freqN3, freqHinge, aprimeI2, aprimeI1I3, acthinge, fitness, seaweedforce);
 
-            fprintf(animation, "%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t\n", time, x, a, odontophoreangle, xctop, xcbottom, ytop, ybottom, y, lengthofI2, topphiangleofi2, bottomphiangleofi2,furthestbackxpoint,furthestbackypoint,i1i3contacttopy,i1i3contactbottomy,ocontacttopx,ocontacttopy,ocontactbottomx,ocontactbottomy,bigxval,i1i3contactx,freqI2, freqI1I3, freqN3, freqHinge);
+            fprintf(animation, "%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f\n", time, x, a, odontophoreangle, xctop, xcbottom, ytop, ybottom, y, lengthofI2, topphiangleofi2, bottomphiangleofi2,furthestbackxpoint,furthestbackypoint,i1i3contacttopy,i1i3contactbottomy,ocontacttopx,ocontacttopy,ocontactbottomx,ocontactbottomy,bigxval,i1i3contactx,freqI2, freqI1I3, freqN3, freqHinge);
             //Izhikevich Model Output
-            //fprintf(izout , "%f\t%f\t%f\t\n", time, membranePotential, membraneRecovery);
+            //fprintf(izout , "%f,%f,%f\n", time, membranePotential, membraneRecovery);
 
             fprintf(mechout, "%f,%f,%f,%f,", time, x, ytop, ybottom);
             for (int i = 0; i < N_RINGS; i++)
@@ -883,7 +883,7 @@ BLARF COMMENT REMOVING READING INPUT END */
     debug_print("that's another simulation completed at %f\t%f\n", frequencyiterationtime, frequencyiterationtime2);
 
         /* While loop Removal
-    fprintf(valout, "%f\t%f\t%f \n", frequencyiterationtime, frequencyiterationtime2, fitness);
+    fprintf(valout, "%f,%f,%f\n", frequencyiterationtime, frequencyiterationtime2, fitness);
     printf("that's another simulation completed at %f\t%f\n", frequencyiterationtime, frequencyiterationtime2);
     frequencyiterationtime = frequencyiterationtime + frequencystep;
     }

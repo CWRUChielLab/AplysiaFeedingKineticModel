@@ -9,26 +9,10 @@ from matplotlib import animation
 #import plotly.plotly as py
 #import plotly.tools as tls
 
-#os.chdir("/Users/tatekeller/Documents/Aplysia Feeding Kinetic Model/AplysiaFeedingKineticModel")
-#The following code reads the SlugOutput2.txt file and converts it to a csv file
-tabDelimitedFile = open("SlugOutput2.txt", "r")
-splitFileToList = "SlugOutput2.txt".split(".")
-listInput = []
-for line in tabDelimitedFile:
-    listLine = line.replace("\n","").split("\t")
-    listInput.append(listLine)
-
-tabDelimitedFile.close()
-newFile = open(splitFileToList[0] + "-csvTranslated.csv", "w")
-for line in listInput:
-    writeLineForNewFile = ",".join(line)
-    newFile.write(writeLineForNewFile + "\n")
-
-newFile.close()
-#The following code reads the SlugOutput2-csvTranslated.csv and saves the time in an array list "time"
+#The following code reads the SlugOutput2.csv and saves the time in an array list "time"
 time = []
 i = 0
-with open("SlugOutput2-csvTranslated.csv", "r") as file:
+with open("SlugOutput2.csv", "r") as file:
      row = csv.reader(file)
      while i < 850:
         for column in row:
@@ -39,10 +23,10 @@ time[1:] = list(map(float, time[1:]))
 #The following line prints the time array to confirm that it contains the correct values
 #print(time)
 
-#The following code reads the SlugOutput2-csvTranslated.csv and saves the position in an array list "position"
+#The following code reads the SlugOutput2.csv and saves the position in an array list "position"
 position = []
 i = 0
-with open("SlugOutput2-csvTranslated.csv", "r") as file:
+with open("SlugOutput2.csv", "r") as file:
     row = csv.reader(file)
     while i < 850:
         for column in row:
@@ -53,10 +37,10 @@ position[1:] = list(map(float, position[1:]))
 #The following line prints the time array to confirm that it contains the correct values
 #print(position)
 
-#The following code reads the SlugOutput2-csvTranslated.csv and saves the radius in an array list "radius"
+#The following code reads the SlugOutput2.csv and saves the radius in an array list "radius"
 radius = []
 i = 0
-with open("SlugOutput2-csvTranslated.csv", "r") as file:
+with open("SlugOutput2.csv", "r") as file:
     row = csv.reader(file)
     while i < 850:
         for column in row:
@@ -67,10 +51,10 @@ radius[1:] = list(map(float, radius[1:]))
 #The following line prints the time array to confirm that it contains the correct values
 #print(radius)
 
-#The following code reads the SlugOutput2-csvTranslated.csv and saves the angle in an array list "angle"
+#The following code reads the SlugOutput2.csv and saves the angle in an array list "angle"
 angle = []
 i = 0
-with open("SlugOutput2-csvTranslated.csv", "r") as file:
+with open("SlugOutput2.csv", "r") as file:
     row = csv.reader(file)
     while i < 850:
         for column in row:
@@ -81,10 +65,10 @@ angle[1:] = list(map(float, angle[1:]))
 #The following line prints the time array to confirm that it contains the correct values
 #print(angle)
 
-#The following code reads the SlugOutput2-csvTranslated.csv and saves the seaweedforce in an array list "seaweedforce"
+#The following code reads the SlugOutput2.csv and saves the seaweedforce in an array list "seaweedforce"
 seaweedforce = []
 i = 0
-with open("SlugOutput2-csvTranslated.csv", "r") as file:
+with open("SlugOutput2.csv", "r") as file:
     row = csv.reader(file)
     while i < 850:
         for column in row:
@@ -95,10 +79,10 @@ seaweedforce[1:] = list(map(float, seaweedforce[1:]))
 #The following line prints the time array to confirm that it contains the correct values
 #print(seaweedforce)
 
-#The following code reads the SlugOutput2-csvTranslated.csv and saves the Odontophore input in an array list "freqN3"
+#The following code reads the SlugOutput2.csv and saves the Odontophore input in an array list "freqN3"
 freqN3 = []
 i = 0
-with open("SlugOutput2-csvTranslated.csv", "r") as file:
+with open("SlugOutput2.csv", "r") as file:
     row = csv.reader(file)
     while i < 850:
         for column in row:
@@ -109,10 +93,10 @@ freqN3[1:] = list(map(float, freqN3[1:]))
 #The following line prints the time array to confirm that it contains the correct values
 #print(freqN3)
 
-#The following code reads the SlugOutput2-csvTranslated.csv and saves the Hinge input in an array list "freqHinge"
+#The following code reads the SlugOutput2.csv and saves the Hinge input in an array list "freqHinge"
 freqHinge = []
 i = 0
-with open("SlugOutput2-csvTranslated.csv", "r") as file:
+with open("SlugOutput2.csv", "r") as file:
     row = csv.reader(file)
     while i < 850:
         for column in row:
@@ -123,10 +107,10 @@ freqHinge[1:] = list(map(float, freqHinge[1:]))
 #The following line prints the time array to confirm that it contains the correct values
 #print(freqHinge)
 
-#The following code reads the SlugOutput2-csvTranslated.csv and saves the I2 input in an array list "freqI2"
+#The following code reads the SlugOutput2.csv and saves the I2 input in an array list "freqI2"
 freqI2 = []
 i = 0
-with open("SlugOutput2-csvTranslated.csv", "r") as file:
+with open("SlugOutput2.csv", "r") as file:
     row = csv.reader(file)
     while i < 850:
         for column in row:
@@ -137,10 +121,10 @@ freqI2[1:] = list(map(float, freqI2[1:]))
 #The following line prints the time array to confirm that it contains the correct values
 #print(freqI2)
 
-#The following code reads the SlugOutput2-csvTranslated.csv and saves the I1/I3 input in an array list "freqI1I3"
+#The following code reads the SlugOutput2.csv and saves the I1/I3 input in an array list "freqI1I3"
 freqI1I3 = []
 i = 0
-with open("SlugOutput2-csvTranslated.csv", "r") as file:
+with open("SlugOutput2.csv", "r") as file:
     row = csv.reader(file)
     while i < 850:
         for column in row:

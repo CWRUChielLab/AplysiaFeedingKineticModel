@@ -1,10 +1,9 @@
 model
 Figures/
+Animations/
+*.csv
 *.pdf
 *.mp4
-*.txt
-*.csv
-*.xlsx
 
 *~
 

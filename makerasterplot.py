@@ -8,31 +8,15 @@ import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib.gridspec as gridspec
 
-#The following code reads the rasterplotinfo.txt file and converts it to a csv file
-tabDelimitedFile = open("rasterplotinfo.txt", "r")
-splitFileToList = "rasterplotinfo.txt".split(".")
-listInput = []
-for line in tabDelimitedFile:
-    listLine = line.replace("\n","").split("\t")
-    listInput.append(listLine)
-tabDelimitedFile.close()
-sys.stdout.write('File Read \r')
-newFile = open(splitFileToList[0] + "-csvTranslated.csv", "w")
-for line in listInput:
-    writeLineForNewFile = ",".join(line)
-    newFile.write(writeLineForNewFile + "\n")
-newFile.close()
-sys.stdout.write('New File Written \r')
-
-with open("rasterplotinfo-csvTranslated.csv","r") as file:
+with open("rasterplotinfo.csv","r") as file:
     reader = csv.reader(file)
     data = list(reader)
     row_count = len(data)
 
-#The following code reads the rasterplotinfo-csvTranslated.csv and saves the time in an array list "time"
+#The following code reads the rasterplotinfo.csv and saves the time in an array list "time"
 time = []
 i = 0
-with open("rasterplotinfo-csvTranslated.csv", "r") as file:
+with open("rasterplotinfo.csv", "r") as file:
     row = csv.reader(file)
     while i < row_count:
         for column in row:
@@ -42,10 +26,10 @@ time[1:] = list(map(float, time[1:]))
 sys.stdout.write('Time Saved \r')
 # [0]- B31/32, [1] - B61/62, [2] - B8a,b, [3] - B3, [4] - B6, [5] - B9, [6] - B38, [7] - B10, [8] - B43, [9] - B7
 
-#The following code reads the rasterplotinfo-csvTranslated.csv and saves the time in an array list "time"
+#The following code reads the rasterplotinfo.csv and saves the time in an array list "time"
 b31 = []
 i = 0
-with open("rasterplotinfo-csvTranslated.csv", "r") as file:
+with open("rasterplotinfo.csv", "r") as file:
     row = csv.reader(file)
     while i < row_count:
         for column in row:
@@ -53,10 +37,10 @@ with open("rasterplotinfo-csvTranslated.csv", "r") as file:
             i+=1
 b31[1:] = list(map(float, b31[1:]))
 sys.stdout.write('B31/32 Saved \r')
-#The following code reads the rasterplotinfo-csvTranslated.csv and saves the time in an array list "time"
+#The following code reads the rasterplotinfo.csv and saves the time in an array list "time"
 b61 = []
 i = 0
-with open("rasterplotinfo-csvTranslated.csv", "r") as file:
+with open("rasterplotinfo.csv", "r") as file:
     row = csv.reader(file)
     while i < row_count:
         for column in row:
@@ -64,10 +48,10 @@ with open("rasterplotinfo-csvTranslated.csv", "r") as file:
             i+=1
 b61[1:] = list(map(float, b61[1:]))
 sys.stdout.write('B61/62 Saved \r')
-#The following code reads the rasterplotinfo-csvTranslated.csv and saves the time in an array list "time"
+#The following code reads the rasterplotinfo.csv and saves the time in an array list "time"
 b8 = []
 i = 0
-with open("rasterplotinfo-csvTranslated.csv", "r") as file:
+with open("rasterplotinfo.csv", "r") as file:
     row = csv.reader(file)
     while i < row_count:
         for column in row:
@@ -75,10 +59,10 @@ with open("rasterplotinfo-csvTranslated.csv", "r") as file:
             i+=1
 b8[1:] = list(map(float, b8[1:]))
 sys.stdout.write('B8 Saved \r')
-#The following code reads the rasterplotinfo-csvTranslated.csv and saves the time in an array list "time"
+#The following code reads the rasterplotinfo.csv and saves the time in an array list "time"
 b3 = []
 i = 0
-with open("rasterplotinfo-csvTranslated.csv", "r") as file:
+with open("rasterplotinfo.csv", "r") as file:
     row = csv.reader(file)
     while i < row_count:
         for column in row:
@@ -86,10 +70,10 @@ with open("rasterplotinfo-csvTranslated.csv", "r") as file:
             i+=1
 b3[1:] = list(map(float, b3[1:]))
 sys.stdout.write('B3 Saved \r')
-#The following code reads the rasterplotinfo-csvTranslated.csv and saves the time in an array list "time"
+#The following code reads the rasterplotinfo.csv and saves the time in an array list "time"
 b6 = []
 i = 0
-with open("rasterplotinfo-csvTranslated.csv", "r") as file:
+with open("rasterplotinfo.csv", "r") as file:
     row = csv.reader(file)
     while i < row_count:
         for column in row:
@@ -97,10 +81,10 @@ with open("rasterplotinfo-csvTranslated.csv", "r") as file:
             i+=1
 b6[1:] = list(map(float, b6[1:]))
 sys.stdout.write('B6 Saved \r')
-#The following code reads the rasterplotinfo-csvTranslated.csv and saves the time in an array list "time"
+#The following code reads the rasterplotinfo.csv and saves the time in an array list "time"
 b9 = []
 i = 0
-with open("rasterplotinfo-csvTranslated.csv", "r") as file:
+with open("rasterplotinfo.csv", "r") as file:
     row = csv.reader(file)
     while i < row_count:
         for column in row:
@@ -108,10 +92,10 @@ with open("rasterplotinfo-csvTranslated.csv", "r") as file:
             i+=1
 b9[1:] = list(map(float, b9[1:]))
 sys.stdout.write('B9 Saved \r')
-#The following code reads the rasterplotinfo-csvTranslated.csv and saves the time in an array list "time"
+#The following code reads the rasterplotinfo.csv and saves the time in an array list "time"
 b38 = []
 i = 0
-with open("rasterplotinfo-csvTranslated.csv", "r") as file:
+with open("rasterplotinfo.csv", "r") as file:
     row = csv.reader(file)
     while i < row_count:
         for column in row:
@@ -119,10 +103,10 @@ with open("rasterplotinfo-csvTranslated.csv", "r") as file:
             i+=1
 b38[1:] = list(map(float, b38[1:]))
 sys.stdout.write('B38 Saved \r')
-#The following code reads the rasterplotinfo-csvTranslated.csv and saves the time in an array list "time"
+#The following code reads the rasterplotinfo.csv and saves the time in an array list "time"
 b10 = []
 i = 0
-with open("rasterplotinfo-csvTranslated.csv", "r") as file:
+with open("rasterplotinfo.csv", "r") as file:
     row = csv.reader(file)
     while i < row_count:
         for column in row:
@@ -130,10 +114,10 @@ with open("rasterplotinfo-csvTranslated.csv", "r") as file:
             i+=1
 b10[1:] = list(map(float, b10[1:]))
 sys.stdout.write('B10 Saved \r')
-#The following code reads the rasterplotinfo-csvTranslated.csv and saves the time in an array list "time"
+#The following code reads the rasterplotinfo.csv and saves the time in an array list "time"
 b43 = []
 i = 0
-with open("rasterplotinfo-csvTranslated.csv", "r") as file:
+with open("rasterplotinfo.csv", "r") as file:
     row = csv.reader(file)
     while i < row_count:
         for column in row:
@@ -141,10 +125,10 @@ with open("rasterplotinfo-csvTranslated.csv", "r") as file:
             i+=1
 b43[1:] = list(map(float, b43[1:]))
 sys.stdout.write('B43 Saved \r')
-#The following code reads the rasterplotinfo-csvTranslated.csv and saves the time in an array list "time"
+#The following code reads the rasterplotinfo.csv and saves the time in an array list "time"
 b7 = []
 i = 0
-with open("rasterplotinfo-csvTranslated.csv", "r") as file:
+with open("rasterplotinfo.csv", "r") as file:
     row = csv.reader(file)
     while i < row_count:
         for column in row:
@@ -153,10 +137,10 @@ with open("rasterplotinfo-csvTranslated.csv", "r") as file:
 b7[1:] = list(map(float, b7[1:]))
 sys.stdout.write('B7 Saved \r')
 
-#The following code reads the rasterplotinfo-csvTranslated.csv and saves the time in an array list "time"
+#The following code reads the rasterplotinfo.csv and saves the time in an array list "time"
 b8b = []
 i = 0
-with open("rasterplotinfo-csvTranslated.csv", "r") as file:
+with open("rasterplotinfo.csv", "r") as file:
     row = csv.reader(file)
     while i < row_count:
         for column in row:
