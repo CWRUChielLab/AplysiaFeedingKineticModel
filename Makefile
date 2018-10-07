@@ -50,7 +50,7 @@ check: $(CHECKBEHAVIORS)
 $(CHECKBEHAVIORS): CHECK-%: $(EXEC)
 	@echo -n "Checking $*...\t"
 	@./$< $* # run the model for this behavior
-	@echo `diff SlugOutput2.csv Check/Output-$*.csv | wc -l` "deviations"
+	@echo `diff --strip-trailing-cr SlugOutput2.csv Check/Output-$*.csv | wc -l` "deviations"
 
 
 .PHONY: bless
