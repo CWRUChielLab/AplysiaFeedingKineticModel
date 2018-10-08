@@ -297,7 +297,7 @@ class Animator:
         return self.i1i3top2
 
     def createi1i3bottom2(self, discretemoment, i1i3bottom2):
-        self.bottomcontactpointy2 = float(self.data['ybottom1'][discretemoment])
+        self.bottomcontactpointy2 = float(self.data['ybottom2'][discretemoment])
         self.i1i3bottom2 = Circle((2*2*0.00125,self.bottomcontactpointy2),0.00125)
         self.i1i3bottom2.set_facecolor('none')
         self.i1i3bottom2.set_linewidth(.5)
