@@ -731,6 +731,18 @@ BLARF COMMENT REMOVING READING INPUT END */
     debug_print("Dreaming the impossible dream \n");
     while(time < RunDuration) //runs the individual until time is greater than RunDuration
         {
+
+        if (isnan(x))
+        {
+            printf("ABORTING: x is nan @ time = %f !\n", time);
+            exit(1);
+        }
+        if (isnan(y))
+        {
+            printf("ABORTING: y is nan @ time = %f !\n", time);
+            exit(1);
+        }
+
         //NeuronOutput is from 0 to 1, multip ly be 20 to get freq from 0 to 20
         freqI2 = 0;//circ.NeuronOutput(1) * 20;
         freqI1I3 = 0;//circ.NeuronOutput(2) * 20;
