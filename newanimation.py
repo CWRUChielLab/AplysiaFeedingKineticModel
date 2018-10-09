@@ -215,7 +215,6 @@ def createi1i3bottom(i, i1i3bottom):
 def createi2top(i, i2top):
     #Top line
 
-    # i1i3radius = data['y'][i]
     i2length = data['lengthofI2'][i]
     topangle = data['topphiangleofi2'][i] #Tphi
     bottomangle = data['bottomphiangleofi2'][i] #Bphi
@@ -228,8 +227,6 @@ def createi2top(i, i2top):
     i1i3contacttopx = -0.00125
     i1i3contactbottomy = data['i1i3contactbottomy'][i]
     i1i3contactbottomx = -.00125
-
-    #x1val = data['i1i3contactx'][i]
 
     ocontacttopx = data['ocontacttopx'][i]
     ocontacttopy = data['ocontacttopy'][i]
@@ -250,7 +247,6 @@ def createi2top(i, i2top):
 def createi2bottom(i, i2bottom):
     #Bottom line
 
-    # i1i3radius = data['y'][i]
     i2length = data['lengthofI2'][i]
     topangle = data['topphiangleofi2'][i] #Tphi
     bottomangle = data['bottomphiangleofi2'][i] #Bphi
@@ -263,8 +259,6 @@ def createi2bottom(i, i2bottom):
     i1i3contacttopx = -0.00125
     i1i3contactbottomy = data['i1i3contactbottomy'][i]
     i1i3contactbottomx = -.00125
-
-    #x1val = data['i1i3contactx'][i]
 
     ocontacttopx = data['ocontacttopx'][i]
     ocontacttopy = data['ocontacttopy'][i]
