@@ -578,7 +578,7 @@ int main(int argc, char* argv[])
     //Titles for Izhikevich output
     fprintf(izout, "time,MembranePotentialo,MembraneRecoveryo,ofreq,i1i3freq,hfreq,i2freq,current\n");
     //Titles for animation info
-    fprintf(animation, "time,position,radius,angle,xctop,xcbottom,ytop,ybottom,i1i3radius,i2length,topangle,bottomangle,furthestbackx,furthestbacky,i1i3contacttopy,i1i3contactbottomy,ocontacttopx,ocontacttopy,ocontactbottomx,ocontactbottomy,bigxval,i1i3contactx,freqI2,freqI1I3,freqN3,freqHinge\n");
+    fprintf(animation, "time,x,a,odontophoreangle,xctop,xcbottom,ytop,ybottom,y,lengthofI2,topphiangleofi2,bottomphiangleofi2,furthestbackxpoint,furthestbackypoint,i1i3contacttopy,i1i3contactbottomy,ocontacttopx,ocontacttopy,ocontactbottomx,ocontactbottomy,bigxval,i1i3contactx,freqI2,freqI1I3,freqN3,freqHinge\n");
     //Titles for rasterplot info
     // [0]- B31/32, [1] - B61/62, [2] - B8a, [3] - B3, [4] - B6, [5] - B9, [6] - B38, [7] - B10, [8] - B43, [9] - B7, [10] - B8b
     fprintf(rasterplot, "time,B31/32,B61/62,B8a,B3,B6,B9,B38,B10,B43,B7,B8b\n");

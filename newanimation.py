@@ -167,12 +167,12 @@ def makevertlinehinge(hingegraph, i):
 
 def createOdontophore(i, odontophore):
     #Define Variables by acsessing array values
-    oradius = data['radius'][i] #"a" in the kinetic model
+    oradius = data['a'][i] #"a" in the kinetic model
     odiameter = 2*oradius #2*a
     ominoraxisradius = (5.0 * sqrt(5.0) / sqrt(oradius * 1000.0)) / 1000.0 #"b" in the kinetic model
     ominoraxisdiameter = 2*ominoraxisradius #2*b
-    oangle = -(90 - data['angle'][i]) #"odontophoreangle"
-    ocenter = data['position'][i] #"x"
+    oangle = -(90 - data['odontophoreangle'][i]) #"odontophoreangle"
+    ocenter = data['x'][i] #"x"
     #odontophore
     odontophore = Ellipse((ocenter, 0), ominoraxisdiameter, odiameter, oangle)
     odontophore.set_alpha(1)
@@ -215,15 +215,15 @@ def createi1i3bottom(i, i1i3bottom):
 def createi2top(i, i2top):
     #Top line
 
-    i1i3radius = data['i1i3radius'][i]
-    i2length = data['i2length'][i]
-    topangle = data['topangle'][i] #Tphi
-    bottomangle = data['bottomangle'][i] #Bphi
+    # i1i3radius = data['y'][i]
+    i2length = data['lengthofI2'][i]
+    topangle = data['topphiangleofi2'][i] #Tphi
+    bottomangle = data['bottomphiangleofi2'][i] #Bphi
     xtopval = -(np.cos(np.deg2rad(topangle))*i2length)/2
     xbottomval = -(np.cos(np.deg2rad(bottomangle))*i2length)/2
 
-    furthestbackxpoint = data['furthestbackx'][i]
-    furthestbackypoint = data['furthestbacky'][i]
+    furthestbackxpoint = data['furthestbackxpoint'][i]
+    furthestbackypoint = data['furthestbackypoint'][i]
     i1i3contacttopy = data['i1i3contacttopy'][i]
     i1i3contacttopx = -0.00125
     i1i3contactbottomy = data['i1i3contactbottomy'][i]
@@ -250,15 +250,15 @@ def createi2top(i, i2top):
 def createi2bottom(i, i2bottom):
     #Bottom line
 
-    i1i3radius = data['i1i3radius'][i]
-    i2length = data['i2length'][i]
-    topangle = data['topangle'][i] #Tphi
-    bottomangle = data['bottomangle'][i] #Bphi
+    # i1i3radius = data['y'][i]
+    i2length = data['lengthofI2'][i]
+    topangle = data['topphiangleofi2'][i] #Tphi
+    bottomangle = data['bottomphiangleofi2'][i] #Bphi
     xtopval = -(np.cos(np.deg2rad(topangle))*i2length)/2
     xbottomval = -(np.cos(np.deg2rad(bottomangle))*i2length)/2
 
-    furthestbackxpoint = data['furthestbackx'][i]
-    furthestbackypoint = data['furthestbacky'][i]
+    furthestbackxpoint = data['furthestbackxpoint'][i]
+    furthestbackypoint = data['furthestbackypoint'][i]
     i1i3contacttopy = data['i1i3contacttopy'][i]
     i1i3contacttopx = -0.00125
     i1i3contactbottomy = data['i1i3contactbottomy'][i]
