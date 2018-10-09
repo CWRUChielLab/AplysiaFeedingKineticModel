@@ -575,7 +575,12 @@ int main(int argc, char* argv[])
     //Titles for Izhikevich output
     fprintf(izout, "time,MembranePotentialo,MembraneRecoveryo,ofreq,i1i3freq,hfreq,i2freq,current\n");
     //Titles for animation info
-    fprintf(animation, "time,x,a,odontophoreangle,xctop,xcbottom,ytop,ybottom,lengthofI2,topphiangleofi2,bottomphiangleofi2,furthestbackxpoint,furthestbackypoint,i1i3contacttopy,i1i3contactbottomy,ocontacttopx,ocontacttopy,ocontactbottomx,ocontactbottomy,freqI2,freqI1I3,freqN3,freqHinge\n");
+    fprintf(animation, "time,x,ytop,ybottom,");
+    for (int i = 0; i < N_RINGS; i++)
+    {
+        fprintf(animation, "ytop%d,ybottom%d,", i, i);
+    }
+    fprintf(animation, "a,odontophoreangle,xctop,xcbottom,lengthofI2,topphiangleofi2,bottomphiangleofi2,furthestbackxpoint,furthestbackypoint,i1i3contacttopy,i1i3contactbottomy,ocontacttopx,ocontacttopy,ocontactbottomx,ocontactbottomy,freqI2,freqI1I3,freqN3,freqHinge\n");
     //Titles for rasterplot info
     // [0]- B31/32, [1] - B61/62, [2] - B8a, [3] - B3, [4] - B6, [5] - B9, [6] - B38, [7] - B10, [8] - B43, [9] - B7, [10] - B8b
     fprintf(rasterplot, "time,B31/32,B61/62,B8a,B3,B6,B9,B38,B10,B43,B7,B8b\n");
@@ -848,7 +853,12 @@ BLARF COMMENT REMOVING READING INPUT END */
             //This is the Fprint for the simulations in the example PDF's I sent Hillel.
             fprintf(valout, "%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f\n", time, x, a, odontophoreangle, hingeF, fitness, freqI2, freqI1I3, freqN3, freqHinge, aprimeI2, aprimeI1I3, acthinge, fitness, seaweedforce);
 
-            fprintf(animation, "%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f\n", time, x, a, odontophoreangle, xctop, xcbottom, ytop, ybottom, lengthofI2, topphiangleofi2, bottomphiangleofi2,furthestbackxpoint,furthestbackypoint,i1i3contacttopy,i1i3contactbottomy,ocontacttopx,ocontacttopy,ocontactbottomx,ocontactbottomy,freqI2, freqI1I3, freqN3, freqHinge);
+            fprintf(animation, "%f,%f,%f,%f,", time, x, ytop, ybottom);
+            for (int i = 0; i < N_RINGS; i++)
+            {
+                fprintf(animation, "%f,%f,", ytop_MULTIRING[i], ybottom_MULTIRING[i]);
+            }
+            fprintf(animation, "%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f\n", a, odontophoreangle, xctop, xcbottom, lengthofI2, topphiangleofi2, bottomphiangleofi2,furthestbackxpoint,furthestbackypoint,i1i3contacttopy,i1i3contactbottomy,ocontacttopx,ocontacttopy,ocontactbottomx,ocontactbottomy,freqI2, freqI1I3, freqN3, freqHinge);
             //Izhikevich Model Output
             //fprintf(izout , "%f,%f,%f\n", time, membranePotential, membraneRecovery);
 
