@@ -437,13 +437,23 @@ int main(int argc, char* argv[])
     double checker = 1;
     double period = 0;
     double dummyvariable = 0;  //just something to hand to functions for outputs that dont matter
+    double seaweedforce = 0;  //This is added seaweed force on the odontophore
     ifstream inFile;
     valout = fopen(filename, "w");
+    if (!valout)
+        printf("Unable to open \"%s\" for writing!\n", filename);
     izout = fopen(filenamei, "w");
+    if (!izout)
+        printf("Unable to open \"%s\" for writing!\n", filenamei);
     animation = fopen(filenamea, "w");
+    if (!animation)
+        printf("Unable to open \"%s\" for writing!\n", filenamea);
     rasterplot = fopen(filenamer, "w");
+    if (!rasterplot)
+        printf("Unable to open \"%s\" for writing!\n", filenamer);
     mechout = fopen(filenameMechanics, "w");
-    double seaweedforce = 0;  //This is added seaweed force on the odontophore
+    if (!mechout)
+        printf("Unable to open \"%s\" for writing!\n", filenameMechanics);
 
     //rasterplot information
     // [0]- B31/32, [1] - B61/62, [2] - B8ab, [3] - B3, [4] - B6, [5] - B9, [6] - B38, [7] - B10, [8] - B43, [9] - B7, [10] - B8b
