@@ -56,12 +56,28 @@ a = figure.add_subplot(gs[2:9,0:9], aspect='equal')
 odontophore = Ellipse((0, 0), 0, 0, 0)
 i1i3top = Circle((0,0),0.00125)
 i1i3bottom = Circle((0,0),0.00125)
+i1i3top1 = Circle((0,0),0.00125)
+i1i3bottom1 = Circle((0,0),0.00125)
+i1i3top2 = Circle((0,0),0.00125)
+i1i3bottom2 = Circle((0,0),0.00125)
+i1i3top3 = Circle((0,0),0.00125)
+i1i3bottom3 = Circle((0,0),0.00125)
+i1i3top4 = Circle((0,0),0.00125)
+i1i3bottom4 = Circle((0,0),0.00125)
 i2top = mlines.Line2D([0,1],[0,1])
 i2bottom= mlines.Line2D([0,1],[0,1])
 
 a.add_artist(odontophore)
 a.add_artist(i1i3top)
 a.add_artist(i1i3bottom)
+a.add_artist(i1i3top1)
+a.add_artist(i1i3bottom1)
+a.add_artist(i1i3top2)
+a.add_artist(i1i3bottom2)
+a.add_artist(i1i3top3)
+a.add_artist(i1i3bottom3)
+a.add_artist(i1i3top4)
+a.add_artist(i1i3bottom4)
 a.add_artist(i2top)
 a.add_artist(i2bottom)
 plt.ylabel('Y- Plane (m)', fontsize = 4)
@@ -211,6 +227,110 @@ def createi1i3bottom(i, i1i3bottom):
     else:
         i1i3bottom.set_edgecolor('red')
     return i1i3bottom
+
+def createi1i3top1(i, i1i3top1):
+    topcontactpointy1 = data['ytop1'][i]
+    i1i3top1 = Circle((1*2*0.00125,topcontactpointy1),0.00125)
+    i1i3top1.set_facecolor('none')
+    i1i3top1.set_linewidth(.5)
+    if data['freqI1I3'][i] == 0:
+        i1i3top1.set_edgecolor('black')
+    elif data['freqI1I3'][i] > 0:
+        i1i3top1.set_edgecolor('black')
+    else:
+        i1i3top1.set_edgecolor('red')
+    return i1i3top1
+
+def createi1i3bottom1(i, i1i3bottom1):
+    bottomcontactpointy1 = data['ybottom1'][i]
+    i1i3bottom1 = Circle((1*2*0.00125,bottomcontactpointy1),0.00125)
+    i1i3bottom1.set_facecolor('none')
+    i1i3bottom1.set_linewidth(.5)
+    if data['freqI1I3'][i] == 0:
+        i1i3bottom1.set_edgecolor('black')
+    elif data['freqI1I3'][i] > 0:
+        i1i3bottom1.set_edgecolor('black')
+    else:
+        i1i3bottom1.set_edgecolor('red')
+    return i1i3bottom1
+
+def createi1i3top2(i, i1i3top2):
+    topcontactpointy2 = data['ytop2'][i]
+    i1i3top2 = Circle((2*2*0.00125,topcontactpointy2),0.00125)
+    i1i3top2.set_facecolor('none')
+    i1i3top2.set_linewidth(.5)
+    if data['freqI1I3'][i] == 0:
+        i1i3top2.set_edgecolor('black')
+    elif data['freqI1I3'][i] > 0:
+        i1i3top2.set_edgecolor('black')
+    else:
+        i1i3top2.set_edgecolor('red')
+    return i1i3top2
+
+def createi1i3bottom2(i, i1i3bottom2):
+    bottomcontactpointy2 = data['ybottom2'][i]
+    i1i3bottom2 = Circle((2*2*0.00125,bottomcontactpointy2),0.00125)
+    i1i3bottom2.set_facecolor('none')
+    i1i3bottom2.set_linewidth(.5)
+    if data['freqI1I3'][i] == 0:
+        i1i3bottom2.set_edgecolor('black')
+    elif data['freqI1I3'][i] > 0:
+        i1i3bottom2.set_edgecolor('black')
+    else:
+        i1i3bottom2.set_edgecolor('red')
+    return i1i3bottom2
+
+def createi1i3top3(i, i1i3top3):
+    topcontactpointy3 = data['ytop3'][i]
+    i1i3top3 = Circle((3*2*0.00125,topcontactpointy3),0.00125)
+    i1i3top3.set_facecolor('none')
+    i1i3top3.set_linewidth(.5)
+    if data['freqI1I3'][i] == 0:
+        i1i3top3.set_edgecolor('black')
+    elif data['freqI1I3'][i] > 0:
+        i1i3top3.set_edgecolor('black')
+    else:
+        i1i3top3.set_edgecolor('red')
+    return i1i3top3
+
+def createi1i3bottom3(i, i1i3bottom3):
+    bottomcontactpointy3 = data['ybottom3'][i]
+    i1i3bottom3 = Circle((3*2*0.00125,bottomcontactpointy3),0.00125)
+    i1i3bottom3.set_facecolor('none')
+    i1i3bottom3.set_linewidth(.5)
+    if data['freqI1I3'][i] == 0:
+        i1i3bottom3.set_edgecolor('black')
+    elif data['freqI1I3'][i] > 0:
+        i1i3bottom3.set_edgecolor('black')
+    else:
+        i1i3bottom3.set_edgecolor('red')
+    return i1i3bottom3
+
+def createi1i3top4(i, i1i3top4):
+    topcontactpointy4 = data['ytop4'][i]
+    i1i3top4 = Circle((4*2*0.00125,topcontactpointy4),0.00125)
+    i1i3top4.set_facecolor('none')
+    i1i3top4.set_linewidth(.5)
+    if data['freqI1I3'][i] == 0:
+        i1i3top4.set_edgecolor('black')
+    elif data['freqI1I3'][i] > 0:
+        i1i3top4.set_edgecolor('black')
+    else:
+        i1i3top4.set_edgecolor('red')
+    return i1i3top4
+
+def createi1i3bottom4(i, i1i3bottom4):
+    bottomcontactpointy4 = data['ybottom4'][i]
+    i1i3bottom4 = Circle((4*2*0.00125,bottomcontactpointy4),0.00125)
+    i1i3bottom4.set_facecolor('none')
+    i1i3bottom4.set_linewidth(.5)
+    if data['freqI1I3'][i] == 0:
+        i1i3bottom4.set_edgecolor('black')
+    elif data['freqI1I3'][i] > 0:
+        i1i3bottom4.set_edgecolor('black')
+    else:
+        i1i3bottom4.set_edgecolor('red')
+    return i1i3bottom4
 
 def createi2top(i, i2top):
     #Top line
@@ -398,6 +518,14 @@ with moviewriter.saving(plt.gcf(), moviefile, dpi):
         odontophore.remove()
         i1i3top.remove()
         i1i3bottom.remove()
+        i1i3top1.remove()
+        i1i3bottom1.remove()
+        i1i3top2.remove()
+        i1i3bottom2.remove()
+        i1i3top3.remove()
+        i1i3bottom3.remove()
+        i1i3top4.remove()
+        i1i3bottom4.remove()
         i2top.remove()
         i2bottom.remove()
         vertlinei2.remove()
@@ -429,11 +557,27 @@ with moviewriter.saving(plt.gcf(), moviefile, dpi):
         odontophore = createOdontophore(i, odontophore)
         i1i3top = createi1i3top(i, i1i3top)
         i1i3bottom = createi1i3bottom(i, i1i3bottom)
+        i1i3top1 = createi1i3top1(i, i1i3top1)
+        i1i3bottom1 = createi1i3bottom1(i, i1i3bottom1)
+        i1i3top2 = createi1i3top2(i, i1i3top2)
+        i1i3bottom2 = createi1i3bottom2(i, i1i3bottom2)
+        i1i3top3 = createi1i3top3(i, i1i3top3)
+        i1i3bottom3 = createi1i3bottom3(i, i1i3bottom3)
+        i1i3top4 = createi1i3top4(i, i1i3top4)
+        i1i3bottom4 = createi1i3bottom4(i, i1i3bottom4)
         i2top = createi2top(i, i2top)
         i2bottom = createi2bottom(i, i2bottom)
         a.add_artist(odontophore)
         a.add_artist(i1i3top)
         a.add_artist(i1i3bottom)
+        a.add_artist(i1i3top1)
+        a.add_artist(i1i3bottom1)
+        a.add_artist(i1i3top2)
+        a.add_artist(i1i3bottom2)
+        a.add_artist(i1i3top3)
+        a.add_artist(i1i3bottom3)
+        a.add_artist(i1i3top4)
+        a.add_artist(i1i3bottom4)
         a.add_artist(i2top)
         a.add_artist(i2bottom)
         moviewriter.grab_frame()
