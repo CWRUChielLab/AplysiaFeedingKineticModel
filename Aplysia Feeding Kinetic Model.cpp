@@ -22,7 +22,6 @@ FILE *valout;
 FILE *neuralinputs;
 FILE *animation;
 FILE *rasterplot;
-FILE *mechout;
 
 /* including some files of my own in the rebulid */
 #include <string.h>
@@ -370,7 +369,6 @@ int main(int argc, char* argv[])
     const char* filename2 = "NeuralInputs.txt";
     const char* filenamea = "animationinfo.csv";
     const char* filenamer = "rasterplotinfo.csv";
-    const char* filenameMechanics = "output-mechanics.csv";
 
     //variables used to calculate the muscle forces and odontophore position - explained when initialized
     double x, y, xdot, ydot, adot, xacc;
@@ -448,9 +446,6 @@ int main(int argc, char* argv[])
     rasterplot = fopen(filenamer, "w");
     if (!rasterplot)
         printf("Unable to open \"%s\" for writing!\n", filenamer);
-    mechout = fopen(filenameMechanics, "w");
-    if (!mechout)
-        printf("Unable to open \"%s\" for writing!\n", filenameMechanics);
 
     //rasterplot information
     // [0]- B31/32, [1] - B61/62, [2] - B8ab, [3] - B3, [4] - B6, [5] - B9, [6] - B38, [7] - B10, [8] - B43, [9] - B7, [10] - B8b
@@ -584,13 +579,6 @@ int main(int argc, char* argv[])
     //Titles for rasterplot info
     // [0]- B31/32, [1] - B61/62, [2] - B8a, [3] - B3, [4] - B6, [5] - B9, [6] - B38, [7] - B10, [8] - B43, [9] - B7, [10] - B8b
     fprintf(rasterplot, "time,B31/32,B61/62,B8a,B3,B6,B9,B38,B10,B43,B7,B8b\n");
-
-    fprintf(mechout, "time,x,ytop,ybottom,");
-    for (int i = 0; i < N_RINGS; i++)
-    {
-        fprintf(mechout, "ytop%d,ybottom%d,", i, i);
-    }
-    fprintf(mechout, "a,odontophoreangle,lengthofI2,topphiangleofi2,bottomphiangleofi2,i1i3contacttopy,i1i3contactbottomy,ocontacttopx,ocontacttopy,ocontactbottomx,ocontactbottomy\n");
 
     /* Reading the file for neural input */
     i = 0;
@@ -861,13 +849,6 @@ BLARF COMMENT REMOVING READING INPUT END */
             fprintf(animation, "%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f\n", a, odontophoreangle, xctop, xcbottom, lengthofI2, topphiangleofi2, bottomphiangleofi2,furthestbackxpoint,furthestbackypoint,i1i3contacttopy,i1i3contactbottomy,ocontacttopx,ocontacttopy,ocontactbottomx,ocontactbottomy,freqI2, freqI1I3, freqN3, freqHinge);
             //Izhikevich Model Output
             //fprintf(izout , "%f,%f,%f\n", time, membranePotential, membraneRecovery);
-
-            fprintf(mechout, "%f,%f,%f,%f,", time, x, ytop, ybottom);
-            for (int i = 0; i < N_RINGS; i++)
-            {
-                fprintf(mechout, "%f,%f,", ytop_MULTIRING[i], ybottom_MULTIRING[i]);
-            }
-            fprintf(mechout, "%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f\n", a, odontophoreangle, lengthofI2, topphiangleofi2, bottomphiangleofi2, i1i3contacttopy, i1i3contactbottomy, ocontacttopx, ocontacttopy, ocontactbottomx, ocontactbottomy);
 
             //resets printtimer
             printtimer = 0.0;

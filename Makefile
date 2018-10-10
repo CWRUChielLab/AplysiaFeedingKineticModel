@@ -5,7 +5,6 @@ OUTPUTS = \
 	animation.mp4 \
 	animationinfo.csv \
 	Izhikevich.csv \
-	output-mechanics.csv \
 	plot.pdf \
 	RasterPlot.pdf \
 	rasterplotinfo.csv \
