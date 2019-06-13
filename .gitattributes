@@ -1,2 +1,6 @@
-# Always check-in and check-out files in the Check dir with Unix-style line endings
+# Auto detect text files and perform LF normalization
+* text=auto
+
+# Always checkout files in the Check dir with Unix-style line endings so that
+# they can be compared to the outputs of `make check`
 /Check/* eol=lf
