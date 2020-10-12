@@ -72,6 +72,20 @@ const double I1I3mass = 1.3; //mass of torus in grams (labeled m in Guidebook)
 
 // multi-ring I1/I3
 const int N_RINGS = 5;
+double aprimeI1I3_MULTIRING[N_RINGS];
+double freqI1I3_MULTIRING[N_RINGS];
+double xctop_MULTIRING[N_RINGS];
+double xcbottom_MULTIRING[N_RINGS];
+double yctop_MULTIRING[N_RINGS];
+double ycbottom_MULTIRING[N_RINGS];
+double ytop_MULTIRING[N_RINGS];
+double ybottom_MULTIRING[N_RINGS];
+double oldytop_MULTIRING[N_RINGS];
+double oldybottom_MULTIRING[N_RINGS];
+double topslope_MULTIRING[N_RINGS];
+double bottomslope_MULTIRING[N_RINGS];
+double effectiveslope_MULTIRING[N_RINGS];
+double force2_MULTIRING[N_RINGS];
 
 //Free parameters
 const double LI2opt = 0.0225; //.0825; //optimal length of I2
@@ -158,6 +172,11 @@ double seaweedforcearray[1000];
 double freqI2array[1000];
 double timearray[900000];
 
+/* variables for multi-ring I1/I3 */
+double freqI1I3array_MULTIRING[N_RINGS][1000];
+double actI1I3array_MULTIRING[N_RINGS][1000];
+double i1i3poolarray_MULTIRING[N_RINGS][900000];
+
 double i1i3poolarray[900000];
 double i2poolarray[900000];
 double i4poolarray[900000];
@@ -242,7 +261,8 @@ double calchingeforce (double, double, double *);
 
 double calchingeforce2 (double, double);
 
-double updateposition (double *x, double *ytop, double *ybottom, double *a, double *xdot, double *ydot, double *adot, double f1, double f2, double actN3, double *Txc, double *Bxc, double *output, double *Oangle, double hingeforce);
+// double updateposition (double *x, double *ytop, double *ybottom, double *a, double *xdot, double *ydot, double *adot, double f1, double f2, double actN3, double *Txc, double *Bxc, double *output, double *Oangle, double hingeforce);
+double updateposition (double *x, double *ytop, double *ybottom, double ytop_MULTIRING[], double ybottom_MULTIRING[], double *a, double *xdot, double *ydot, double *adot, double f1, double f2, double actN3, double *Txc, double *Bxc, double xctop_MULTIRING[], double xcbottom_MULTIRING[], double *output, double *Oangle, double hingeforce);
     //takes the forces on the odontophore and finds the new position of the odontophore and I1/I3
 
 double calcphi (double x, double ytop, double ybottom, double a, double *Tphi, double *Bphi, double Oangle);
@@ -381,17 +401,17 @@ int main(int argc, char* argv[])
     double hingeF = 0;
     double xctop, xcbottom, yctop, ycbottom, ytop, ybottom, topslope, bottomslope, rotation;
 
-    // variables for multi-ring I1/I3
-    double aprimeI1I3_MULTIRING[N_RINGS];
-    double freqI1I3_MULTIRING[N_RINGS];
-    double xctop_MULTIRING[N_RINGS];
-    double xcbottom_MULTIRING[N_RINGS];
-    double yctop_MULTIRING[N_RINGS];
-    double ycbottom_MULTIRING[N_RINGS];
-    double ytop_MULTIRING[N_RINGS];
-    double ybottom_MULTIRING[N_RINGS];
-    double topslope_MULTIRING[N_RINGS];
-    double bottomslope_MULTIRING[N_RINGS];
+    // // variables for multi-ring I1/I3
+    // double aprimeI1I3_MULTIRING[N_RINGS];
+    // double freqI1I3_MULTIRING[N_RINGS];
+    // double xctop_MULTIRING[N_RINGS];
+    // double xcbottom_MULTIRING[N_RINGS];
+    // double yctop_MULTIRING[N_RINGS];
+    // double ycbottom_MULTIRING[N_RINGS];
+    // double ytop_MULTIRING[N_RINGS];
+    // double ybottom_MULTIRING[N_RINGS];
+    // double topslope_MULTIRING[N_RINGS];
+    // double bottomslope_MULTIRING[N_RINGS];
 
     //fitness calculation variables - explained when initialized
     double fitness;
@@ -484,17 +504,25 @@ int main(int argc, char* argv[])
     xcbottom = -0.0037;
 
     debug_print("=== INITIALIZATION ===\n");
+    debug_print("Initial a, x, theta: %f, %f, %f\n", a, x, odontophoreangle);
+    debug_print("--- ORIGINAL RING ---\n");
     xcCalc(a, -1*x, odontophoreangle, xctop, xcbottom, yctop, ycbottom, topslope, bottomslope);
+    debug_print("\tInitial xctop, yctop for original ring: %f, %f\n", xctop_MULTIRING[i], yctop_MULTIRING[i]);
 
     ytop = yctop + sqrt(r*r - (-1*x - xctop)*(-1*x - xctop));
     ybottom = ycbottom - sqrt(r*r - (-1*x - xcbottom)*(-1*x - xcbottom)); //initializing contact point
+    debug_print("\tInitial ytop, ybottom for original ring: %f, %f\n", ytop, ybottom);
 
     // initialize multi-ring I1/I3
     for (i=0; i<N_RINGS; i++)
     {
+        debug_print("--- NEW RING %i ---\n", i);
         xctop_MULTIRING[i] = -0.0037;
         xcbottom_MULTIRING[i] = -0.0037;
         xcCalc(a, -1*x+(i*2*r), odontophoreangle, xctop_MULTIRING[i], xcbottom_MULTIRING[i], yctop_MULTIRING[i], ycbottom_MULTIRING[i], topslope_MULTIRING[i], bottomslope_MULTIRING[i]);
+        debug_print("\tInitial x, r, xctop, yctop for ring %i: %f, %f, %f, %f\n", i, x, r, xctop_MULTIRING[i], yctop_MULTIRING[i]);
+        // debug_print("\t(-1*x+(i*2*r) - xctop_MULTIRING[i]) = %f\n", (-1*x+(i*2*r) - xctop_MULTIRING[i]));
+        // debug_print("\t(-1*x+(i*2*r) - xcbottom_MULTIRING[i]) = %f\n", (-1*x+(i*2*r) - xcbottom_MULTIRING[i]));
 
         if (isnan(xctop_MULTIRING[i])) // ring not contacting odontophore
         {
@@ -503,14 +531,24 @@ int main(int argc, char* argv[])
             // arbitrarily: they are the positions of the original one-torus
             // I1/I3 model (always in contact with the odontophore) when fully
             // contracted at 20 Hz with simultaneous 20 Hz hinge stimulation.
+            // debug_print("\tfound nan, gonna assume not touching\n");
             ytop_MULTIRING[i] = 0.00341734;
             ybottom_MULTIRING[i] = -0.00341734;
         }
         else // ring contacting odontophore
         {
+            // debug_print("(-1*x+(i*2*r) - xctop_MULTIRING[i])    = %f\n", (-1*x+(i*2*r) - xctop_MULTIRING[i]));
+            // debug_print("(-1*x+(i*2*r) - xcbottom_MULTIRING[i]) = %f\n", (-1*x+(i*2*r) - xcbottom_MULTIRING[i]));
+            // debug_print("r*r - power(thingtop,2)                = %f\n", r*r - power((-1*x+(i*2*r) - xctop_MULTIRING[i]),2));
+            // debug_print("r*r - power(thingbottom,2)             = %f\n", r*r - power((-1*x+(i*2*r) - xcbottom_MULTIRING[i]),2));
+            // debug_print("sqrt(otherthingtop)                    = %f\n", sqrt(r*r - power((-1*x+(i*2*r) - xctop_MULTIRING[i]),2)));
+            // debug_print("sqrt(otherthingbottom)                 = %f\n", sqrt(r*r - power((-1*x+(i*2*r) - xcbottom_MULTIRING[i]),2)));
+
+            // SACRED!!!!!! this formula seems to work, checked 2018-10-05
             ytop_MULTIRING[i]    = yctop_MULTIRING[i]    + sqrt(r*r - power((-1*x+(i*2*r) - xctop_MULTIRING[i]),2));
             ybottom_MULTIRING[i] = ycbottom_MULTIRING[i] - sqrt(r*r - power((-1*x+(i*2*r) - xcbottom_MULTIRING[i]),2)); //initializing contact point
         }
+        debug_print("\tInitial ytop, ybottom for ring %i: %f, %f\n", i, ytop_MULTIRING[i], ybottom_MULTIRING[i]);
     }
 
     force1 = 0.000; //horizontal force acting on odontophore
@@ -522,6 +560,11 @@ int main(int argc, char* argv[])
     olda = a;
     oldytop = ytop;
     oldybottom = ybottom;
+    for (int i = 0; i < N_RINGS; i++)
+    {
+        oldytop_MULTIRING[i] = ytop_MULTIRING[i];
+        oldybottom_MULTIRING[i] = ybottom_MULTIRING[i];
+    }
 
     //Initialize arrays
         for(int i = 0; i < NUMBEROFNEURONS; i++){
@@ -785,11 +828,26 @@ BLARF COMMENT REMOVING READING INPUT END */
         olda = a;
         oldytop = ytop;
         oldybottom = ybottom;
+        for (int i = 0; i < N_RINGS; i++)
+        {
+            oldytop_MULTIRING[i] = ytop_MULTIRING[i];
+            oldybottom_MULTIRING[i] = ybottom_MULTIRING[i];
+        }
 
         //take forces and the frequency of N3 and determine odontophore position
-        updateposition(&x, &ytop, &ybottom, &a, &xdot, &ydot, &adot, force1, force2, actN3, &xctop, &xcbottom, &dummyvariable, &odontophoreangle, hingeF);
+        updateposition(&x, &ytop, &ybottom, ytop_MULTIRING, ybottom_MULTIRING, &a, &xdot, &ydot, &adot, force1, force2, actN3, &xctop, &xcbottom, xctop_MULTIRING, xcbottom_MULTIRING, &dummyvariable, &odontophoreangle, hingeF);
             //resetting the visco-elastic force to zero to prevent accumulation of visco-elastic forces over large amounts of time
             //from overwelming the elastic hinge force
+        // debug_print("%f\n", ytop_MULTIRING[0]);
+        // debug_print("%f\n", topslope_MULTIRING[0]);
+
+        // if (ytop_MULTIRING[3] > 0.005)
+        // {
+        //     printf("it's happened @ time = %f\n", time);
+        //     exit(1);
+        // }
+
+        // x = time/1000. - 0.005;
 
 
         peak = updateRasterPlot(peakB3132, peakB6162, peakB8a, peakB3, peakB6, peakB9, peakB38, peakB10, peakB43, peakB7, peakB8b);
@@ -923,6 +981,12 @@ be added directly to the horizontal force acting on the odontophore.*/
         double acthinge;
         //double legx, legy, hyp; BLARF
 
+        double lengthI1I3_MULTIRING[N_RINGS];
+        double velocityI1I3_MULTIRING[N_RINGS];
+        double actI1I3_MULTIRING[N_RINGS];
+        double tensionI1I3_MULTIRING[N_RINGS];
+        double passiveI1I3_MULTIRING[N_RINGS];
+
 
         //double Tphi, Bphi, A, B; BLARF
         //double vertI2force, horI2force; BLARF
@@ -938,25 +1002,47 @@ be added directly to the horizontal force acting on the odontophore.*/
 
 
         lengthI1I3 = musclelengthI1I3 (ytop, ybottom);
+        for (int i = 0; i < N_RINGS; i++)
+        {
+            lengthI1I3_MULTIRING[i] = musclelengthI1I3 (ytop_MULTIRING[i], ybottom_MULTIRING[i]);
+        }
+
 
         // cancelling output for now *output = lengthI2;
 
         //calculating muscle velocities, are normalized
         velocityI2 = musclevelocityI2 (oldx, oldytop, oldybottom, olda, x, ytop, ybottom, a, Oangle);
         velocityI1I3 = musclevelocityI1I3 (ytop, ybottom, oldytop, oldybottom);
+        for (int i = 0; i < N_RINGS; i++)
+        {
+            velocityI1I3_MULTIRING[i] = musclevelocityI1I3 (ytop_MULTIRING[i], ybottom_MULTIRING[i], oldytop_MULTIRING[i], oldybottom_MULTIRING[i]);
+        }
 
         //calculating activations
         actI2 = activationI2 (freqI2, aprimeI2);
         actI1I3 = activationI1I3 (freqI1I3, aprimeI1I3);
+        for (int i = 0; i < N_RINGS; i++)
+        {
+            // @@@@@@@ FOR NOW USING ORIGINAL @@@@@@@@@@
+            actI1I3_MULTIRING[i] = actI1I3;
+        }
         acthinge = activationI2 (hingefrequency, HingeAct);
 
         //calculating the passive muscle forces
         passiveI2 = FnotI2 * passive(lengthI2);
         passiveI1I3 = 0.0; //taking out passive I1I3 forces FnotI1I3 * passive(lengthI1I3);
+        for (int i = 0; i < N_RINGS; i++)
+        {
+            passiveI1I3_MULTIRING[i] = 0.0; //taking out passive I1I3 forces FnotI1I3 * passive(lengthI1I3);
+        }
 
         //calculating the muscle tensions
         tensionI2 = FnotI2 * lengthtens (lengthI2) * forcevelocity (velocityI2) * actI2 + 1.0*passiveI2; //BLARF 1.8 for stable bites
         tensionI1I3 = FnotI1I3 * lengthtens (lengthI1I3) * forcevelocity (velocityI1I3) * actI1I3 + passiveI1I3/2;
+        for (int i = 0; i < N_RINGS; i++)
+        {
+            tensionI1I3_MULTIRING[i] = FnotI1I3 * lengthtens (lengthI1I3_MULTIRING[i]) * forcevelocity (velocityI1I3_MULTIRING[i]) * actI1I3_MULTIRING[i] + passiveI1I3_MULTIRING[i]/2;
+        }
 
         //update phi
         calcphi (x, ytop, ybottom, a, &Tphi, &Bphi, Oangle);
@@ -979,6 +1065,10 @@ be added directly to the horizontal force acting on the odontophore.*/
         *force1 = 2 * pi * tensionI2 * cos(effectivePhi) + *hinge + *externalforce;   ///JEFF THIS IS WHERE THE EXTERNAL FORCE GOES!!!!
 
         *force2 =  2 * tensionI1I3 * pi; //+ 2*pi*tensionI2*sin(effectivePhi) taking out I2component on I3 simplemodel;
+        for (int i=0; i<N_RINGS; i++)
+        {
+            force2_MULTIRING[i] = 2 * tensionI1I3_MULTIRING[i] * pi;
+        }
 
         //valueTBD = aprimeI2; //TATE
 
@@ -1573,7 +1663,7 @@ of time.  This operation is performed in the model code rather than in calchinge
 
     }
 
-double updateposition (double *x, double *ytop, double *ybottom, double *a, double *xdot, double *ydot, double *adot, double f1, double f2, double actN3, double *Txc, double *Bxc, double *output, double *Oangle, double hingeforce)
+double updateposition (double *x, double *ytop, double *ybottom, double ytop_MULTIRING[], double ybottom_MULTIRING[], double *a, double *xdot, double *ydot, double *adot, double f1, double f2, double actN3, double *Txc, double *Bxc, double xctop_MULTIRING[], double xcbottom_MULTIRING[], double *output, double *Oangle, double hingeforce)
 
     /*updateposition takes the previous positions of the odontophore (x), the major radius of I1/I3 (y), the major axis of the
 odontophore (a), the velocity of the odontophore (xdot), the velocity of I1/I3 (ydot), the horizontal force on the odontophore
@@ -1602,9 +1692,13 @@ they are changed in updateposition.  The function does not need to return anythi
     {
         //eom variables - explained where initialized
         //double xc, yc, slope; blarf
-        double xddot, oldy;
+        double xddot, xddot_numerator, xddot_denominator, oldy;
         double Tyc, Byc, topslope, bottomslope;
+        // double yctop_MULTIRING[N_RINGS];
+        // double ycbottom_MULTIRING[N_RINGS];
         double effectiveslope;
+        // double topslope_MULTIRING[N_RINGS];
+        // double bottomslope_MULTIRING[N_RINGS];
 
         *Oangle = OdonAngle2(*x, hingeforce, *a, *Oangle);
 
@@ -1614,11 +1708,69 @@ they are changed in updateposition.  The function does not need to return anythi
         xcCalc(*a, -1* *x, *Oangle, *Txc, *Bxc, Tyc, Byc, topslope, bottomslope);
         //contactslope (a, x, &yc, &xc, &slope); //initializing contact point and slope at that point
 
+        for (int i=0; i<N_RINGS; i++)
+        {
+            // debug_print("--- NEW RING %i ---\n", i);
+            xcCalc(*a, -1*(*x)+(i*2*r), *Oangle, xctop_MULTIRING[i], xcbottom_MULTIRING[i], yctop_MULTIRING[i], ycbottom_MULTIRING[i], topslope_MULTIRING[i], bottomslope_MULTIRING[i]);
+            // debug_print("\tInitial x, r, xctop, yctop for ring %i: %f, %f, %f, %f\n", i, x, r, xctop_MULTIRING[i], yctop_MULTIRING[i]);
+            // debug_print("\t(-1*x+(i*2*r) - xctop_MULTIRING[i]) = %f\n", (-1*x+(i*2*r) - xctop_MULTIRING[i]));
+            // debug_print("\t(-1*x+(i*2*r) - xcbottom_MULTIRING[i]) = %f\n", (-1*x+(i*2*r) - xcbottom_MULTIRING[i]));
+
+            if (isnan(xctop_MULTIRING[i])) // ring not contacting odontophore
+            {
+                // These constants are where a ring will stay if it is not in
+                // contact with the odontophore. They were chosen somewhat
+                // arbitrarily: they are the positions of the original one-torus
+                // I1/I3 model (always in contact with the odontophore) when fully
+                // contracted at 20 Hz with simultaneous 20 Hz hinge stimulation.
+                // debug_print("\tfound nan, gonna assume not touching\n");
+                ytop_MULTIRING[i] = 0.00341734;
+                ybottom_MULTIRING[i] = -0.00341734;
+            }
+            else // ring contacting odontophore
+            {
+                // debug_print("(-1*x+(i*2*r) - xctop_MULTIRING[i])    = %f\n", (-1*x+(i*2*r) - xctop_MULTIRING[i]));
+                // debug_print("(-1*x+(i*2*r) - xcbottom_MULTIRING[i]) = %f\n", (-1*x+(i*2*r) - xcbottom_MULTIRING[i]));
+                // debug_print("r*r - power(thingtop,2)                = %f\n", r*r - power((-1*x+(i*2*r) - xctop_MULTIRING[i]),2));
+                // debug_print("r*r - power(thingbottom,2)             = %f\n", r*r - power((-1*x+(i*2*r) - xcbottom_MULTIRING[i]),2));
+                // debug_print("sqrt(otherthingtop)                    = %f\n", sqrt(r*r - power((-1*x+(i*2*r) - xctop_MULTIRING[i]),2)));
+                // debug_print("sqrt(otherthingbottom)                 = %f\n", sqrt(r*r - power((-1*x+(i*2*r) - xcbottom_MULTIRING[i]),2)));
+
+                // SACRED!!!!!! this formula seems to work, checked 2018-10-05
+                ytop_MULTIRING[i]    = yctop_MULTIRING[i]    + sqrt(r*r - power((-1*(*x)+(i*2*r) - xctop_MULTIRING[i]),2));
+                ybottom_MULTIRING[i] = ycbottom_MULTIRING[i] - sqrt(r*r - power((-1*(*x)+(i*2*r) - xcbottom_MULTIRING[i]),2)); //initializing contact point
+            }
+            // debug_print("\tInitial ytop, ybottom for ring %i: %f, %f\n", i, ytop_MULTIRING[i], ybottom_MULTIRING[i]);
+        }
+
         effectiveslope = (topslope - bottomslope)/2;
+        for (int i=0; i<N_RINGS; i++)
+        {
+            if (isnan(topslope_MULTIRING[i]))
+                debug_print("topslope_MULTIRING[%d] is nan\n", i);
+            if (isnan(bottomslope_MULTIRING[i]))
+                debug_print("bottomslope_MULTIRING[%d] is nan\n", i);
+            effectiveslope_MULTIRING[i] = (topslope_MULTIRING[i] - bottomslope_MULTIRING[i])/2;
+        }
         *output = effectiveslope; // output back in removed output simplemodel
 
         //slightly more complex simple eom (NSEOM)
-        xddot =(f1 + f2*effectiveslope)/(Odonmass+I1I3mass*effectiveslope*effectiveslope);
+        // xddot =(f1 + f2*effectiveslope)/(Odonmass+I1I3mass*effectiveslope*effectiveslope);
+        xddot_numerator = f1 + f2*effectiveslope;
+        xddot_denominator = Odonmass+I1I3mass*effectiveslope*effectiveslope;
+        for (int i=0; i<N_RINGS; i++)
+        {
+            if (isnan(force2_MULTIRING[i]))
+                debug_print("force2_MULTIRING[%d] is nan\n", i);
+            if (isnan(effectiveslope_MULTIRING[i]))
+                debug_print("effectiveslope_MULTIRING[%d] is nan\n", i);
+            // @@@@@@@@@@@@ THIS ATTEMPTS TO ADD FORCES FROM THE NEW RINGS BUT BREAKS STUFF!!! @@@@@@@@@@@@@@@@@@
+            // xddot_numerator += force2_MULTIRING[i]*effectiveslope_MULTIRING[i];
+            // xddot_denominator += I1I3mass*effectiveslope_MULTIRING[i]*effectiveslope_MULTIRING[i];
+        }
+        xddot = xddot_numerator/xddot_denominator;
+        if (isnan(xddot))
+            debug_print("oh no!\n");
 
         //*a = freqN3 * 0.00015 + 0.005; //major axis length is updated from freqN3
         *a = 0.003*actN3+0.005; //removing ability to change a, simplemodel this was original function above was commented out
@@ -1642,10 +1794,10 @@ they are changed in updateposition.  The function does not need to return anythi
 
 
         //use geometry to find y and a numerical approximation for ydot
-        *ytop = Tyc + sqrt(r * r - (-1 * *x - *Txc) * (-1 * *x - *Txc));
-        *ybottom = Byc - sqrt(r*r - (-1* *x - *Bxc)*(-1* *x - *Bxc));
+        *ytop    = Tyc + sqrt(r*r - (-1 * *x - *Txc) * (-1 * *x - *Txc));
+        *ybottom = Byc - sqrt(r*r - (-1 * *x - *Bxc) * (-1 * *x - *Bxc));
 
-        *ydot = (*ytop - oldy)/StepSize;
+        *ydot = (*ytop - oldy)/StepSize; // ydot isn't used anymore
 
         return 0;
     }
@@ -1753,30 +1905,74 @@ equations.*/
 
 double topEllipseSlope(double a, double xc, double rotation, double & yc)
 {
+    if (isnan(xc))
+        debug_print("    topEllipseSlope: xc is nan\n");
     double theta = rotation*pi/180;
     double b = 0.005*sqrt(0.005)/sqrt(a);
     double part1 = a*a*cos(theta)*xc;
     double part2 = power(a,4)*b*b*cos(theta)*cos(theta)*sin(theta)*sin(theta) - a*a*b*b*xc*xc*sin(theta)*sin(theta)+a*a*power(b,4)*power(sin(theta),4);
+    if (0 > part2)
+    {
+        debug_print("    topEllipseSlope: 0 > part2 = %f\n", part2);
+        part2 = 0; // @@@@@@@@@@@@@@@@@ IS THIS OK?
+    }
     double part3 = a*a*cos(theta)*cos(theta)+b*b*sin(theta)*sin(theta);
     double xcHoriz = (part1+sqrt(part2))/part3;
+    if (isnan(xcHoriz))
+    {
+        debug_print("    topEllipseSlope: xcHoriz is nan\n");
+        debug_print("      part1 was %f\n", part1);
+        debug_print("      part2 was %f\n", part2);
+        debug_print("      part3 was %f\n", part3);
+    }
+    if (0 >= 1-xcHoriz*xcHoriz/(a*a))
+    {
+        debug_print("    topEllipseSlope: 0 >= 1-xcHoriz*xcHoriz/(a*a) = %f\n", 1-xcHoriz*xcHoriz/(a*a));
+    }
     double horizslope = -b*xcHoriz/(a*a*sqrt(1-xcHoriz*xcHoriz/(a*a)));
+    if (isnan(horizslope))
+        debug_print("    topEllipseSlope: horizslope is nan\n");
 
     yc = -1*sin(-1*theta)*xcHoriz + cos(-1*theta)*b*sqrt(1-xcHoriz*xcHoriz/(a*a));
+    if (isnan(yc))
+        debug_print("    topEllipseSlope: yc is nan\n");
 
     return ((-sin(-1*theta) + horizslope * cos(-1*theta))/(cos(-1*theta) + horizslope*sin(-1*theta)));
 }
 
 double topEllipseSlope2(double a, double xc, double rotation, double & yc)
 {
+    if (isnan(xc))
+        debug_print("    topEllipseSlope2: xc is nan\n");
     double theta = rotation*pi/180;
     double b = 0.005*sqrt(0.005)/sqrt(a);
     double part1 = a*a*cos(theta)*xc;
     double part2 = power(a,4)*b*b*cos(theta)*cos(theta)*sin(theta)*sin(theta) - a*a*b*b*xc*xc*sin(theta)*sin(theta)+a*a*power(b,4)*power(sin(theta),4);
+    if (0 > part2)
+    {
+        debug_print("    topEllipseSlope2: 0 > part2 = %f\n", part2);
+        part2 = 0; // @@@@@@@@@@@@@@@@@ IS THIS OK?
+    }
     double part3 = a*a*cos(theta)*cos(theta)+b*b*sin(theta)*sin(theta);
     double xcHoriz = (part1+sqrt(part2))/part3;
+    if (isnan(xcHoriz))
+    {
+        debug_print("    topEllipseSlope2: xcHoriz is nan\n");
+        debug_print("      part1 was %f\n", part1);
+        debug_print("      part2 was %f\n", part2);
+        debug_print("      part3 was %f\n", part3);
+    }
+    if (0 >= 1-xcHoriz*xcHoriz/(a*a))
+    {
+        debug_print("    topEllipseSlope2: 0 >= 1-xcHoriz*xcHoriz/(a*a) = %f\n", 1-xcHoriz*xcHoriz/(a*a));
+    }
     double horizslope = b*xcHoriz/(a*a*sqrt(1-xcHoriz*xcHoriz/(a*a)));
+    if (isnan(horizslope))
+        debug_print("    topEllipseSlope2: horizslope is nan\n");
 
     yc = -1*sin(-1*theta)*xcHoriz + cos(-1*theta)*-1*b*sqrt(1-xcHoriz*xcHoriz/(a*a));
+    if (isnan(yc))
+        debug_print("    topEllipseSlope2: yc is nan\n");
 
     return ((-sin(-1*theta) + horizslope * cos(-1*theta))/(cos(-1*theta) + horizslope*sin(-1*theta)));
 }
@@ -1812,6 +2008,7 @@ double bottomI1I3slope(double x, double xc)
 
 void xcCalc(double a, double x, double rotation, double & Txc, double & Bxc, double & Tyc, double & Byc, double & topslope, double & bottomslope)
 {
+    // debug_print("\t(1) Txc: %f\n", Txc);
     double TES, BES, TI1I3S, BI1I3S, n, ndelta, Tslope;
     double b, odonslope, frontxpoint, frontypoint, furthestx;
     double oldTxc = Txc, oldBxc = Bxc;
@@ -1827,37 +2024,86 @@ void xcCalc(double a, double x, double rotation, double & Txc, double & Bxc, dou
     // x   is the       center x-position       of the ring relative to the odontophore
     // x-r is the   most posterior x-position   of the ring relative to the odontophore
     if (x-r > furthestx)
+    // double fudge = 0.001; // @@@@@@@@@@@@@@@@ IS THIS OK?
+    // if (x-r + fudge > furthestx)
+    {
+        // debug_print("\tNot touching!\n");
         isContactingOdontophore = false;
+    }
     else
+    {
+        // debug_print("\tTouching!\n");
         isContactingOdontophore = true;
+    }
+
 
 
     if(Bxc < (-r + x))
+    {
+        // debug_print("\tBxc < (-r + x)\n");
         Bxc = x - 0.00125 + 0.0000101;
+    }
     if(Bxc > (r + x))
+    {
+        // debug_print("\tBxc > (r + x)\n");
         Bxc = x + r - 0.0000101;
+    }
     if(Txc < (x - r))
+    {
+        // debug_print("\tTxc < (x - r)\n");
         Txc = x - r + 0.0000101;
+    }
     if(Txc > (r + x))
+    {
+        // debug_print("\tTxc > (r + x)\n");
         Txc = x + r - 0.0000101;
+    }
+    // debug_print("\t(2) Txc: %f\n", Txc);
 
     if(Txc > furthestx)
+    {
+        // debug_print("\tTxc > furthestx (not touching?)\n");
+        // debug_print("\t\tfurthestx, x, r: %f, %f, %f\n", furthestx, x, r);
         Txc = (furthestx + x - r)/2;
+    }
     if(Txc < -1*furthestx)
+    {
+        // debug_print("\tTxc < -1*furthestx\n");
         Txc = (-1*furthestx + x + r)/2;
+    }
     if(Bxc > furthestx)
+    {
+        // debug_print("\tBxc > furthestx (not touching?)\n");
+        // debug_print("\t\tfurthestx, x, r: %f, %f, %f\n", furthestx, x, r);
         Bxc = (furthestx + x - r)/2;
+    }
     if(Bxc < -1*furthestx)
+    {
+        // debug_print("\tBxc < -1*furthestx\n");
         Bxc = (-1*furthestx + x + r)/2;
+    }
+    // debug_print("\t(3) Txc: %f\n", Txc);
 
     if (isContactingOdontophore)
     {
         for(;;)
         {
+            // debug_print("counter = %d\n", counter);
+
             if(rotation > 45 && (Txc > (a * cos(rotation*pi/180))))
+            {
+                // debug_print("\tGonna use topEllipseSlope2\n");
                 TES = topEllipseSlope2(a, Txc, rotation, Tyc);
+                if (isnan(TES))
+                    debug_print("TES (topEllipseSlope2) is nan\n");
+            }
             else
+            {
+                // debug_print("\tGonna use topEllipseSlope\n");
                 TES = topEllipseSlope(a, Txc, rotation, Tyc);
+                if (isnan(TES))
+                    debug_print("TES (topEllipseSlope) is nan\n");
+            }
 
             TI1I3S = topI1I3slope(x, Txc);
 
@@ -1867,6 +2113,9 @@ void xcCalc(double a, double x, double rotation, double & Txc, double & Bxc, dou
 
             if((n < 0 && -1*n < Error) || (n > 0 && n < Error))
                 break;
+
+            // if (isnan(TES))
+            //     debug_print("  made it past break\n");
 
             counter = counter + 1;
 
@@ -1882,6 +2131,9 @@ void xcCalc(double a, double x, double rotation, double & Txc, double & Bxc, dou
                 break;
             }
 
+            if (isnan(topslope))
+                debug_print("topslope is nan\n");
+
             if(rotation > 45 && ((Txc+delta) > (a * cos(rotation*pi/180))))
                 Tslope = topEllipseSlope2(a, Txc+delta, rotation, Tyc);
             else
@@ -1896,6 +2148,15 @@ void xcCalc(double a, double x, double rotation, double & Txc, double & Bxc, dou
         }
 
         counter = 0;
+
+        if (isnan(TES))
+        {
+            debug_print("  made it to second loop\n");
+            if (isnan(topslope))
+                debug_print("  at this time, topslope is nan\n");
+            else
+                debug_print("  at this time, topslope is NOT nan\n");
+        }
 
         for(;;)
         {
@@ -1932,12 +2193,17 @@ void xcCalc(double a, double x, double rotation, double & Txc, double & Bxc, dou
         Bxc = nan("");
         Tyc = nan("");
         Byc = nan("");
+        // Txc = x - r;
+        // Bxc = x - r;
+        // Tyc = 0.00341734;
+        // Byc = -0.00341734;
 
         // zero slope ensures that the rings which are not in contact with the
         // odontophore exert no force on it
         topslope = 0;
         bottomslope = 0;
     }
+    // debug_print("\t(4) Txc: %f\n", Txc);
 
 }
 
