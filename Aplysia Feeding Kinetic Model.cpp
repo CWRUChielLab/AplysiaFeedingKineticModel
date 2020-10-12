@@ -2224,7 +2224,27 @@ void updateinputs (double time, double & freqI2, double & freqHinge, double & fr
     }
     else
     {
-        cerr << "Behavior Type Not Recognized"  << endl;
+        std::vector<std::string> behavior_list(0);
+        behavior_list.push_back("Bite");
+        behavior_list.push_back("SwallowA");
+        behavior_list.push_back("SwallowB");
+        behavior_list.push_back("SwallowPerturbed");
+        behavior_list.push_back("RejectionA");
+        behavior_list.push_back("RejectionB");
+        behavior_list.push_back("IzhikevichBite");
+        behavior_list.push_back("IzhikevichSwallowA");
+        behavior_list.push_back("IzhikevichSwallowB");
+        behavior_list.push_back("IzhikevichSwallowPerturbed");
+        behavior_list.push_back("IzhikevichRejectionA");
+        behavior_list.push_back("IzhikevichRejectionB");
+        behavior_list.push_back("IzExampleSwallow");
+        behavior_list.push_back("IzSwallowBmoreaccurate");
+        behavior_list.push_back("NeuromechanicalInput");
+        behavior_list.push_back("Dynamic");
+        cerr << "Behavior Type Not Recognized. Provide one of the following as an argument:"  << endl;
+        for (int i = 0; i < behavior_list.size(); i++) {
+            cerr << "\t" << behavior_list[i]  << endl;
+        }
         exit(1);
     }
 }
