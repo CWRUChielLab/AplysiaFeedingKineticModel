@@ -2002,6 +2002,7 @@ double OdonAngle(double x)  //my new function for rejection, based on Hui's pape
 }
 double calchingeforce2 (double xdisplacement, double xvelocity)
 /* calchingeforce2 only includes the elastic anti-protraction component of the hinge force */
+/* no Maxwell element; no forward/backward asymetry */
 
     {
         double Fo, So, x, xdot;
