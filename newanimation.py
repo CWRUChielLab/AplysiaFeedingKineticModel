@@ -30,7 +30,7 @@ br = 2000
 dpi = 180
 
 # show rings 2-5 --- not fully implemented yet in model
-show_multiring = False
+show_multiring = True
 
 
 ######################################################
