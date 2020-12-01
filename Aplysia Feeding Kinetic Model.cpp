@@ -2239,8 +2239,8 @@ void updateinputs (double time, double & freqI2, double & freqHinge, double & fr
         behavior_list.push_back("IzhikevichRejectionB");
         behavior_list.push_back("IzExampleSwallow");
         behavior_list.push_back("IzSwallowBmoreaccurate");
-        behavior_list.push_back("NeuromechanicalInput");
         behavior_list.push_back("Dynamic");
+        behavior_list.push_back("NeuromechanicalInput");
         cerr << "Behavior Type Not Recognized. Provide one of the following as an argument:"  << endl;
         for (int i = 0; i < behavior_list.size(); i++) {
             cerr << "\t" << behavior_list[i]  << endl;
